@@ -4,27 +4,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Diagnóstico de Saúde Metabólica - Protocolo Pós-Caneta</title>
+    <title>Diagnóstico - Risco Rebote</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #fdfbf7;
-        color: #1e293b;
-        margin: 0;
-        padding: 0;
-      }
-      .shadow-soft {
-        box-shadow: 0 10px 30px -5px rgba(15, 118, 110, 0.08);
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .animate-fadeIn {
-        animation: fadeIn 0.6s ease-out forwards;
-      }
+      body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fdfbf7; }
     </style>
   <script type="importmap">
 {
@@ -44,3 +28,4 @@
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
+
