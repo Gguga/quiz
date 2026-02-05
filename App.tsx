@@ -103,12 +103,17 @@ const App: React.FC = () => {
             {/* SLOT PARA SUA IMAGEM LOCAL CONFIGURADA */}
             <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 flex items-center justify-center group">
                <img 
-                 src="/capa.jpg" 
+                 src="capa.jpeg" 
                  alt="Foto de Capa - Diagnóstico Metabólico" 
                  className="w-full h-full object-cover"
                  onError={(e) => {
-                    // Fallback para uma imagem genérica caso o arquivo 'capa.jpg' não seja encontrado
-                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=800";
+                    const target = e.target as HTMLImageElement;
+                    // Se falhar com capa.jpeg, tenta capa.jpg antes de carregar a imagem da internet
+                    if (target.src.includes('capa.jpeg')) {
+                        target.src = "capa.jpg";
+                    } else if (target.src.includes('capa.jpg')) {
+                        target.src = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=800";
+                    }
                  }}
                />
                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
