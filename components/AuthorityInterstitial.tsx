@@ -23,22 +23,11 @@ const AuthorityInterstitial: React.FC<AuthorityInterstitialProps> = ({ onNext })
             Sem uma alimentação bem estruturada, boa parte da perda rápida pode ser de <span className="text-slate-900">massa magra</span>, o que dificulta muito manter o peso depois.
           </p>
           
-          <p className="text-[#0f766e] font-black text-sm uppercase tracking-wide">
-            É isso que vamos analisar no seu resultado.
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-          Resultado Típico de Proteção Metabólica:
-        </p>
-        <div className="rounded-[2rem] overflow-hidden shadow-soft border-4 border-white bg-white">
-          <img 
-            src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800" 
-            alt="Resultado Real Metabolismo" 
-            className="w-full h-auto object-cover"
-          />
+          <div className="bg-teal-50 p-6 rounded-3xl border border-teal-100 mt-6">
+            <p className="text-[#0f766e] font-black text-sm uppercase tracking-wide leading-relaxed">
+              Nosso objetivo é garantir que seu metabolismo não "trave" e que você não recupere o peso ao finalizar o uso.
+            </p>
+          </div>
         </div>
       </div>
 

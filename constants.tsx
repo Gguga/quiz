@@ -104,7 +104,6 @@ export const QUESTIONS: Question[] = [
   {
     id: 8, 
     text: "Como você avalia sua força e carga nos treinos ultimamente?",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800",
     options: [
       { label: "Minha força caiu drasticamente", subLabel: "Sinal de que seu corpo está queimando músculos como energia.", value: "forca_caiu_muito", weight: 45, icon: "📉" },
       { label: "Sinto mais cansaço e menos rendimento", subLabel: "O metabolismo está entrando em modo de economia.", value: "forca_caiu_pouco", weight: 25, icon: "😕" },

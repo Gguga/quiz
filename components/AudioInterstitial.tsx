@@ -21,8 +21,8 @@ const AudioInterstitial: React.FC<AudioInterstitialProps> = ({ onNext }) => {
 
       <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-soft">
         <div className="bg-slate-50/50 p-5 rounded-3xl border border-slate-100 flex items-center space-x-4 shadow-inner">
-           <div className="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-[#0f766e] shrink-0 shadow-sm">
-              <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200" alt="Gustavo Campos" className="w-full h-full object-cover" />
+           <div className="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-[#0f766e] shrink-0 shadow-sm bg-teal-100 flex items-center justify-center">
+              <span className="text-2xl">🎙️</span>
            </div>
            
            <div className="flex-1 space-y-2">
@@ -52,14 +52,6 @@ const AudioInterstitial: React.FC<AudioInterstitialProps> = ({ onNext }) => {
               )}
            </button>
         </div>
-      </div>
-
-      <div className="rounded-[2rem] overflow-hidden shadow-soft border-4 border-white bg-white">
-          <img 
-            src="https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&q=80&w=800" 
-            alt="Análise Metabólica Visual" 
-            className="w-full h-auto object-cover opacity-90"
-          />
       </div>
 
       <button

@@ -16,6 +16,10 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   
+  // Lista de tentativas baseada estritamente nos arquivos do seu GitHub
+  const myImages = ['/capa.jpeg', '/capa.jpg', '/capa.jpeg.jpeg', 'capa.jpeg'];
+  const [imgIdx, setImgIdx] = useState(0);
+  
   const apiDataRef = useRef<QuizResults | null>(null);
 
   const getQuestionIndex = (step: number) => {
@@ -76,6 +80,12 @@ const App: React.FC = () => {
     }
   }, [loadingProgress]);
 
+  const handleImageError = () => {
+    if (imgIdx < myImages.length - 1) {
+      setImgIdx(prev => prev + 1);
+    }
+  };
+
   const qIdx = getQuestionIndex(currentStep);
   const totalSteps = 13;
   const progress = currentStep >= 0 ? ((currentStep + 1) / totalSteps) * 100 : 0;
@@ -87,7 +97,7 @@ const App: React.FC = () => {
         {currentStep === -1 && !loading && !results && (
           <div className="w-full max-w-xl text-center space-y-8 animate-fadeIn mt-6">
             <div className="space-y-4">
-              <span className="bg-teal-50 text-[#0f766e] px-4 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-teal-100">
+              <span className="bg-teal-50 text-[#0f766e] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-teal-100">
                 Protocolo Anti-Rebote
               </span>
               <h1 className="text-[#0f766e] font-black text-4xl md:text-5xl uppercase tracking-tighter leading-[0.9] pt-2">
@@ -100,25 +110,17 @@ const App: React.FC = () => {
               </h2>
             </div>
 
-            {/* SLOT PARA SUA IMAGEM LOCAL CONFIGURADA */}
-            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 flex items-center justify-center group">
+            {/* SLOT DE IMAGEM: Só carrega os arquivos do seu GitHub */}
+            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-200 flex items-center justify-center">
                <img 
-                 src="capa.jpeg" 
-                 alt="Foto de Capa - Diagnóstico Metabólico" 
+                 src={myImages[imgIdx]} 
+                 alt="Capa do Diagnóstico" 
                  className="w-full h-full object-cover"
-                 onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    // Se falhar com capa.jpeg, tenta capa.jpg antes de carregar a imagem da internet
-                    if (target.src.includes('capa.jpeg')) {
-                        target.src = "capa.jpg";
-                    } else if (target.src.includes('capa.jpg')) {
-                        target.src = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=800";
-                    }
-                 }}
+                 onError={handleImageError}
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                <div className="absolute bottom-6 left-0 right-0">
-                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Análise de Tendência de Reganho</p>
+                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90">Análise de Tendência de Reganho</p>
                </div>
             </div>
 

@@ -15,7 +15,7 @@ const VideoInterstitial: React.FC<VideoInterstitialProps> = ({ onNext }) => {
         videoRef.current.pause();
         setIsPlaying(false);
       } else {
-        videoRef.current.muted = false; // Garante que o som saia ao clicar
+        videoRef.current.muted = false;
         videoRef.current.play();
         setIsPlaying(true);
       }
@@ -31,20 +31,17 @@ const VideoInterstitial: React.FC<VideoInterstitialProps> = ({ onNext }) => {
       </div>
 
       <div className="relative aspect-[9/16] max-w-[300px] mx-auto rounded-[2.5rem] overflow-hidden shadow-soft border-4 border-white bg-slate-900 group">
-        {/* VIDEO TAG: Substitua o 'src' abaixo pelo link do seu vídeo */}
         <video
           ref={videoRef}
           className="w-full h-full object-cover opacity-90"
           playsInline
-          muted // Começa mudo para permitir autoplay/preview se desejar
+          muted 
           loop
-          poster="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=800" // Capa do vídeo antes do play
-          src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" // LINK DO SEU VÍDEO AQUI
+          src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" 
         />
         
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent pointer-events-none"></div>
         
-        {/* Overlay de Controle */}
         <div className="absolute inset-0 flex items-center justify-center p-4">
           {!isPlaying && (
             <button 
@@ -58,7 +55,6 @@ const VideoInterstitial: React.FC<VideoInterstitialProps> = ({ onNext }) => {
             </button>
           )}
 
-          {/* Botão pequeno para pausar caso já esteja tocando */}
           {isPlaying && (
             <button 
               onClick={handlePlayToggle}

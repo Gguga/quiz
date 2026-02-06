@@ -13,7 +13,6 @@ interface QuizStepProps {
 }
 
 const QuizStep: React.FC<QuizStepProps> = ({ question, selectedOption, onSelect, onNext, onBack, isFirst, isLast }) => {
-  // Pergunta 2 (objetivo) usa layout em grade para maior impacto visual
   const isGridQuestion = question.id === 2;
 
   return (
@@ -26,16 +25,6 @@ const QuizStep: React.FC<QuizStepProps> = ({ question, selectedOption, onSelect,
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white inline-block px-4 py-1 rounded-full border border-slate-100">
           Toque na opção desejada:
         </p>
-
-        {question.image && (
-          <div className="pt-2 animate-fadeIn">
-             <img 
-              src={question.image} 
-              alt="Visual de referência" 
-              className="w-full max-w-[340px] mx-auto rounded-[2rem] shadow-lg border-4 border-white"
-            />
-          </div>
-        )}
 
         <div className={`pt-4 ${isGridQuestion ? 'grid grid-cols-2 gap-4 space-y-0' : 'space-y-3'}`}>
           {question.options.map((option) => (
