@@ -16,6 +16,10 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   
+  // LINK DIRETO DO SEU REPOSITÓRIO (Sempre funciona, independente do build)
+  const imageUrl = "https://raw.githubusercontent.com/Gguga/quiz/main/capa.jpeg";
+  const [imgLoaded, setImgLoaded] = useState(false);
+  
   const apiDataRef = useRef<QuizResults | null>(null);
 
   const getQuestionIndex = (step: number) => {
@@ -63,7 +67,7 @@ const App: React.FC = () => {
       setLoadingProgress(prev => {
         if (prev >= 99 && !apiDataRef.current) return 99;
         if (apiDataRef.current && prev >= 90) return 100;
-        return prev + 1;
+        return prev + 1.2;
       });
     }, 40);
     return () => clearInterval(interval);
@@ -96,32 +100,43 @@ const App: React.FC = () => {
               </h1>
               
               <h2 className="text-slate-600 font-bold text-lg md:text-xl max-w-md mx-auto leading-tight tracking-tight pt-2">
-                Descubra se você corre risco de recuperar o peso perdido após parar com a medicação
+                Descubra em 2 minutos se você corre risco de recuperar o peso perdido após parar com a medicação
               </h2>
             </div>
 
-            {/* SLOT DE IMAGEM SIMPLIFICADO: APENAS TENTA CARREGAR capa.jpeg */}
-            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-50">
-               {/* Fundo de placeholder que só aparece se a imagem falhar */}
-               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-slate-50 to-teal-50/30">
-                  <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-3 border border-teal-100">
-                     <span className="text-3xl opacity-50">👨‍⚕️</span>
+            {/* SLOT DE IMAGEM INFALÍVEL */}
+            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-white">
+               
+               {/* FUNDO PROFISSIONAL (Aparece enquanto a foto carrega ou se o link quebrar) */}
+               <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-slate-100 flex flex-col items-center justify-center p-8 text-center">
+                  <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-4 border border-teal-100">
+                     <span className="text-4xl">👨‍⚕️</span>
                   </div>
-                  <p className="text-[#0f766e] font-black uppercase tracking-tighter">Gustavo Campos</p>
-                  <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Nutricionista</p>
+                  <div className="space-y-1">
+                    <p className="text-[#0f766e] text-xl font-black uppercase tracking-tighter leading-none">Gustavo Campos</p>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Nutricionista Especialista</p>
+                  </div>
+                  {!imgLoaded && (
+                    <div className="absolute bottom-10 w-6 h-6 border-2 border-teal-100 border-t-[#0f766e] rounded-full animate-spin"></div>
+                  )}
                </div>
-               
-               {/* Sua imagem por cima */}
+
+               {/* IMAGEM DO SEU GITHUB */}
                <img 
-                 src="capa.jpeg" 
-                 alt=""
-                 className="absolute inset-0 w-full h-full object-cover z-10"
-                 onError={(e) => (e.currentTarget.style.display = 'none')}
+                 src={imageUrl} 
+                 alt="Gustavo Campos"
+                 className={`absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-1000 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                 onLoad={() => setImgLoaded(true)}
+                 onError={(e) => {
+                   console.log("Erro ao carregar do GitHub, mantendo placeholder.");
+                   e.currentTarget.style.display = 'none';
+                 }}
                />
-               
-               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-20 pointer-events-none"></div>
-               <div className="absolute bottom-6 left-0 right-0 z-30">
-                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Parecer Técnico Especializado</p>
+
+               {/* OVERLAYS ESTÉTICOS */}
+               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-30 pointer-events-none"></div>
+               <div className="absolute bottom-6 left-0 right-0 z-40">
+                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Análise de Tendência de Reganho</p>
                </div>
             </div>
 
