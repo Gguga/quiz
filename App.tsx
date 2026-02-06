@@ -16,26 +16,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   
-  // Lista exaustiva de possíveis nomes baseada em erros comuns (maiusculas/minusculas/extensões)
-  const myImages = [
-    'capa.jpeg', 'capa.jpg', 'capa.png', 
-    'Capa.jpeg', 'Capa.jpg', 'Capa.png',
-    'capa.jpeg.jpeg', 'CAPA.JPG', 'CAPA.JPEG'
-  ];
-  const [imgIdx, setImgIdx] = useState(0);
-  const [imgStatus, setImgStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
-  
   const apiDataRef = useRef<QuizResults | null>(null);
-
-  // Fallback de segurança: Se em 2.5 segundos a imagem não carregar, libera a visualização profissional
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (imgStatus === 'loading') {
-        setImgStatus('error');
-      }
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, [imgStatus]);
 
   const getQuestionIndex = (step: number) => {
     const mapping: Record<number, number> = { 
@@ -70,7 +51,7 @@ const App: React.FC = () => {
       apiDataRef.current = {
         score: 85,
         riskLevel: "Alto",
-        personalizedMessage: "Risco elevado de rebote metabólico detectado devido ao padrão de ingestão proteica e massa magra.",
+        personalizedMessage: "Risco elevado de rebote metabólico detectado devido ao seu perfil de ingestão proteica.",
         keyInsights: ["Priorize o aporte de proteínas.", "Inicie treinos de força.", "Consuma 3L de água."]
       };
     });
@@ -82,9 +63,9 @@ const App: React.FC = () => {
       setLoadingProgress(prev => {
         if (prev >= 99 && !apiDataRef.current) return 99;
         if (apiDataRef.current && prev >= 90) return 100;
-        return prev + 0.8;
+        return prev + 1;
       });
-    }, 50);
+    }, 40);
     return () => clearInterval(interval);
   }, [loading]);
 
@@ -94,18 +75,6 @@ const App: React.FC = () => {
       setLoading(false);
     }
   }, [loadingProgress]);
-
-  const handleImageError = () => {
-    if (imgIdx < myImages.length - 1) {
-      setImgIdx(prev => prev + 1);
-    } else {
-      setImgStatus('error');
-    }
-  };
-
-  const handleImageLoad = () => {
-    setImgStatus('loaded');
-  };
 
   const qIdx = getQuestionIndex(currentStep);
   const totalSteps = 13;
@@ -127,46 +96,33 @@ const App: React.FC = () => {
               </h1>
               
               <h2 className="text-slate-600 font-bold text-lg md:text-xl max-w-md mx-auto leading-tight tracking-tight pt-2">
-                Descubra em 2 minutos se você corre risco de recuperar tudo o que perdeu quando parar com a medicação
+                Descubra se você corre risco de recuperar o peso perdido após parar com a medicação
               </h2>
             </div>
 
-            {/* SLOT DE IMAGEM INTELIGENTE */}
-            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-white flex items-center justify-center">
-               
-               {/* Caso a imagem não carregue, mostra este fundo profissional em vez do erro */}
-               {imgStatus !== 'loaded' && (
-                 <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-slate-100 flex flex-col items-center justify-center p-8 text-center">
-                    <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-4 border border-teal-100">
-                       <span className="text-4xl text-[#0f766e]">👨‍⚕️</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[#0f766e] text-lg font-black uppercase tracking-tighter leading-none">Gustavo Campos</p>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Nutricionista</p>
-                    </div>
-                    
-                    {imgStatus === 'loading' && (
-                      <div className="absolute bottom-6 w-8 h-8 border-2 border-teal-100 border-t-[#0f766e] rounded-full animate-spin"></div>
-                    )}
-                 </div>
-               )}
-
-               <img 
-                 src={myImages[imgIdx]} 
-                 alt=""
-                 className={`w-full h-full object-cover transition-opacity duration-700 ${imgStatus === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
-                 onError={handleImageError}
-                 onLoad={handleImageLoad}
-               />
-
-               {imgStatus === 'loaded' && (
-                 <>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-6 left-0 right-0">
-                      <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Análise de Tendência de Reganho</p>
+            {/* SLOT DE IMAGEM SIMPLIFICADO: APENAS TENTA CARREGAR capa.jpeg */}
+            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-50">
+               {/* Fundo de placeholder que só aparece se a imagem falhar */}
+               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-slate-50 to-teal-50/30">
+                  <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-3 border border-teal-100">
+                     <span className="text-3xl opacity-50">👨‍⚕️</span>
                   </div>
-                 </>
-               )}
+                  <p className="text-[#0f766e] font-black uppercase tracking-tighter">Gustavo Campos</p>
+                  <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Nutricionista</p>
+               </div>
+               
+               {/* Sua imagem por cima */}
+               <img 
+                 src="capa.jpeg" 
+                 alt=""
+                 className="absolute inset-0 w-full h-full object-cover z-10"
+                 onError={(e) => (e.currentTarget.style.display = 'none')}
+               />
+               
+               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-20 pointer-events-none"></div>
+               <div className="absolute bottom-6 left-0 right-0 z-30">
+                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Parecer Técnico Especializado</p>
+               </div>
             </div>
 
             <div className="pt-4">
