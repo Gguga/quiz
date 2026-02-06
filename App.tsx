@@ -16,9 +16,10 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   
-  // Lista de tentativas baseada estritamente nos arquivos do seu GitHub
-  const myImages = ['/capa.jpeg', '/capa.jpg', '/capa.jpeg.jpeg', 'capa.jpeg'];
+  // Tentativas de nomes de arquivos que vimos no seu GitHub
+  const myImages = ['capa.jpeg', 'capa.jpg', 'capa.jpeg.jpeg', '/capa.jpeg'];
   const [imgIdx, setImgIdx] = useState(0);
+  const [imgStatus, setImgStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
   
   const apiDataRef = useRef<QuizResults | null>(null);
 
@@ -83,7 +84,13 @@ const App: React.FC = () => {
   const handleImageError = () => {
     if (imgIdx < myImages.length - 1) {
       setImgIdx(prev => prev + 1);
+    } else {
+      setImgStatus('error');
     }
+  };
+
+  const handleImageLoad = () => {
+    setImgStatus('loaded');
   };
 
   const qIdx = getQuestionIndex(currentStep);
@@ -110,18 +117,35 @@ const App: React.FC = () => {
               </h2>
             </div>
 
-            {/* SLOT DE IMAGEM: Só carrega os arquivos do seu GitHub */}
-            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-200 flex items-center justify-center">
+            {/* SLOT DE IMAGEM OTIMIZADO */}
+            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 flex items-center justify-center">
+               
+               {/* Loader visual enquanto tenta carregar sua imagem */}
+               {imgStatus !== 'loaded' && (
+                 <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center p-12 text-center">
+                    <div className="w-12 h-12 border-4 border-[#0f766e]/20 border-t-[#0f766e] rounded-full animate-spin mb-4"></div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
+                      {imgStatus === 'error' ? 'Aguardando imagem final...' : 'Processando diagnóstico...'}
+                    </p>
+                 </div>
+               )}
+
                <img 
                  src={myImages[imgIdx]} 
-                 alt="Capa do Diagnóstico" 
-                 className="w-full h-full object-cover"
+                 alt="" // Alt vazio para não aparecer o texto se der erro
+                 className={`w-full h-full object-cover transition-opacity duration-500 ${imgStatus === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
                  onError={handleImageError}
+                 onLoad={handleImageLoad}
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-               <div className="absolute bottom-6 left-0 right-0">
-                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90">Análise de Tendência de Reganho</p>
-               </div>
+
+               {imgStatus === 'loaded' && (
+                 <>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-6 left-0 right-0">
+                      <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90">Análise de Tendência de Reganho</p>
+                  </div>
+                 </>
+               )}
             </div>
 
             <div className="pt-4">
