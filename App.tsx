@@ -16,12 +16,26 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   
-  // Tentativas de nomes de arquivos que vimos no seu GitHub
-  const myImages = ['capa.jpeg', 'capa.jpg', 'capa.jpeg.jpeg', '/capa.jpeg'];
+  // Lista exaustiva de possíveis nomes baseada em erros comuns (maiusculas/minusculas/extensões)
+  const myImages = [
+    'capa.jpeg', 'capa.jpg', 'capa.png', 
+    'Capa.jpeg', 'Capa.jpg', 'Capa.png',
+    'capa.jpeg.jpeg', 'CAPA.JPG', 'CAPA.JPEG'
+  ];
   const [imgIdx, setImgIdx] = useState(0);
   const [imgStatus, setImgStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
   
   const apiDataRef = useRef<QuizResults | null>(null);
+
+  // Fallback de segurança: Se em 2.5 segundos a imagem não carregar, libera a visualização profissional
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (imgStatus === 'loading') {
+        setImgStatus('error');
+      }
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [imgStatus]);
 
   const getQuestionIndex = (step: number) => {
     const mapping: Record<number, number> = { 
@@ -117,32 +131,39 @@ const App: React.FC = () => {
               </h2>
             </div>
 
-            {/* SLOT DE IMAGEM OTIMIZADO */}
-            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 flex items-center justify-center">
+            {/* SLOT DE IMAGEM INTELIGENTE */}
+            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-white flex items-center justify-center">
                
-               {/* Loader visual enquanto tenta carregar sua imagem */}
+               {/* Caso a imagem não carregue, mostra este fundo profissional em vez do erro */}
                {imgStatus !== 'loaded' && (
-                 <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center p-12 text-center">
-                    <div className="w-12 h-12 border-4 border-[#0f766e]/20 border-t-[#0f766e] rounded-full animate-spin mb-4"></div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
-                      {imgStatus === 'error' ? 'Aguardando imagem final...' : 'Processando diagnóstico...'}
-                    </p>
+                 <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-slate-100 flex flex-col items-center justify-center p-8 text-center">
+                    <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-4 border border-teal-100">
+                       <span className="text-4xl text-[#0f766e]">👨‍⚕️</span>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[#0f766e] text-lg font-black uppercase tracking-tighter leading-none">Gustavo Campos</p>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Nutricionista</p>
+                    </div>
+                    
+                    {imgStatus === 'loading' && (
+                      <div className="absolute bottom-6 w-8 h-8 border-2 border-teal-100 border-t-[#0f766e] rounded-full animate-spin"></div>
+                    )}
                  </div>
                )}
 
                <img 
                  src={myImages[imgIdx]} 
-                 alt="" // Alt vazio para não aparecer o texto se der erro
-                 className={`w-full h-full object-cover transition-opacity duration-500 ${imgStatus === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
+                 alt=""
+                 className={`w-full h-full object-cover transition-opacity duration-700 ${imgStatus === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
                  onError={handleImageError}
                  onLoad={handleImageLoad}
                />
 
                {imgStatus === 'loaded' && (
                  <>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   <div className="absolute bottom-6 left-0 right-0">
-                      <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90">Análise de Tendência de Reganho</p>
+                      <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Análise de Tendência de Reganho</p>
                   </div>
                  </>
                )}
