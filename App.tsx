@@ -99,9 +99,6 @@ const App: React.FC = () => {
   const totalSteps = 15;
   const progress = currentStep >= 0 ? ((currentStep + 1) / totalSteps) * 100 : 0;
 
-  // Imagem de alta qualidade que combina com a descrição do usuário (mesa com notebook, água, checklist)
-  const CAPA_IMAGE_URL = "https://images.unsplash.com/photo-1494597564530-897f5a210287?q=80&w=800&auto=format&fit=crop";
-
   return (
     <div className="fixed inset-0 h-[100dvh] w-full bg-[#fdfbf7] flex flex-col font-sans overflow-hidden">
       {currentStep >= 0 && currentStep <= 14 && !loading && !results && !showVsl && (
@@ -121,20 +118,20 @@ const App: React.FC = () => {
               <h2 className="text-slate-600 font-bold text-lg md:text-xl uppercase tracking-tight">Risco de Rebote</h2>
             </div>
 
-            {/* Meio Superior: Foto centralizada - Agora usando uma URL válida de alta fidelidade */}
+            {/* Meio Superior: Foto centralizada - Puxando capa.jpeg local */}
             <div className="flex justify-center shrink-0 relative px-6">
               <div className="relative w-full max-w-[260px] md:max-w-[300px]">
                 <img 
-                  src={CAPA_IMAGE_URL} 
-                  alt="Diagnóstico de Risco" 
+                  src="capa.jpeg" 
+                  alt="Análise de Tendência de Reganho" 
                   className="w-full aspect-square object-cover rounded-[3rem] shadow-2xl border-[8px] border-white transition-transform duration-700 hover:scale-105"
                   loading="eager"
+                  onError={(e) => {
+                    // Se o arquivo capa.jpeg ainda não existir no root durante o dev, 
+                    // mostramos uma mensagem discreta em vez de quebrar o layout
+                    console.warn("Certifique-se de que o arquivo 'capa.jpeg' está na raiz do projeto para o deploy no Vercel.");
+                  }}
                 />
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full px-4 text-center">
-                   <div className="bg-white/90 backdrop-blur-md py-2 px-4 rounded-xl shadow-lg border border-slate-100 inline-block">
-                     <span className="text-[10px] font-black text-slate-900 uppercase tracking-tighter leading-none">Análise de Tendência de Reganho</span>
-                   </div>
-                </div>
               </div>
             </div>
 
