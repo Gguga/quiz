@@ -2,8 +2,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
-import QuizStep from './components/QuizStep';
-import ResultsView from './components/ResultsView';
+import QuizStep from './QuizStep';
+import ResultsView from './ResultsView';
+import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 import VideoInterstitial from './components/VideoInterstitial';
 import AuthorityInterstitial from './components/AuthorityInterstitial';
@@ -13,18 +14,26 @@ const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(-1);
   const [answers, setAnswers] = useState<UserAnswers>({});
   const [results, setResults] = useState<QuizResults | null>(null);
+  const [showVsl, setShowVsl] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  
-  // LINK DIRETO DO SEU REPOSITÓRIO (Sempre funciona, independente do build)
-  const imageUrl = "https://raw.githubusercontent.com/Gguga/quiz/main/capa.jpeg";
-  const [imgLoaded, setImgLoaded] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<string>("Analisando...");
+  const [animateCharts, setAnimateCharts] = useState<boolean>(false);
   
   const apiDataRef = useRef<QuizResults | null>(null);
 
+  useEffect(() => {
+    if (currentStep === -1) {
+      const timer = setTimeout(() => setAnimateCharts(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setAnimateCharts(false);
+    }
+  }, [currentStep]);
+
   const getQuestionIndex = (step: number) => {
     const mapping: Record<number, number> = { 
-      0: 0, 1: 1, 3: 2, 6: 3, 7: 4, 8: 5, 9: 6, 10: 7, 11: 8, 12: 9
+      0: 0, 1: 1, 3: 2, 6: 3, 7: 4, 8: 5, 9: 6, 10: 7, 11: 8, 12: 9, 13: 10, 14: 11
     };
     return mapping[step] !== undefined ? mapping[step] : null;
   };
@@ -38,9 +47,8 @@ const App: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (currentStep < 12) {
+    if (currentStep < 14) {
       setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       startAnalysis();
     }
@@ -55,8 +63,8 @@ const App: React.FC = () => {
       apiDataRef.current = {
         score: 85,
         riskLevel: "Alto",
-        personalizedMessage: "Risco elevado de rebote metabólico detectado devido ao seu perfil de ingestão proteica.",
-        keyInsights: ["Priorize o aporte de proteínas.", "Inicie treinos de força.", "Consuma 3L de água."]
+        personalizedMessage: "Risco elevado detectado.",
+        keyInsights: ["Proteínas", "Treino", "Hidratação"]
       };
     });
   };
@@ -65,107 +73,116 @@ const App: React.FC = () => {
     if (!loading) return;
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
-        if (prev >= 99 && !apiDataRef.current) return 99;
-        if (apiDataRef.current && prev >= 90) return 100;
-        return prev + 1.2;
+        const next = prev + (Math.random() * 4);
+        if (next >= 99 && !apiDataRef.current) return 99;
+        if (apiDataRef.current && next >= 90) return 100;
+        return next;
       });
-    }, 40);
+    }, 100);
     return () => clearInterval(interval);
   }, [loading]);
 
   useEffect(() => {
+    if (loadingProgress < 30) setLoadingStatus("Calculando...");
+    else if (loadingProgress < 70) setLoadingStatus("Verificando...");
+    else setLoadingStatus("Concluindo...");
+
     if (loadingProgress >= 100 && apiDataRef.current) {
-      setResults(apiDataRef.current);
-      setLoading(false);
+      setTimeout(() => {
+        setResults(apiDataRef.current);
+        setLoading(false);
+      }, 300);
     }
   }, [loadingProgress]);
 
   const qIdx = getQuestionIndex(currentStep);
-  const totalSteps = 13;
+  const totalSteps = 15;
   const progress = currentStep >= 0 ? ((currentStep + 1) / totalSteps) * 100 : 0;
 
+  // Imagem de alta qualidade que combina com a descrição do usuário (mesa com notebook, água, checklist)
+  const CAPA_IMAGE_URL = "https://images.unsplash.com/photo-1494597564530-897f5a210287?q=80&w=800&auto=format&fit=crop";
+
   return (
-    <div className="min-h-screen bg-[#fdfbf7] flex flex-col font-sans">
-      <main className="flex-1 flex flex-col items-center py-10 px-6">
-        
-        {currentStep === -1 && !loading && !results && (
-          <div className="w-full max-w-xl text-center space-y-8 animate-fadeIn mt-6">
-            <div className="space-y-4">
-              <span className="bg-teal-50 text-[#0f766e] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-teal-100">
-                Protocolo Anti-Rebote
-              </span>
-              <h1 className="text-[#0f766e] font-black text-4xl md:text-5xl uppercase tracking-tighter leading-[0.9] pt-2">
-                Diagnóstico Metabólico:<br/>
-                <span className="text-slate-900">Risco de Rebote</span>
-              </h1>
-              
-              <h2 className="text-slate-600 font-bold text-lg md:text-xl max-w-md mx-auto leading-tight tracking-tight pt-2">
-                Descubra em 2 minutos se você corre risco de recuperar o peso perdido após parar com a medicação
-              </h2>
+    <div className="fixed inset-0 h-[100dvh] w-full bg-[#fdfbf7] flex flex-col font-sans overflow-hidden">
+      {currentStep >= 0 && currentStep <= 14 && !loading && !results && !showVsl && (
+        <div className="absolute top-0 left-0 w-full h-[3px] z-50">
+          <div className="bg-[#0f766e] h-full transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+      )}
+
+      <main className="flex-1 flex flex-col pt-2 max-w-md mx-auto w-full relative h-full overflow-hidden justify-center">
+        {currentStep === -1 && !loading && !results && !showVsl && (
+          <div className="flex-1 flex flex-col justify-between p-4 text-center animate-fadeIn h-full gap-y-2">
+            
+            {/* Topo: Títulos */}
+            <div className="shrink-0 space-y-1 mt-2">
+              <span className="bg-white text-[#0f766e] px-4 py-1 rounded-full text-[10px] font-black uppercase border border-teal-100 shadow-sm inline-block tracking-widest">Avaliação Gratuita</span>
+              <h1 className="text-[#64a39e] font-black text-2xl md:text-3xl uppercase tracking-tighter leading-none">Diagnóstico Metabólico</h1>
+              <h2 className="text-slate-600 font-bold text-lg md:text-xl uppercase tracking-tight">Risco de Rebote</h2>
             </div>
 
-            {/* SLOT DE IMAGEM INFALÍVEL */}
-            <div className="relative mx-auto w-full max-w-[380px] aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-white">
-               
-               {/* FUNDO PROFISSIONAL (Aparece enquanto a foto carrega ou se o link quebrar) */}
-               <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-slate-100 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-4 border border-teal-100">
-                     <span className="text-4xl">👨‍⚕️</span>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[#0f766e] text-xl font-black uppercase tracking-tighter leading-none">Gustavo Campos</p>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Nutricionista Especialista</p>
-                  </div>
-                  {!imgLoaded && (
-                    <div className="absolute bottom-10 w-6 h-6 border-2 border-teal-100 border-t-[#0f766e] rounded-full animate-spin"></div>
-                  )}
-               </div>
-
-               {/* IMAGEM DO SEU GITHUB */}
-               <img 
-                 src={imageUrl} 
-                 alt="Gustavo Campos"
-                 className={`absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-1000 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                 onLoad={() => setImgLoaded(true)}
-                 onError={(e) => {
-                   console.log("Erro ao carregar do GitHub, mantendo placeholder.");
-                   e.currentTarget.style.display = 'none';
-                 }}
-               />
-
-               {/* OVERLAYS ESTÉTICOS */}
-               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-30 pointer-events-none"></div>
-               <div className="absolute bottom-6 left-0 right-0 z-40">
-                  <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Análise de Tendência de Reganho</p>
-               </div>
+            {/* Meio Superior: Foto centralizada - Agora usando uma URL válida de alta fidelidade */}
+            <div className="flex justify-center shrink-0 relative px-6">
+              <div className="relative w-full max-w-[260px] md:max-w-[300px]">
+                <img 
+                  src={CAPA_IMAGE_URL} 
+                  alt="Diagnóstico de Risco" 
+                  className="w-full aspect-square object-cover rounded-[3rem] shadow-2xl border-[8px] border-white transition-transform duration-700 hover:scale-105"
+                  loading="eager"
+                />
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full px-4 text-center">
+                   <div className="bg-white/90 backdrop-blur-md py-2 px-4 rounded-xl shadow-lg border border-slate-100 inline-block">
+                     <span className="text-[10px] font-black text-slate-900 uppercase tracking-tighter leading-none">Análise de Tendência de Reganho</span>
+                   </div>
+                </div>
+              </div>
             </div>
 
-            <div className="pt-4">
+            {/* Texto de Apoio */}
+            <p className="text-slate-500 font-medium text-sm md:text-base leading-snug px-8 shrink-0">
+              Descubra em 2 minutos seu <span className="font-black text-slate-700 uppercase tracking-tighter">risco de reganho</span> após interromper a medicação.
+            </p>
+
+            {/* Meio Inferior: Gráficos lado a lado */}
+            <div className="flex flex-row w-full gap-3 px-6 justify-center items-center shrink-0 max-h-[18%]">
+              <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-md p-2 flex-1 flex flex-col items-center max-w-[120px]">
+                <div className="w-full bg-slate-50 h-14 md:h-16 rounded-xl relative overflow-hidden flex flex-col justify-end">
+                   <div 
+                    className="bg-emerald-500 w-full rounded-b-xl flex items-start justify-center pt-1 transition-all duration-[1500ms] ease-out" 
+                    style={{ height: animateCharts ? '20%' : '0%' }}
+                   >
+                     <span className={`text-[8px] font-black text-white transition-opacity duration-500 delay-1000 ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
+                   </div>
+                </div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase mt-1.5 leading-tight">Baixo Risco</span>
+              </div>
+
+              <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-md p-2 flex-1 flex flex-col items-center max-w-[120px]">
+                <div className="w-full bg-slate-50 h-14 md:h-16 rounded-xl relative overflow-hidden flex flex-col justify-end">
+                   <div 
+                    className="bg-red-600 w-full rounded-b-xl flex items-start justify-center pt-1 transition-all duration-[1500ms] ease-out" 
+                    style={{ height: animateCharts ? '90%' : '0%' }}
+                   >
+                     <span className={`text-[8px] font-black text-white transition-opacity duration-500 delay-1000 ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
+                   </div>
+                </div>
+                <span className="text-[9px] font-black text-red-600 uppercase mt-1.5 leading-tight">Alto Risco</span>
+              </div>
+            </div>
+
+            {/* Base: Botão de Ação */}
+            <div className="w-[90%] mx-auto shrink-0 pb-6">
               <button 
                 onClick={() => setCurrentStep(0)} 
-                className="w-full py-6 bg-[#0f766e] text-white rounded-2xl text-xl font-black shadow-xl shadow-teal-900/20 uppercase transform active:scale-95 transition-all hover:bg-[#134e4a] animate-pulse"
+                className="w-full py-4 bg-[#0f766e] text-white rounded-[1.25rem] text-xl font-black uppercase shadow-xl active:scale-95 transition-transform tracking-tight"
               >
-                começar avaliação gratuita
+                começar avaliação
               </button>
-              <p className="text-slate-400 font-bold text-[9px] uppercase tracking-widest mt-4">
-                🔒 Resposta rápida e 100% privada
-              </p>
             </div>
           </div>
         )}
 
-        {currentStep >= 0 && currentStep <= 12 && !loading && !results && (
-          <div className="w-full max-w-xl mb-8">
-            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-              <div 
-                className="bg-[#0f766e] h-full transition-all duration-700" 
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {qIdx !== null && !loading && !results && (
+        {qIdx !== null && !loading && !results && !showVsl && (
           <QuizStep
             question={QUESTIONS[qIdx]}
             selectedOption={answers[QUESTIONS[qIdx].id] || null}
@@ -173,33 +190,49 @@ const App: React.FC = () => {
             onNext={handleNext}
             onBack={() => setCurrentStep(prev => prev - 1)}
             isFirst={currentStep === 0}
-            isLast={currentStep === 12}
+            isLast={currentStep === 14}
           />
         )}
 
-        {currentStep === 2 && !loading && <NewsInterstitial onNext={handleNext} />}
-        {currentStep === 4 && !loading && <AuthorityInterstitial onNext={handleNext} />}
-        {currentStep === 5 && !loading && <VideoInterstitial onNext={handleNext} />}
+        {(currentStep === 2 || currentStep === 4 || currentStep === 5) && !loading && !showVsl && (
+          <div className="flex-1 overflow-y-auto no-scrollbar py-4 px-2">
+            {currentStep === 2 && <NewsInterstitial onNext={handleNext} />}
+            {currentStep === 4 && <AuthorityInterstitial onNext={handleNext} />}
+            {currentStep === 5 && <VideoInterstitial onNext={handleNext} />}
+          </div>
+        )}
 
-        {loading && (
-          <div className="flex-1 flex flex-col items-center justify-center space-y-6 text-center py-20">
-            <div className="text-7xl font-black text-[#0f766e] tracking-tighter">{Math.round(loadingProgress)}%</div>
-            <div className="space-y-2">
-              <h2 className="text-xl font-bold text-slate-800 uppercase tracking-widest">
-                Analisando Perfil Metabólico...
-              </h2>
-              <p className="text-slate-400 text-xs font-bold uppercase tracking-tighter">Cruzando dados com padrões de rebote</p>
+        {loading && !showVsl && (
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 animate-fadeIn">
+            <div className="w-full max-w-xs space-y-6 bg-white p-8 rounded-[2rem] shadow-xl border border-slate-50">
+              <div className="space-y-2">
+                <h2 className="text-xl font-black text-[#0f766e] uppercase tracking-widest">{Math.round(loadingProgress)}%</h2>
+                <div className="w-full bg-slate-50 h-3 rounded-full overflow-hidden">
+                  <div className="bg-[#0f766e] h-full transition-all duration-300" style={{ width: `${loadingProgress}%` }} />
+                </div>
+              </div>
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.2em]">{loadingStatus}</p>
             </div>
           </div>
         )}
 
-        {results && !loading && (
-          <ResultsView 
-            results={results} 
-            onCtaClick={() => window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')} 
-          />
+        {(results || showVsl) && !loading && (
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            {showVsl ? (
+              <VslView onCheckout={() => window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')} />
+            ) : (
+              <ResultsView 
+                results={results!} 
+                onCtaClick={() => setShowVsl(true)} 
+              />
+            )}
+          </div>
         )}
       </main>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
     </div>
   );
 };

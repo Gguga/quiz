@@ -10,7 +10,7 @@ const NewsInterstitial: React.FC<NewsInterstitialProps> = ({ onNext }) => {
     <div className="w-full max-w-xl mx-auto animate-fadeIn px-4">
       <div className="bg-white rounded-[1.5rem] shadow-2xl overflow-hidden border border-slate-200 flex flex-col">
         
-        {/* Header Estilo Portal de Notícias - Simplificado */}
+        {/* Header Estilo Portal de Notícias */}
         <div className="bg-black px-6 py-6 flex items-center justify-center border-b-4 border-[#cc0000]">
           <div className="text-white font-black text-2xl tracking-tighter uppercase italic">
             SAÚDE
@@ -38,21 +38,23 @@ const NewsInterstitial: React.FC<NewsInterstitialProps> = ({ onNext }) => {
               Um estudo clínico publicado na <span className="font-bold text-slate-900 underline decoration-[#cc0000] decoration-2 underline-offset-4">JAMA Network</span> acompanhou quem emagreceu com tirzepatida (Mounjaro) e depois interrompeu o tratamento. A maioria recuperou uma parte importante do peso, e os marcadores metabólicos pioraram conforme o reganho aumentou.
             </p>
             
-            <div className="bg-slate-900 p-6 rounded-xl border-l-4 border-[#cc0000] shadow-lg">
-              <p className="text-white font-extrabold text-base md:text-lg leading-snug tracking-tight">
-                Agora vem a parte que importa: você sabe se o seu emagrecimento está estruturado pra se manter, ou se está só <span className="text-[#cc0000] underline italic">‘emprestado’</span> pela caneta?
+            {/* Box com fundo vermelho e texto formatado conforme solicitado */}
+            <div className="bg-[#cc0000] p-6 rounded-xl shadow-lg border-l-4 border-black">
+              <p className="text-white text-base md:text-lg leading-snug tracking-tight">
+                Agora vem a parte que importa: você sabe se o seu emagrecimento está estruturado pra se manter, ou se está só <span className="font-black">‘emprestado’ pela caneta?</span>
               </p>
             </div>
           </div>
 
           <div className="pt-2">
+            {/* Botão com a cor padrão do app #0f766e */}
             <button
               onClick={onNext}
-              className="w-full py-5 bg-black text-white rounded-xl font-black text-base hover:bg-slate-900 transition-all shadow-xl uppercase tracking-wider flex items-center justify-center group"
+              className="w-full py-5 bg-[#0f766e] text-white rounded-xl font-black text-base hover:bg-[#0d6b63] transition-all shadow-xl uppercase tracking-wider flex items-center justify-center group"
             >
               <span className="mr-3">CONTINUAR PARA O DIAGNÓSTICO</span>
               <svg 
-                className="w-5 h-5 text-[#cc0000] transform transition-transform group-hover:translate-x-1" 
+                className="w-5 h-5 text-white transform transition-transform group-hover:translate-x-1" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
