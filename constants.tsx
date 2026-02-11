@@ -7,19 +7,19 @@ export const QUESTIONS: Question[] = [
     text: "Qual sua situação atual com as canetas emagrecedoras?",
     options: [
       { label: "💉 Uso atualmente e estou perdendo peso", subLabel: "Quero garantir que esse resultado seja definitivo.", value: "uso_atual_perda", weight: 30 },
-      { label: "🛑 Uso atualmente, mas o peso travou (Platô)", subLabel: "Sinto que o efeito diminuuiu e meu metabolismo estagnou.", value: "uso_atual_plato", weight: 45 },
+      { label: "🛑 Uso atualmente, mas o peso travou (Platô)", subLabel: "Sinto que o efeito diminuiu.", value: "uso_atual_plato", weight: 45 },
       { label: "📉 Estou na fase de desmame ou redução", subLabel: "Momento crítico: receio de recuperar o peso agora.", value: "uso_desmame", weight: 50 },
-      { label: "⚠️ Já parei de usar e o peso está voltando", subLabel: "Preciso de um socorro metabólico para frear o rebote.", value: "uso_parou_rebote", weight: 60 }
+      { label: "⚠️ Já parei de usar e o peso está voltando", subLabel: "Estou com medo do rebote", value: "uso_parou_rebote", weight: 60 }
     ]
   },
   {
     id: 12,
     text: "Há quanto tempo você carrega o peso de lutar contra a balança, entre perdas e ganhos temporários?",
     options: [
-      { label: "🌱 Menos de 1 ano", subLabel: "Ainda estou descobrindo como meu corpo reage.", value: "tempo_curto", weight: 10 },
-      { label: "⏳ De 1 a 3 anos", subLabel: "O cansaço de tentar e não manter já começou a aparecer.", value: "tempo_medio", weight: 25 },
-      { label: "🔄 De 5 a 10 anos", subLabel: "O efeito sanfona virou uma rotina exaustiva na minha vida.", value: "tempo_longo", weight: 40 },
-      { label: "⛓️ Mais de 10 anos", subLabel: "Parece uma batalha sem fim e que nunca vou vencer de verdade.", value: "tempo_eterno", weight: 60 }
+      { label: "🌱 Menos de 1 ano", subLabel: "Engordei faz pouco tempo", value: "tempo_curto", weight: 10 },
+      { label: "⏳ Entre 1 a 3 anos", subLabel: "O cansaço de tentar e não manter já começou a aparecer.", value: "tempo_medio", weight: 25 },
+      { label: "🔄 Entre 5 a 10 anos", subLabel: "O efeito sanfona virou uma rotina exaustiva na minha vida.", value: "tempo_longo", weight: 40 },
+      { label: "⛓️ Mais de 10 anos ou a vida toda", subLabel: "A caneta foi minha última esperança", value: "tempo_eterno", weight: 60 }
     ]
   },
   {
@@ -66,7 +66,8 @@ export const QUESTIONS: Question[] = [
     options: [
       { label: "⚖️ Está calculada por kg", value: "proteina_calculada", weight: 0 },
       { label: "🤔 Vou no feeling", value: "proteina_feeling", weight: 40 },
-      { label: "❓ Nunca calculei", value: "proteina_nunca", weight: 50 }
+      { label: "❓ Nunca calculei", value: "proteina_nunca", weight: 50 },
+      { label: "🤢 Já foi calculada, mas não consigo comer o que preciso", value: "proteina_calculada_dificuldade", weight: 45 }
     ]
   },
   {
