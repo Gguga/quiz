@@ -10,6 +10,9 @@ import VideoInterstitial from './components/VideoInterstitial';
 import AuthorityInterstitial from './components/AuthorityInterstitial';
 import { analyzeQuizResults } from './services/geminiService';
 
+// Importação direta da imagem para garantir que o Vite a encontre na raiz do projeto
+import capaImg from './capa.jpeg';
+
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(-1);
   const [answers, setAnswers] = useState<UserAnswers>({});
@@ -109,68 +112,61 @@ const App: React.FC = () => {
 
       <main className="flex-1 flex flex-col max-w-md mx-auto w-full relative h-full overflow-hidden">
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex-1 flex flex-col justify-between py-4 px-6 text-center animate-fadeIn h-full overflow-hidden">
+          <div className="flex-1 flex flex-col justify-between py-3 px-6 text-center animate-fadeIn h-full overflow-hidden">
             
-            {/* Topo: Títulos Compactos */}
-            <div className="shrink-0 space-y-1">
+            {/* Topo: Títulos Ultra Compactos */}
+            <div className="shrink-0 space-y-0.5">
               <span className="bg-white text-[#0f766e] px-3 py-0.5 rounded-full text-[9px] font-black uppercase border border-teal-100 shadow-sm inline-block tracking-widest">Avaliação Gratuita</span>
-              <h1 className="text-[#64a39e] font-black text-xl md:text-2xl uppercase tracking-tighter leading-none">Diagnóstico Metabólico</h1>
+              <h1 className="text-[#64a39e] font-black text-xl md:text-2xl uppercase tracking-tighter leading-none mt-1">Diagnóstico Metabólico</h1>
               <h2 className="text-slate-600 font-bold text-base md:text-lg uppercase tracking-tight leading-none">Risco de Rebote</h2>
             </div>
 
-            {/* Meio: Foto Redimensionada (Dobra Única) */}
-            <div className="flex-1 flex items-center justify-center min-h-0 py-2">
-              <div className="relative max-h-[150px] md:max-h-[180px] w-auto">
+            {/* Meio: Foto com Importação Garantida */}
+            <div className="flex-1 flex items-center justify-center min-h-0 py-1">
+              <div className="relative group max-h-[130px] md:max-h-[160px] w-auto">
                 <img 
-                  src="capa.jpeg" 
+                  src={capaImg} 
                   alt="Protocolo Pós-Caneta" 
-                  className="max-h-[150px] md:max-h-[180px] w-auto rounded-3xl shadow-xl border-4 border-white"
-                  onError={(e) => {
-                    const img = e.target as HTMLImageElement;
-                    if (!img.src.includes('capa.jpeg')) {
-                        img.src = 'capa.jpeg';
-                    }
-                  }}
+                  className="max-h-[130px] md:max-h-[160px] w-auto rounded-[1.5rem] shadow-xl border-[5px] border-white object-contain"
                 />
               </div>
             </div>
 
-            {/* Texto de Apoio Curto */}
-            <div className="shrink-0 space-y-3">
-              <p className="text-slate-500 font-medium text-xs md:text-sm leading-snug px-4">
+            {/* Texto de Apoio e Gráficos Super Compactos */}
+            <div className="shrink-0 space-y-2.5">
+              <p className="text-slate-500 font-medium text-[10px] md:text-sm leading-snug px-4">
                 Descubra em 2 min seu <span className="font-black text-slate-700 uppercase">risco de reganho</span> após interromper a medicação.
               </p>
 
-              {/* Gráficos Compactos */}
               <div className="flex flex-row w-full gap-2 justify-center items-center">
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-2 flex-1 flex flex-col items-center max-w-[100px]">
-                  <div className="w-full bg-slate-50 h-10 rounded-lg relative overflow-hidden flex flex-col justify-end">
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-1.5 flex-1 flex flex-col items-center max-w-[85px]">
+                  <div className="w-full bg-slate-50 h-7 rounded-lg relative overflow-hidden flex flex-col justify-end">
                      <div 
                       className="bg-emerald-500 w-full rounded-b-lg flex items-center justify-center transition-all duration-[1500ms] ease-out" 
                       style={{ height: animateCharts ? '20%' : '0%' }}
                      >
-                       <span className={`text-[7px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
+                       <span className={`text-[6px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
                      </div>
                   </div>
-                  <span className="text-[8px] font-bold text-slate-400 uppercase mt-1">Baixo Risco</span>
+                  <span className="text-[7px] font-bold text-slate-400 uppercase mt-1 leading-none">Baixo Risco</span>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-2 flex-1 flex flex-col items-center max-w-[100px]">
-                  <div className="w-full bg-slate-50 h-10 rounded-lg relative overflow-hidden flex flex-col justify-end">
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-1.5 flex-1 flex flex-col items-center max-w-[85px]">
+                  <div className="w-full bg-slate-50 h-7 rounded-lg relative overflow-hidden flex flex-col justify-end">
                      <div 
                       className="bg-red-600 w-full rounded-b-lg flex items-center justify-center transition-all duration-[1500ms] ease-out" 
                       style={{ height: animateCharts ? '90%' : '0%' }}
                      >
-                       <span className={`text-[7px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
+                       <span className={`text-[6px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
                      </div>
                   </div>
-                  <span className="text-[8px] font-black text-red-600 uppercase mt-1">Alto Risco</span>
+                  <span className="text-[7px] font-black text-red-600 uppercase mt-1 leading-none">Alto Risco</span>
                 </div>
               </div>
             </div>
 
-            {/* Base: Botão com padding otimizado */}
-            <div className="shrink-0 pt-4 pb-2">
+            {/* Base: Botão com altura fixa para não gerar scroll */}
+            <div className="shrink-0 pt-2 pb-3">
               <button 
                 onClick={() => setCurrentStep(0)} 
                 className="w-full py-3.5 bg-[#0f766e] text-white rounded-xl text-lg font-black uppercase shadow-lg active:scale-95 transition-transform tracking-tight"
@@ -182,15 +178,17 @@ const App: React.FC = () => {
         )}
 
         {qIdx !== null && !loading && !results && !showVsl && (
-          <QuizStep
-            question={QUESTIONS[qIdx]}
-            selectedOption={answers[QUESTIONS[qIdx].id] || null}
-            onSelect={handleSelectOption}
-            onNext={handleNext}
-            onBack={() => setCurrentStep(prev => prev - 1)}
-            isFirst={currentStep === 0}
-            isLast={currentStep === 14}
-          />
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            <QuizStep
+              question={QUESTIONS[qIdx]}
+              selectedOption={answers[QUESTIONS[qIdx].id] || null}
+              onSelect={handleSelectOption}
+              onNext={handleNext}
+              onBack={() => setCurrentStep(prev => prev - 1)}
+              isFirst={currentStep === 0}
+              isLast={currentStep === 14}
+            />
+          </div>
         )}
 
         {(currentStep === 2 || currentStep === 4 || currentStep === 5) && !loading && !showVsl && (
@@ -237,3 +235,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
