@@ -127,8 +127,8 @@ const App: React.FC = () => {
                   className="max-h-[150px] md:max-h-[180px] w-auto rounded-3xl shadow-xl border-4 border-white"
                   onError={(e) => {
                     const img = e.target as HTMLImageElement;
-                    if (!img.src.includes('capa.jpeg.jpeg')) {
-                        img.src = 'capa.jpeg.jpeg';
+                    if (!img.src.includes('capa.jpeg')) {
+                        img.src = 'capa.jpeg';
                     }
                   }}
                 />
