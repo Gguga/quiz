@@ -10,8 +10,8 @@ import VideoInterstitial from './components/VideoInterstitial';
 import AuthorityInterstitial from './components/AuthorityInterstitial';
 import { analyzeQuizResults } from './services/geminiService';
 
-// Importação direta da imagem para garantir que o Vite a encontre na raiz do projeto
-import capaImg from './capa.jpeg';
+// Definindo o caminho como string para evitar erro de resolução de módulo ESM no navegador
+const capaImg = './capa.jpeg';
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(-1);
@@ -112,29 +112,35 @@ const App: React.FC = () => {
 
       <main className="flex-1 flex flex-col max-w-md mx-auto w-full relative h-full overflow-hidden">
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex-1 flex flex-col justify-between py-3 px-6 text-center animate-fadeIn h-full overflow-hidden">
+          <div className="flex-1 flex flex-col pt-10 pb-4 px-6 text-center animate-fadeIn h-full overflow-hidden items-center">
             
-            {/* Topo: Títulos Ultra Compactos */}
-            <div className="shrink-0 space-y-0.5">
-              <span className="bg-white text-[#0f766e] px-3 py-0.5 rounded-full text-[9px] font-black uppercase border border-teal-100 shadow-sm inline-block tracking-widest">Avaliação Gratuita</span>
-              <h1 className="text-[#64a39e] font-black text-xl md:text-2xl uppercase tracking-tighter leading-none mt-1">Diagnóstico Metabólico</h1>
-              <h2 className="text-slate-600 font-bold text-base md:text-lg uppercase tracking-tight leading-none">Risco de Rebote</h2>
+            {/* Topo: Títulos com Safe Area (pt-10) */}
+            <div className="shrink-0 space-y-1 mb-2">
+              <span className="bg-white text-[#0f766e] px-4 py-1 rounded-full text-[10px] font-black uppercase border border-teal-100 shadow-sm inline-block tracking-widest">Avaliação Gratuita</span>
+              <h1 className="text-[#64a39e] font-black text-2xl md:text-3xl uppercase tracking-tighter leading-none mt-1">Diagnóstico Metabólico</h1>
+              <h2 className="text-slate-600 font-bold text-lg md:text-xl uppercase tracking-tight leading-none">Risco de Rebote</h2>
             </div>
 
-            {/* Meio: Foto com Importação Garantida */}
-            <div className="flex-1 flex items-center justify-center min-h-0 py-1">
-              <div className="relative group max-h-[130px] md:max-h-[160px] w-auto">
+            {/* Meio: Foto de Capa Ampliada (max-h-180) */}
+            <div className="flex-1 flex items-center justify-center min-h-0 py-2">
+              <div className="relative group max-h-[180px] md:max-h-[220px] w-auto">
                 <img 
                   src={capaImg} 
                   alt="Protocolo Pós-Caneta" 
-                  className="max-h-[130px] md:max-h-[160px] w-auto rounded-[1.5rem] shadow-xl border-[5px] border-white object-contain"
+                  className="max-h-[180px] md:max-h-[220px] w-auto rounded-[2rem] shadow-2xl border-[6px] border-white object-contain"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    if (!img.src.includes('capa.jpeg.jpeg')) {
+                      img.src = './capa.jpeg.jpeg';
+                    }
+                  }}
                 />
               </div>
             </div>
 
-            {/* Texto de Apoio e Gráficos Super Compactos */}
-            <div className="shrink-0 space-y-2.5">
-              <p className="text-slate-500 font-medium text-[10px] md:text-sm leading-snug px-4">
+            {/* Texto de Apoio e Gráficos Redimensionados */}
+            <div className="shrink-0 space-y-2.5 w-full mt-auto">
+              <p className="text-slate-500 font-medium text-[11px] md:text-sm leading-snug px-4">
                 Descubra em 2 min seu <span className="font-black text-slate-700 uppercase">risco de reganho</span> após interromper a medicação.
               </p>
 
@@ -145,10 +151,10 @@ const App: React.FC = () => {
                       className="bg-emerald-500 w-full rounded-b-lg flex items-center justify-center transition-all duration-[1500ms] ease-out" 
                       style={{ height: animateCharts ? '20%' : '0%' }}
                      >
-                       <span className={`text-[6px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
+                       <span className={`text-[7px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
                      </div>
                   </div>
-                  <span className="text-[7px] font-bold text-slate-400 uppercase mt-1 leading-none">Baixo Risco</span>
+                  <span className="text-[8px] font-bold text-slate-400 uppercase mt-1 leading-none">Baixo Risco</span>
                 </div>
 
                 <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-1.5 flex-1 flex flex-col items-center max-w-[85px]">
@@ -157,19 +163,19 @@ const App: React.FC = () => {
                       className="bg-red-600 w-full rounded-b-lg flex items-center justify-center transition-all duration-[1500ms] ease-out" 
                       style={{ height: animateCharts ? '90%' : '0%' }}
                      >
-                       <span className={`text-[6px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
+                       <span className={`text-[7px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
                      </div>
                   </div>
-                  <span className="text-[7px] font-black text-red-600 uppercase mt-1 leading-none">Alto Risco</span>
+                  <span className="text-[8px] font-black text-red-600 uppercase mt-1 leading-none">Alto Risco</span>
                 </div>
               </div>
             </div>
 
-            {/* Base: Botão com altura fixa para não gerar scroll */}
-            <div className="shrink-0 pt-2 pb-3">
+            {/* Base: Botão Fixo na Dobra Única */}
+            <div className="shrink-0 pt-4 pb-2 w-full">
               <button 
                 onClick={() => setCurrentStep(0)} 
-                className="w-full py-3.5 bg-[#0f766e] text-white rounded-xl text-lg font-black uppercase shadow-lg active:scale-95 transition-transform tracking-tight"
+                className="w-full py-4 bg-[#0f766e] text-white rounded-xl text-lg font-black uppercase shadow-lg active:scale-95 transition-transform tracking-tight"
               >
                 começar avaliação
               </button>
@@ -235,4 +241,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
