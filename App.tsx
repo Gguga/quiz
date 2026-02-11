@@ -107,71 +107,73 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col pt-2 max-w-md mx-auto w-full relative h-full overflow-hidden justify-center">
+      <main className="flex-1 flex flex-col max-w-md mx-auto w-full relative h-full overflow-hidden">
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex-1 flex flex-col justify-between p-4 text-center animate-fadeIn h-full gap-y-2">
+          <div className="flex-1 flex flex-col justify-between py-4 px-6 text-center animate-fadeIn h-full overflow-hidden">
             
-            {/* Topo: Títulos */}
-            <div className="shrink-0 space-y-1 mt-2">
-              <span className="bg-white text-[#0f766e] px-4 py-1 rounded-full text-[10px] font-black uppercase border border-teal-100 shadow-sm inline-block tracking-widest">Avaliação Gratuita</span>
-              <h1 className="text-[#64a39e] font-black text-2xl md:text-3xl uppercase tracking-tighter leading-none">Diagnóstico Metabólico</h1>
-              <h2 className="text-slate-600 font-bold text-lg md:text-xl uppercase tracking-tight">Risco de Rebote</h2>
+            {/* Topo: Títulos Compactos */}
+            <div className="shrink-0 space-y-1">
+              <span className="bg-white text-[#0f766e] px-3 py-0.5 rounded-full text-[9px] font-black uppercase border border-teal-100 shadow-sm inline-block tracking-widest">Avaliação Gratuita</span>
+              <h1 className="text-[#64a39e] font-black text-xl md:text-2xl uppercase tracking-tighter leading-none">Diagnóstico Metabólico</h1>
+              <h2 className="text-slate-600 font-bold text-base md:text-lg uppercase tracking-tight leading-none">Risco de Rebote</h2>
             </div>
 
-            {/* Meio Superior: Foto centralizada - Puxando capa.jpeg local */}
-            <div className="flex justify-center shrink-0 relative px-6">
-              <div className="relative w-full max-w-[260px] md:max-w-[300px]">
+            {/* Meio: Foto Redimensionada (Dobra Única) */}
+            <div className="flex-1 flex items-center justify-center min-h-0 py-2">
+              <div className="relative max-h-[150px] md:max-h-[180px] w-auto">
                 <img 
                   src="capa.jpeg" 
-                  alt="Análise de Tendência de Reganho" 
-                  className="w-full aspect-square object-cover rounded-[3rem] shadow-2xl border-[8px] border-white transition-transform duration-700 hover:scale-105"
-                  loading="eager"
+                  alt="Protocolo Pós-Caneta" 
+                  className="max-h-[150px] md:max-h-[180px] w-auto rounded-3xl shadow-xl border-4 border-white"
                   onError={(e) => {
-                    // Se o arquivo capa.jpeg ainda não existir no root durante o dev, 
-                    // mostramos uma mensagem discreta em vez de quebrar o layout
-                    console.warn("Certifique-se de que o arquivo 'capa.jpeg' está na raiz do projeto para o deploy no Vercel.");
+                    const img = e.target as HTMLImageElement;
+                    if (!img.src.includes('capa.jpeg.jpeg')) {
+                        img.src = 'capa.jpeg.jpeg';
+                    }
                   }}
                 />
               </div>
             </div>
 
-            {/* Texto de Apoio */}
-            <p className="text-slate-500 font-medium text-sm md:text-base leading-snug px-8 shrink-0">
-              Descubra em 2 minutos seu <span className="font-black text-slate-700 uppercase tracking-tighter">risco de reganho</span> após interromper a medicação.
-            </p>
+            {/* Texto de Apoio Curto */}
+            <div className="shrink-0 space-y-3">
+              <p className="text-slate-500 font-medium text-xs md:text-sm leading-snug px-4">
+                Descubra em 2 min seu <span className="font-black text-slate-700 uppercase">risco de reganho</span> após interromper a medicação.
+              </p>
 
-            {/* Meio Inferior: Gráficos lado a lado */}
-            <div className="flex flex-row w-full gap-3 px-6 justify-center items-center shrink-0 max-h-[18%]">
-              <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-md p-2 flex-1 flex flex-col items-center max-w-[120px]">
-                <div className="w-full bg-slate-50 h-14 md:h-16 rounded-xl relative overflow-hidden flex flex-col justify-end">
-                   <div 
-                    className="bg-emerald-500 w-full rounded-b-xl flex items-start justify-center pt-1 transition-all duration-[1500ms] ease-out" 
-                    style={{ height: animateCharts ? '20%' : '0%' }}
-                   >
-                     <span className={`text-[8px] font-black text-white transition-opacity duration-500 delay-1000 ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
-                   </div>
+              {/* Gráficos Compactos */}
+              <div className="flex flex-row w-full gap-2 justify-center items-center">
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-2 flex-1 flex flex-col items-center max-w-[100px]">
+                  <div className="w-full bg-slate-50 h-10 rounded-lg relative overflow-hidden flex flex-col justify-end">
+                     <div 
+                      className="bg-emerald-500 w-full rounded-b-lg flex items-center justify-center transition-all duration-[1500ms] ease-out" 
+                      style={{ height: animateCharts ? '20%' : '0%' }}
+                     >
+                       <span className={`text-[7px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>20%</span>
+                     </div>
+                  </div>
+                  <span className="text-[8px] font-bold text-slate-400 uppercase mt-1">Baixo Risco</span>
                 </div>
-                <span className="text-[9px] font-bold text-slate-400 uppercase mt-1.5 leading-tight">Baixo Risco</span>
-              </div>
 
-              <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-md p-2 flex-1 flex flex-col items-center max-w-[120px]">
-                <div className="w-full bg-slate-50 h-14 md:h-16 rounded-xl relative overflow-hidden flex flex-col justify-end">
-                   <div 
-                    className="bg-red-600 w-full rounded-b-xl flex items-start justify-center pt-1 transition-all duration-[1500ms] ease-out" 
-                    style={{ height: animateCharts ? '90%' : '0%' }}
-                   >
-                     <span className={`text-[8px] font-black text-white transition-opacity duration-500 delay-1000 ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
-                   </div>
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-2 flex-1 flex flex-col items-center max-w-[100px]">
+                  <div className="w-full bg-slate-50 h-10 rounded-lg relative overflow-hidden flex flex-col justify-end">
+                     <div 
+                      className="bg-red-600 w-full rounded-b-lg flex items-center justify-center transition-all duration-[1500ms] ease-out" 
+                      style={{ height: animateCharts ? '90%' : '0%' }}
+                     >
+                       <span className={`text-[7px] font-black text-white ${animateCharts ? 'opacity-100' : 'opacity-0'}`}>90%</span>
+                     </div>
+                  </div>
+                  <span className="text-[8px] font-black text-red-600 uppercase mt-1">Alto Risco</span>
                 </div>
-                <span className="text-[9px] font-black text-red-600 uppercase mt-1.5 leading-tight">Alto Risco</span>
               </div>
             </div>
 
-            {/* Base: Botão de Ação */}
-            <div className="w-[90%] mx-auto shrink-0 pb-6">
+            {/* Base: Botão com padding otimizado */}
+            <div className="shrink-0 pt-4 pb-2">
               <button 
                 onClick={() => setCurrentStep(0)} 
-                className="w-full py-4 bg-[#0f766e] text-white rounded-[1.25rem] text-xl font-black uppercase shadow-xl active:scale-95 transition-transform tracking-tight"
+                className="w-full py-3.5 bg-[#0f766e] text-white rounded-xl text-lg font-black uppercase shadow-lg active:scale-95 transition-transform tracking-tight"
               >
                 começar avaliação
               </button>
