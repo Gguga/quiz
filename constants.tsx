@@ -47,6 +47,7 @@ export const QUESTIONS: Question[] = [
     options: [
       { label: "🌵 Bebo pouquíssima água", value: "agua_baixa", weight: 40 },
       { label: "💧 Esqueço de beber", value: "agua_media", weight: 25 },
+       { label: "✨ Entre 1 e 1,5L ", value: "agua_media", weight: 10 }
       { label: "🌊 Mantenho o ritmo de 2L a 3L", value: "agua_ideal", weight: 0 }
     ]
   },
