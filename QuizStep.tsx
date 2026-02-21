@@ -73,3 +73,4 @@ const QuizStep: React.FC<QuizStepProps> = ({ question, selectedOption, onSelect,
 };
 
 export default QuizStep;
+
