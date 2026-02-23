@@ -14,13 +14,19 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateGraph(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
   const isNewsStep = currentStep === 2;
-
-  const isCriticalPhase = currentStep === 2; // Q3
 
   const handleSelectOption = (value: string) => {
     const questionId = QUESTIONS[currentStep].id;
@@ -35,7 +41,9 @@ const App: React.FC = () => {
     }
   };
 
+  // ---------------------------
   // 🔥 CÁLCULO PERSONALIZADO
+  // ---------------------------
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -54,10 +62,7 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
-    // ---------------------------
-    // 🔹 RISCO CENTRAL DINÂMICO
-    // ---------------------------
-
+    // 🔹 RISCO CENTRAL
     let centralRisk = "";
     const fase = answers[3];
 
@@ -73,10 +78,7 @@ const App: React.FC = () => {
       centralRisk = "Alto risco de dependência da medicação para manutenção do peso.";
     }
 
-    // ---------------------------
     // 🔹 RISCO SECUNDÁRIO
-    // ---------------------------
-
     let secondaryRisk = "";
 
     if (
@@ -136,18 +138,16 @@ const App: React.FC = () => {
       : 0;
 
   const getSexo = () => {
-    const sexoAnswer = answers[1];
-    return sexoAnswer === "sexo_homem" ? "masculina" : "feminina";
+    return answers[1] === "sexo_homem" ? "masculina" : "feminina";
   };
 
   return (
-    <div className={`min-h-screen w-full flex flex-col font-sans transition-colors duration-300
-      ${isCriticalPhase ? 'bg-[#0f766e]' : 'bg-[#f5f6f7]'}`}>
+    <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
       {currentStep >= 0 && !loading && !results && !showVsl && (
-        <div className={`w-full h-[4px] ${isCriticalPhase ? 'bg-white/30' : 'bg-slate-200'}`}>
+        <div className="w-full h-[4px] bg-slate-200">
           <div
-            className={`${isCriticalPhase ? 'bg-white' : 'bg-black'} h-full transition-all duration-300`}
+            className="bg-black h-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -155,18 +155,53 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
+        {/* CAPA COM GRÁFICO */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center p-6 text-center space-y-6 pt-20">
-            <h1 className="text-3xl font-black text-[#0f766e]">
-              DIAGNÓSTICO METABÓLICO
+          <div className="flex flex-col items-center p-6 text-center space-y-8 pt-20">
+
+            <h1 className="text-3xl font-black text-[#0f766e] leading-tight">
+              TESTE GRATUITO
             </h1>
+
+            <p className="text-slate-600">
+              Descubra seu risco de rebote após interromper a medicação.
+            </p>
+
+            <div className="grid grid-cols-2 gap-6 w-full mt-2">
+
+              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+                <div className="w-6 h-24 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-700"
+                    style={{ height: animateGraph ? '20%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-700">
+                  Baixo risco
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+                <div className="w-6 h-24 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-700"
+                    style={{ height: animateGraph ? '80%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-700">
+                  Alto risco
+                </p>
+              </div>
+
+            </div>
+
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-xl font-black uppercase"
+              className="w-full py-5 bg-[#0f766e] text-white rounded-xl font-black uppercase text-base mt-4"
             >
               Começar avaliação gratuita
             </button>
+
           </div>
         )}
 
@@ -181,21 +216,6 @@ const App: React.FC = () => {
             isFirst={currentStep === 0}
             isLast={currentStep === QUESTIONS.length - 1}
           />
-        )}
-
-        {/* Q3 FASE CRÍTICA */}
-        {isCriticalPhase && !loading && !results && !showVsl && (
-          <div className="py-12 px-6 text-white">
-            <QuizStep
-              question={QUESTIONS[currentStep]}
-              selectedOption={answers[QUESTIONS[currentStep].id] || null}
-              onSelect={handleSelectOption}
-              onNext={handleNext}
-              onBack={() => setCurrentStep(prev => prev - 1)}
-              isFirst={currentStep === 0}
-              isLast={currentStep === QUESTIONS.length - 1}
-            />
-          </div>
         )}
 
         {/* NEWS */}
