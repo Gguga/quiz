@@ -10,38 +10,84 @@ const ResultsView: React.FC<{
   const generateRiskFactors = () => {
     const factors: string[] = [];
 
-    // 🔹 Proteína baixa
-    if (answers[8] === "proteina_0_1") {
-      factors.push("Ingestão proteica insuficiente para preservação muscular.");
+    // 🔹 Proteína baixa (id 7)
+    if (answers[7] === "proteina_0_1") {
+      factors.push(
+        "Você relatou consumir proteína em poucas refeições, o que aumenta o risco de perda muscular."
+      );
     }
 
-    if (answers[9] === "proteina_nunca" || answers[9] === "proteina_feeling") {
-      factors.push("Proteína não está estrategicamente calculada.");
-    }
-
-    // 🔹 Força / treino
+    // 🔹 Proteína não calculada (id 8)
     if (
-      answers[10] === "forca_caiu_muito" ||
-      answers[10] === "forca_nao_treina"
+      answers[8] === "proteina_nunca" ||
+      answers[8] === "proteina_feeling"
     ) {
-      factors.push("Ausência de estímulo adequado para manutenção muscular.");
+      factors.push(
+        "Sua ingestão proteica não está estrategicamente calculada para preservar massa magra."
+      );
     }
 
-    // 🔹 Histórico longo
+    // 🔹 Força caiu (id 5)
+    if (answers[5] === "forca_caiu_muito") {
+      factors.push(
+        "A queda significativa de força é um indicativo de perda muscular progressiva."
+      );
+    }
+
+    // 🔹 Não treina (id 6)
+    if (answers[6] === "forca_nao_treina") {
+      factors.push(
+        "A ausência de musculação reduz sua proteção contra perda muscular."
+      );
+    }
+
+    // 🔹 Histórico longo (id 3)
     if (
       answers[3] === "tempo_longo" ||
       answers[3] === "tempo_eterno"
     ) {
-      factors.push("Histórico prolongado de tentativas aumenta adaptação metabólica.");
+      factors.push(
+        "Seu histórico prolongado de tentativas aumenta a adaptação metabólica."
+      );
     }
 
-    // 🔹 Sintomas
-    if (answers[11] === "colaterais_frequentes") {
-      factors.push("Sintomas indicam impacto metabólico relevante.");
+    // 🔹 Dieta não estruturada (id 9)
+    if (
+      answers[9] === "dieta_reduzi" ||
+      answers[9] === "dieta_feeling"
+    ) {
+      factors.push(
+        "Sua dieta não foi estruturada para proteger o metabolismo durante e após a medicação."
+      );
     }
 
-    // Limitar a 3
-    return factors.slice(0, 3);
+    // 🔹 Colaterais (id 10)
+    if (
+      answers[10] === "colateral_varios" ||
+      answers[10] === "colateral_cansaco"
+    ) {
+      factors.push(
+        "Os sinais relatados indicam possível estresse metabólico no processo."
+      );
+    }
+
+    // 🔥 GARANTIR SEMPRE 2
+    if (factors.length === 0) {
+      factors.push(
+        "Existe risco silencioso de perda muscular mesmo sem sintomas aparentes."
+      );
+      factors.push(
+        "Sem estratégia específica, a dependência da medicação pode se manter."
+      );
+    }
+
+    if (factors.length === 1) {
+      factors.push(
+        "A fase atual exige um plano específico para consolidar o resultado."
+      );
+    }
+
+    return factors.slice(0, 2);
   };
 
   const riskFactors = generateRiskFactors();
@@ -70,26 +116,24 @@ const ResultsView: React.FC<{
       {/* FRASE CENTRAL */}
       <div className="text-center">
         <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug max-w-md mx-auto">
-          Risco elevado de dependência da medicação para manter o peso.
+          {results.personalizedMessage}
         </h3>
       </div>
 
       {/* BULLETS PERSONALIZADOS */}
-      {riskFactors.length > 0 && (
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 space-y-3">
-          <p className="text-amber-900 font-bold text-sm uppercase tracking-wider">
-            Fatores que aumentam seu risco:
-          </p>
+      <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 space-y-3">
+        <p className="text-amber-900 font-bold text-sm uppercase tracking-wider">
+          Fatores que aumentam seu risco:
+        </p>
 
-          <ul className="space-y-2">
-            {riskFactors.map((factor, index) => (
-              <li key={index} className="text-amber-800 text-sm font-medium leading-relaxed">
-                • {factor}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        <ul className="space-y-2">
+          {riskFactors.map((factor, index) => (
+            <li key={index} className="text-amber-800 text-sm font-medium leading-relaxed">
+              • {factor}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* CONSEQUÊNCIA CLÍNICA */}
       <div className="text-center max-w-md mx-auto">
@@ -101,7 +145,7 @@ const ResultsView: React.FC<{
       {/* ESPELHO EMOCIONAL */}
       <div className="text-center max-w-md mx-auto">
         <p className="text-slate-900 font-semibold text-base leading-relaxed">
-          Você não tem ainda uma estratégia adequada para essa fase.
+          Seu problema não é falta de disciplina, mas ausência de estratégia adequada.
         </p>
       </div>
 
@@ -109,10 +153,9 @@ const ResultsView: React.FC<{
       <div className="pt-6">
         <button
           onClick={onCtaClick}
-          className="w-full py-7 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-teal-900/40 uppercase"
+          className="w-full py-7 px-8 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-base md:text-lg leading-tight tracking-wide transition-all shadow-xl shadow-teal-900/40 uppercase"
         >
-          Proteger meu emagrecimento
-          
+          Proteger Meu Emagrecimento Agora
         </button>
       </div>
 
