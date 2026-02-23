@@ -112,7 +112,8 @@ const ResultsView: React.FC<{
           onClick={onCtaClick}
           className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-teal-900/40 uppercase"
         >
-          Acessar Protocolo Anti-Rebote
+          Proteger meu emagrecimento
+          
         </button>
       </div>
 
