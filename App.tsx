@@ -3,6 +3,7 @@ import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
 import QuizStep from './QuizStep';
 import ResultsView from './ResultsView';
+import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
 const NEWS_POSITION = 4;
@@ -14,6 +15,7 @@ const App: React.FC = () => {
   const [results, setResults] = useState<QuizResults | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [showVsl, setShowVsl] = useState<boolean>(false);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
   useEffect(() => {
@@ -110,7 +112,7 @@ const App: React.FC = () => {
   };
 
   // =========================
-  // LOADING 5s COM ETAPAS
+  // LOADING
   // =========================
 
   const startAnalysis = () => {
@@ -148,13 +150,17 @@ const App: React.FC = () => {
     }, 100);
   };
 
+  // =========================
+  // RENDER
+  // =========================
+
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA COM GRÁFICOS */}
-        {currentStep === -1 && !loading && !results && (
+        {/* CAPA */}
+        {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
 
             <div className="space-y-4">
@@ -186,12 +192,10 @@ const App: React.FC = () => {
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '82%' : '0%' }}
-                  />
-                </div>
+                <div
+                  className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
+                  style={{ height: animateGraph ? '82%' : '0%' }}
+                />
                 <p className="mt-4 text-sm font-semibold text-slate-700">
                   Alto risco
                 </p>
@@ -206,15 +210,11 @@ const App: React.FC = () => {
               Começar Avaliação Gratuita
             </button>
 
-            <p className="text-xs text-slate-400 pt-6">
-              ©️ 2026 Protocolo Anti-Rebote
-            </p>
-
           </div>
         )}
 
         {/* PERGUNTAS */}
-        {isQuestionStep && !loading && !results && (
+        {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
             question={QUESTIONS[getQuestionIndex()]}
             selectedOption={
@@ -228,27 +228,16 @@ const App: React.FC = () => {
         )}
 
         {/* NEWS */}
-        {isNewsStep && !loading && !results && (
+        {isNewsStep && !loading && !results && !showVsl && (
           <NewsInterstitial onNext={handleNext} />
         )}
 
-        {/* LOADING COM ETAPAS */}
+        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando seu perfil metabólico
             </h2>
-
-            <div className="space-y-2 text-sm text-slate-500 font-medium">
-
-              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
-              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
-              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
-              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
-              {loadingProgress >= 90 && <p className="font-bold text-[#0f766e]">Finalizando diagnóstico...</p>}
-
-            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
@@ -256,17 +245,21 @@ const App: React.FC = () => {
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-
           </div>
         )}
 
         {/* RESULTADO */}
-        {results && !loading && (
+        {results && !loading && !showVsl && (
           <ResultsView
             results={results}
             answers={answers}
-            onCtaClick={() => {}}
+            onCtaClick={() => setShowVsl(true)}
           />
+        )}
+
+        {/* VSL */}
+        {showVsl && (
+          <VslView />
         )}
 
       </main>
