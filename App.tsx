@@ -6,83 +6,82 @@ import ResultsView from './ResultsView';
 import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
-const NEWS_STEP = 4; // após pergunta 4 (index 3)
+const NEWS_AFTER_QUESTION_INDEX = 3; // após pergunta 4 (index 3)
+
+type Step =
+  | { type: "cover" }
+  | { type: "question"; index: number }
+  | { type: "news" }
+  | { type: "loading" }
+  | { type: "result" }
+  | { type: "vsl" };
 
 const App: React.FC = () => {
 
-  const [currentStep, setCurrentStep] = useState<number>(-1);
+  const [step, setStep] = useState<Step>({ type: "cover" });
   const [answers, setAnswers] = useState<UserAnswers>({});
   const [results, setResults] = useState<QuizResults | null>(null);
-  const [showVsl, setShowVsl] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   // =========================
-  // 🧠 INDEX REAL DA PERGUNTA
+  // RESPOSTA
   // =========================
 
-  const getQuestionIndex = (): number => {
-    if (currentStep < 0) return -1;
-    if (currentStep < NEWS_STEP) return currentStep;
-    if (currentStep === NEWS_STEP) return -1;
-    return currentStep - 1;
-  };
-
-  const questionIndex = getQuestionIndex();
-
-  const isCover = currentStep === -1;
-  const isNews = currentStep === NEWS_STEP;
-
-  const isQuestion =
-    questionIndex >= 0 &&
-    questionIndex < QUESTIONS.length;
-
-  // =========================
-  // 🟢 RESPOSTAS
-  // =========================
-
-  const handleSelectOption = (value: string) => {
-
-    if (!isQuestion) return;
-
-    const questionId = QUESTIONS[questionIndex].id;
-
+  const handleSelectOption = (questionId: string | number, value: string) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
     }));
   };
 
-  // ✅ HANDLE NEXT CORRIGIDO
-  const handleNext = () => {
+  // =========================
+  // NEXT
+  // =========================
 
-    if (!isQuestion) {
-      setCurrentStep(prev => prev + 1);
-      return;
-    }
+  const goToNext = () => {
 
-    const questionId = QUESTIONS[questionIndex].id;
+    if (step.type !== "question") return;
 
-    // Bloqueia avanço sem resposta
+    const currentIndex = step.index;
+    const questionId = QUESTIONS[currentIndex].id;
+
     if (!answers[questionId]) return;
 
-    const isLastQuestion =
-      questionIndex === QUESTIONS.length - 1;
+    const isLastQuestion = currentIndex === QUESTIONS.length - 1;
 
     if (isLastQuestion) {
       startAnalysis();
       return;
     }
 
-    setCurrentStep(prev => prev + 1);
+    if (currentIndex === NEWS_AFTER_QUESTION_INDEX) {
+      setStep({ type: "news" });
+      return;
+    }
+
+    setStep({ type: "question", index: currentIndex + 1 });
   };
 
-  const handleBack = () => {
-    setCurrentStep(prev => Math.max(-1, prev - 1));
+  const goBack = () => {
+    if (step.type !== "question") return;
+
+    const currentIndex = step.index;
+
+    if (currentIndex === 0) {
+      setStep({ type: "cover" });
+      return;
+    }
+
+    if (currentIndex - 1 === NEWS_AFTER_QUESTION_INDEX) {
+      setStep({ type: "question", index: currentIndex - 1 });
+      return;
+    }
+
+    setStep({ type: "question", index: currentIndex - 1 });
   };
 
   // =========================
-  // 🔢 SCORE
+  // SCORE
   // =========================
 
   const calculateScore = (): QuizResults => {
@@ -91,8 +90,7 @@ const App: React.FC = () => {
     let maxWeight = 0;
 
     QUESTIONS.forEach(q => {
-
-      if (!q.options || q.options.length === 0) return;
+      if (!q.options?.length) return;
 
       const maxOptionWeight = Math.max(...q.options.map(o => o.weight));
       maxWeight += maxOptionWeight;
@@ -102,14 +100,10 @@ const App: React.FC = () => {
     });
 
     const normalized =
-      maxWeight > 0
-        ? (totalWeight / maxWeight) * 100
-        : 0;
-
-    const finalScore = normalized < 45 ? 48 : normalized;
+      maxWeight > 0 ? (totalWeight / maxWeight) * 100 : 0;
 
     return {
-      score: Math.round(finalScore),
+      score: Math.round(normalized < 45 ? 48 : normalized),
       riskLevel: "Alto",
       personalizedMessage: "",
       keyInsights: []
@@ -117,38 +111,34 @@ const App: React.FC = () => {
   };
 
   // =========================
-  // ⏳ LOADING
+  // LOADING
   // =========================
 
   const startAnalysis = () => {
 
-    setLoading(true);
+    setStep({ type: "loading" });
     setLoadingProgress(0);
 
     const result = calculateScore();
-    let progressValue = 0;
+    let progress = 0;
 
     const interval = setInterval(() => {
 
-      progressValue += 4;
+      progress += 5;
 
-      if (progressValue >= 100) {
-        progressValue = 100;
+      if (progress >= 100) {
         clearInterval(interval);
-
-        setTimeout(() => {
-          setResults(result);
-          setLoading(false);
-        }, 300);
+        setResults(result);
+        setStep({ type: "result" });
       }
 
-      setLoadingProgress(progressValue);
+      setLoadingProgress(progress);
 
-    }, 120);
+    }, 100);
   };
 
   // =========================
-  // 🎨 RENDER
+  // RENDER
   // =========================
 
   return (
@@ -156,86 +146,73 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
-        {isCover && !loading && !results && (
+        {step.type === "cover" && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-                Diagnóstico Gratuito
-              </p>
-
-              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
-                Risco de Rebote
-              </h1>
-
-              <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-                Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
-              </h2>
-            </div>
+            <h1 className="text-3xl font-black text-[#0f766e]">
+              Risco de Rebote
+            </h1>
 
             <button
-              onClick={() => setCurrentStep(0)}
-              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6"
+              onClick={() => setStep({ type: "question", index: 0 })}
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase"
             >
-              Começar Avaliação Gratuita
+              Começar Avaliação
             </button>
-
-            <p className="text-xs text-slate-400 pt-6">
-              ©️ 2026 Protocolo Anti-Rebote
-            </p>
 
           </div>
         )}
 
-        {/* PERGUNTAS */}
-        {isQuestion && !loading && !results && (
+        {step.type === "question" && (
           <QuizStep
-            question={QUESTIONS[questionIndex]}
+            question={QUESTIONS[step.index]}
             selectedOption={
-              answers[QUESTIONS[questionIndex].id] || null
+              answers[QUESTIONS[step.index].id] || null
             }
-            onSelect={handleSelectOption}
-            onNext={handleNext}
-            onBack={handleBack}
-            isFirst={questionIndex === 0}
+            onSelect={(value) =>
+              handleSelectOption(QUESTIONS[step.index].id, value)
+            }
+            onNext={goToNext}
+            onBack={goBack}
+            isFirst={step.index === 0}
           />
         )}
 
-        {/* NEWS */}
-        {isNews && !loading && !results && (
+        {step.type === "news" && (
           <NewsInterstitial
-            onNext={() => setCurrentStep(prev => prev + 1)}
+            onNext={() =>
+              setStep({
+                type: "question",
+                index: NEWS_AFTER_QUESTION_INDEX + 1
+              })
+            }
           />
         )}
 
-        {/* LOADING */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-            <h2 className="text-xl font-black text-[#0f766e] uppercase">
-              Analisando Perfil Metabólico
+        {step.type === "loading" && (
+          <div className="p-10 text-center">
+            <h2 className="font-black text-[#0f766e] mb-6">
+              Analisando Perfil...
             </h2>
 
             <div className="w-full bg-slate-200 h-3 rounded-full">
               <div
-                className="bg-[#0f766e] h-full transition-all duration-300"
+                className="bg-[#0f766e] h-full transition-all"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
           </div>
         )}
 
-        {/* RESULTADO */}
-        {results && !loading && !showVsl && (
+        {step.type === "result" && results && (
           <ResultsView
             results={results}
             answers={answers}
-            onCtaClick={() => setShowVsl(true)}
+            onCtaClick={() => setStep({ type: "vsl" })}
           />
         )}
 
-        {/* VSL */}
-        {showVsl && !loading && (
+        {step.type === "vsl" && (
           <VslView
             onCheckout={() =>
               window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
