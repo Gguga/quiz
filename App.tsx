@@ -14,7 +14,6 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [loadingStatus, setLoadingStatus] = useState<string>("Analisando respostas...");
 
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
@@ -48,6 +47,7 @@ const App: React.FC = () => {
 
     let normalized = (totalWeight / maxWeight) * 100;
 
+    // Score mínimo estratégico
     if (normalized < 40) normalized = 42;
 
     let riskLevel = "Moderado";
@@ -72,7 +72,7 @@ const App: React.FC = () => {
       setResults(result);
       setLoading(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 2200);
+    }, 2600);
   };
 
   useEffect(() => {
@@ -80,19 +80,13 @@ const App: React.FC = () => {
 
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
-        const next = prev + (Math.random() * 3);
+        const next = prev + (Math.random() * 4);
         return next >= 100 ? 100 : next;
       });
     }, 120);
 
     return () => clearInterval(interval);
   }, [loading]);
-
-  useEffect(() => {
-    if (loadingProgress < 30) setLoadingStatus("Analisando padrão metabólico...");
-    else if (loadingProgress < 70) setLoadingStatus("Calculando risco de rebote...");
-    else setLoadingStatus("Finalizando diagnóstico...");
-  }, [loadingProgress]);
 
   const progress =
     currentStep >= 0
@@ -109,7 +103,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {/* Barra progresso */}
+      {/* Barra de progresso */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
         <div className="w-full h-[4px] bg-slate-200">
           <div
@@ -123,7 +117,7 @@ const App: React.FC = () => {
 
         {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center p-6 text-center space-y-6 pt-16">
+          <div className="flex flex-col items-center p-6 text-center space-y-6 pt-20">
 
             <div className="bg-teal-100 text-teal-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
               Avaliação Gratuita
@@ -164,28 +158,62 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* NEWS COM SCROLL FUNCIONANDO */}
+        {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
-        {/* LOADING */}
+        {/* LOADING CLÍNICO */}
         {loading && (
-          <div className="flex flex-col items-center justify-center text-center p-6 pt-24">
-            <h2 className="text-xl font-bold text-teal-700">
-              {Math.round(loadingProgress)}%
-            </h2>
-            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden mt-4">
-              <div
-                className="bg-teal-700 h-full transition-all duration-300"
-                style={{ width: `${loadingProgress}%` }}
-              />
+          <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-10">
+
+            <div className="space-y-3">
+              <h2 className="text-xl font-black text-[#0f766e] uppercase tracking-wide">
+                Triagem Clínica em Andamento
+              </h2>
+              <p className="text-slate-500 text-sm max-w-xs">
+                Seu perfil está sendo analisado com base nos critérios de consolidação metabólica.
+              </p>
             </div>
-            <p className="text-slate-500 mt-3 text-xs uppercase tracking-wider">
-              {loadingStatus}
-            </p>
+
+            <div className="w-full max-w-xs space-y-3 text-left text-sm">
+
+              {loadingProgress > 10 && (
+                <p className="text-slate-700">✔ Histórico de peso analisado</p>
+              )}
+
+              {loadingProgress > 30 && (
+                <p className="text-slate-700">✔ Fase da medicação identificada</p>
+              )}
+
+              {loadingProgress > 50 && (
+                <p className="text-slate-700">✔ Padrão de ingestão proteica avaliado</p>
+              )}
+
+              {loadingProgress > 70 && (
+                <p className="text-slate-700">✔ Indicadores de vulnerabilidade muscular estimados</p>
+              )}
+
+              {loadingProgress > 85 && (
+                <p className="text-slate-700">✔ Probabilidade de rebote calculada</p>
+              )}
+
+            </div>
+
+            <div className="w-full max-w-xs">
+              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-[#0f766e] h-full transition-all duration-300"
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+              <p className="text-slate-400 text-xs mt-3 uppercase tracking-wider text-center">
+                Estruturando relatório personalizado...
+              </p>
+            </div>
+
           </div>
         )}
 
