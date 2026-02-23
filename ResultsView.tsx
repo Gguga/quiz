@@ -18,63 +18,89 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   const idade = answers[2];
   const quedaForca = answers[5];
   const treino = answers[6];
-  const proteinaRefeicoes = answers[7];
-  const proteinaCalculo = answers[8];
+  const proteinaRef = answers[7];
+  const proteinaCalc = answers[8];
   const dieta = answers[9];
-  const compromisso = answers[11];
+  const colateral = answers[10];
+
+  // =========================
+  // PERFIS POR COMBINAÇÃO FORTE
+  // =========================
 
   let perfil = "";
   let descricao = "";
 
+  // Rebote + perda muscular
   if (
     situacao === "uso_parou_rebote" &&
     (treino === "forca_nao_treina" || quedaForca === "forca_caiu_muito")
   ) {
     perfil = "Rebote Estrutural";
     descricao =
-      "Você já interrompeu a medicação e percebeu o peso voltar. Ao mesmo tempo, há sinais claros de perda de estrutura muscular.";
+      "Você marcou que já parou a medicação e o peso começou a voltar. Ao mesmo tempo, relatou queda importante de força ou ausência de musculação — isso indica perda de estrutura muscular que deveria proteger seu metabolismo.";
   }
 
+  // Platô + dieta fraca
   else if (
     situacao === "uso_atual_plato" &&
-    (dieta === "dieta_reduzi" || dieta === "dieta_feeling")
+    (dieta === "dieta_feeling" || dieta === "dieta_reduzi")
   ) {
     perfil = "Platô Adaptativo";
     descricao =
-      "Seu corpo já entrou em adaptação metabólica mesmo usando a medicação.";
+      "Você está usando a medicação, mas o peso travou. Além disso, sua estratégia alimentar é baseada apenas em reduzir quantidades ou ajustar no feeling — esse combo favorece adaptação metabólica.";
   }
 
+  // Proteína baixa + treino ruim
   else if (
-    (proteinaRefeicoes === "proteina_0_1" || proteinaCalculo === "proteina_nunca") &&
-    (treino === "forca_irregular" || quedaForca === "forca_caiu_muito")
+    (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") &&
+    (treino === "forca_irregular" || treino === "forca_nao_treina")
   ) {
     perfil = "Vulnerabilidade Muscular";
     descricao =
-      "Seu padrão atual indica ingestão proteica insuficiente combinada com estímulo muscular inadequado.";
+      "Você relatou consumir proteína de verdade em 0–1 refeições ou nunca calcular proteína. Somado a treino irregular ou ausência de musculação, isso aumenta fortemente o risco de perder massa magra.";
   }
 
+  // Histórico crônico
   else if (
     (tempo === "tempo_longo" || tempo === "tempo_eterno") &&
     (idade === "idade_40_49" || idade === "idade_50_plus")
   ) {
     perfil = "Ciclo Metabólico Crônico";
     descricao =
-      "Seu histórico prolongado sugere padrão metabólico crônico.";
+      "Você está na faixa dos 40+ e tenta emagrecer há muitos anos. Esse padrão prolongado geralmente envolve múltiplas adaptações metabólicas e maior dificuldade de manter resultados.";
   }
 
-  else if (
-    situacao === "uso_atual_perda" &&
-    (compromisso === "compromisso_talvez" || compromisso === "compromisso_duvida")
-  ) {
-    perfil = "Dependência da Medicação";
-    descricao =
-      "Seu emagrecimento depende fortemente da medicação.";
-  }
-
+  // =========================
+  // FALLBACK SEM SER GENÉRICO
+  // =========================
   else {
-    perfil = "Vulnerabilidade Metabólica";
+
+    const fatores: string[] = [];
+
+    if (situacao === "uso_desmame") {
+      fatores.push("você está reduzindo a dose da medicação");
+    }
+
+    if (proteinaRef === "proteina_2") {
+      fatores.push("você consome proteína em apenas 2 refeições por dia");
+    }
+
+    if (dieta === "dieta_emagrecer") {
+      fatores.push("sua dieta está focada apenas em emagrecer, não em proteger metabolismo");
+    }
+
+    if (colateral === "colateral_varios") {
+      fatores.push("você relatou múltiplos colaterais (cansaço + digestivos)");
+    }
+
+    if (quedaForca === "forca_caiu_pouco") {
+      fatores.push("você percebeu queda de força desde que iniciou a medicação");
+    }
+
+    perfil = "Risco Metabólico Estrutural";
+
     descricao =
-      "Existem fragilidades estruturais que podem comprometer a manutenção do peso.";
+      `Pelo que você marcou — ${fatores.slice(0,2).join(" e ")} — seu corpo ainda não demonstra estrutura sólida para manter o peso após a retirada da medicação.`;
   }
 
   return (
@@ -91,7 +117,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
 
         <h3 className="text-xl font-black text-[#0f766e]">
-          Perfil: {perfil}
+          Perfil Identificado: {perfil}
         </h3>
 
       </div>
