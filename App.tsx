@@ -6,6 +6,8 @@ import ResultsView from './ResultsView';
 import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
+const NEWS_POSITION = 4; // após pergunta 4
+
 const App: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState<number>(-1);
@@ -23,24 +25,6 @@ const App: React.FC = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, []);
-
-  const isQuestionStep =
-    currentStep >= 0 && currentStep < QUESTIONS.length;
-
-  const isNewsStep = currentStep === 4;
-
-  const handleSelectOption = (value: string) => {
-    const questionId = QUESTIONS[currentStep].id;
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
-
-  const handleNext = () => {
-    if (currentStep < QUESTIONS.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      startAnalysis();
-    }
-  };
 
   // =========================
   // 🔥 CÁLCULO
@@ -101,9 +85,47 @@ const App: React.FC = () => {
     }, 140);
   };
 
+  // =========================
+  // 🔥 CONTROLE DE STEP
+  // =========================
+
+  const totalSteps = QUESTIONS.length + 1; // +1 por causa do NEWS
+
+  const isNewsStep = currentStep === NEWS_POSITION;
+
+  const isQuestionStep =
+    currentStep >= 0 &&
+    currentStep < totalSteps &&
+    !isNewsStep;
+
+  const getQuestionIndex = () => {
+    if (currentStep > NEWS_POSITION) {
+      return currentStep - 1;
+    }
+    return currentStep;
+  };
+
+  const handleSelectOption = (value: string) => {
+    const questionIndex = getQuestionIndex();
+    const questionId = QUESTIONS[questionIndex].id;
+
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleNext = () => {
+
+    // Última etapa real
+    if (currentStep === totalSteps - 1) {
+      startAnalysis();
+      return;
+    }
+
+    setCurrentStep(prev => prev + 1);
+  };
+
   const progress =
     currentStep >= 0
-      ? ((currentStep + 1) / QUESTIONS.length) * 100
+      ? ((currentStep + 1) / totalSteps) * 100
       : 0;
 
   const getSexo = () => {
@@ -161,9 +183,7 @@ const App: React.FC = () => {
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div
-                  className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden"
-                >
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
                     className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
                     style={{ height: animateGraph ? '82%' : '0%' }}
@@ -190,11 +210,15 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {/* ===================== */}
         {/* PERGUNTAS */}
-        {isQuestionStep && !loading && !results && !showVsl && currentStep !== 4 && (
+        {/* ===================== */}
+        {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
-            question={QUESTIONS[currentStep]}
-            selectedOption={answers[QUESTIONS[currentStep].id] || null}
+            question={QUESTIONS[getQuestionIndex()]}
+            selectedOption={
+              answers[QUESTIONS[getQuestionIndex()].id] || null
+            }
             onSelect={handleSelectOption}
             onNext={handleNext}
             onBack={() => setCurrentStep(prev => prev - 1)}
@@ -202,14 +226,18 @@ const App: React.FC = () => {
           />
         )}
 
+        {/* ===================== */}
         {/* NEWS */}
+        {/* ===================== */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
+        {/* ===================== */}
         {/* LOADING */}
+        {/* ===================== */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
@@ -224,7 +252,9 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {/* ===================== */}
         {/* RESULTADO / VSL */}
+        {/* ===================== */}
         {(results || showVsl) && !loading && (
           <div className="py-6 px-4">
             {showVsl ? (
