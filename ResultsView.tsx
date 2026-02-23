@@ -21,86 +21,65 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   const proteinaRef = answers[7];
   const proteinaCalc = answers[8];
   const dieta = answers[9];
-  const colateral = answers[10];
-
-  // =========================
-  // PERFIS POR COMBINAÇÃO FORTE
-  // =========================
 
   let perfil = "";
   let descricao = "";
 
-  // Rebote + perda muscular
+  // 🔴 REBOTE ESTRUTURAL
   if (
     situacao === "uso_parou_rebote" &&
     (treino === "forca_nao_treina" || quedaForca === "forca_caiu_muito")
   ) {
     perfil = "Rebote Estrutural";
     descricao =
-      "Você marcou que já parou a medicação e o peso começou a voltar. Ao mesmo tempo, relatou queda importante de força ou ausência de musculação — isso indica perda de estrutura muscular que deveria proteger seu metabolismo.";
+      "O peso já começou a voltar após a medicação.\n\n" +
+      "Ao mesmo tempo, houve queda de força ou falta de treino consistente.\n\n" +
+      "Isso indica que a base muscular enfraqueceu. Sem essa proteção, o metabolismo desacelera.\n\n" +
+      "Quando a estrutura não sustenta o emagrecimento, o corpo tende a recuperar o peso.";
   }
 
-  // Platô + dieta fraca
+  // 🟠 PLATÔ ADAPTATIVO
   else if (
     situacao === "uso_atual_plato" &&
     (dieta === "dieta_feeling" || dieta === "dieta_reduzi")
   ) {
     perfil = "Platô Adaptativo";
     descricao =
-      "Você está usando a medicação, mas o peso travou. Além disso, sua estratégia alimentar é baseada apenas em reduzir quantidades ou ajustar no feeling — esse combo favorece adaptação metabólica.";
+      "Mesmo com a medicação ativa, o peso parou de responder.\n\n" +
+      "A alimentação está mais focada em reduzir quantidades do que em construir uma estratégia metabólica sólida.\n\n" +
+      "Com o tempo, o corpo se adapta. Ele aprende a funcionar com menos e passa a resistir à perda de peso.";
   }
 
-  // Proteína baixa + treino ruim
+  // 🟡 VULNERABILIDADE MUSCULAR
   else if (
     (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") &&
     (treino === "forca_irregular" || treino === "forca_nao_treina")
   ) {
     perfil = "Vulnerabilidade Muscular";
     descricao =
-      "Você relatou consumir proteína de verdade em 0–1 refeições ou nunca calcular proteína. Somado a treino irregular ou ausência de musculação, isso aumenta fortemente o risco de perder massa magra.";
+      "A ingestão de proteína está abaixo do ideal e o treino de força não é consistente.\n\n" +
+      "Isso compromete a preservação da massa muscular.\n\n" +
+      "Quando o músculo diminui, o gasto energético também cai. Um metabolismo mais lento facilita o retorno do peso.";
   }
 
-  // Histórico crônico
+  // 🔵 CICLO METABÓLICO CRÔNICO
   else if (
     (tempo === "tempo_longo" || tempo === "tempo_eterno") &&
     (idade === "idade_40_49" || idade === "idade_50_plus")
   ) {
     perfil = "Ciclo Metabólico Crônico";
     descricao =
-      "Você está na faixa dos 40+ e tenta emagrecer há muitos anos. Esse padrão prolongado geralmente envolve múltiplas adaptações metabólicas e maior dificuldade de manter resultados.";
+      "Existe um histórico prolongado de tentativas de emagrecimento.\n\n" +
+      "Além disso, o metabolismo já não responde com a mesma facilidade de antes.\n\n" +
+      "Cada ciclo deixa adaptações acumuladas. Manter o peso agora exige mais estrutura do que no passado.";
   }
 
-  // =========================
-  // FALLBACK SEM SER GENÉRICO
-  // =========================
+  // 🟣 TRANSIÇÃO VULNERÁVEL (fallback)
   else {
-
-    const fatores: string[] = [];
-
-    if (situacao === "uso_desmame") {
-      fatores.push("você está reduzindo a dose da medicação");
-    }
-
-    if (proteinaRef === "proteina_2") {
-      fatores.push("você consome proteína em apenas 2 refeições por dia");
-    }
-
-    if (dieta === "dieta_emagrecer") {
-      fatores.push("sua dieta está focada apenas em emagrecer, não em proteger metabolismo");
-    }
-
-    if (colateral === "colateral_varios") {
-      fatores.push("você relatou múltiplos colaterais (cansaço + digestivos)");
-    }
-
-    if (quedaForca === "forca_caiu_pouco") {
-      fatores.push("você percebeu queda de força desde que iniciou a medicação");
-    }
-
-    perfil = "Risco Metabólico Estrutural";
-
+    perfil = "Estrutura Metabólica em Transição";
     descricao =
-      `Pelo que você marcou — ${fatores.slice(0,2).join(" e ")} — seu corpo ainda não demonstra estrutura sólida para manter o peso após a retirada da medicação.`;
+      "A estrutura alimentar e metabólica ainda não está totalmente consolidada.\n\n" +
+      "Sem uma estratégia clara de proteção muscular e metabólica, o risco de recuperação de peso aumenta após a retirada da medicação.";
   }
 
   return (
@@ -108,21 +87,25 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       <div className="text-center space-y-4">
 
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          Risco estimado de rebote
+        </p>
+
         <div className="text-7xl font-black text-slate-900">
           {results.score}%
         </div>
 
-        <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">
-          Risco {results.riskLevel}
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
+          {results.riskLevel}
         </p>
 
         <h3 className="text-xl font-black text-[#0f766e]">
-          Perfil Identificado: {perfil}
+          {perfil}
         </h3>
 
       </div>
 
-      <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6">
+      <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 whitespace-pre-line">
         <p className="text-amber-800 font-semibold text-sm leading-relaxed">
           {descricao}
         </p>
@@ -130,7 +113,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       <button
         onClick={onCtaClick}
-        className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase"
+        className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl uppercase"
       >
         Ver protocolo recomendado
       </button>
