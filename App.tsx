@@ -16,7 +16,6 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // 🔥 Delay 0.5s para gráfico
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
@@ -42,9 +41,7 @@ const App: React.FC = () => {
     }
   };
 
-  // ---------------------------
   // 🔥 CÁLCULO PERSONALIZADO
-  // ---------------------------
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -63,8 +60,8 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
+    // 🔴 RISCO CENTRAL
     const fase = answers[4];
-
     let centralRisk = "";
 
     if (fase === "uso_atual_perda") {
@@ -79,39 +76,80 @@ const App: React.FC = () => {
       centralRisk = "Risco elevado de dependência da medicação para manter o peso.";
     }
 
-    let secondaryRisk = "";
+    // 🔥 FATORES ESPELHADOS
+    const riskFactors: string[] = [];
 
-    if (
-      answers[8] === "proteina_0_1" ||
-      answers[9] === "proteina_nunca" ||
-      answers[9] === "proteina_feeling"
-    ) {
-      secondaryRisk = "Ingestão proteica insuficiente para preservação muscular.";
+    // Proteína
+    if (answers[8] === "proteina_0_1") {
+      riskFactors.push(
+        "Você relatou consumir proteína em poucas refeições, o que aumenta o risco de perda muscular durante e após o uso da medicação."
+      );
     }
-    else if (
-      answers[10] === "forca_caiu_muito" ||
-      answers[10] === "forca_nao_treina"
-    ) {
-      secondaryRisk = "Indícios de perda progressiva de massa muscular.";
+
+    if (answers[9] === "proteina_nunca" || answers[9] === "proteina_feeling") {
+      riskFactors.push(
+        "Você informou que não calcula sua ingestão proteica, o que pode comprometer a preservação da massa magra."
+      );
     }
-    else if (
-      answers[3] === "tempo_longo" ||
-      answers[3] === "tempo_eterno"
-    ) {
-      secondaryRisk = "Sinais de adaptação metabólica crônica.";
+
+    // Força
+    if (answers[10] === "forca_caiu_muito") {
+      riskFactors.push(
+        "Você percebeu queda significativa de força, sinal clássico de perda muscular progressiva."
+      );
+    }
+
+    if (answers[10] === "forca_nao_treina") {
+      riskFactors.push(
+        "A ausência de treino de força reduz a proteção contra perda muscular e aumenta o risco de rebote."
+      );
+    }
+
+    // Histórico
+    if (answers[3] === "tempo_longo" || answers[3] === "tempo_eterno") {
+      riskFactors.push(
+        "Seu histórico prolongado de tentativas indica maior propensão à adaptação metabólica."
+      );
+    }
+
+    // Colaterais
+    if (answers[11] === "colaterais_intensos") {
+      riskFactors.push(
+        "Os colaterais relatados sugerem possível déficit nutricional durante o processo."
+      );
+    }
+
+    if (answers[11] === "colaterais_moderados") {
+      riskFactors.push(
+        "Os sinais físicos relatados indicam que seu corpo pode estar sob estresse metabólico."
+      );
+    }
+
+    // 🔥 GARANTIR SEMPRE 2
+    if (riskFactors.length === 0) {
+      riskFactors.push(
+        "Mesmo com respostas equilibradas, existe risco silencioso de perda muscular durante o processo."
+      );
+      riskFactors.push(
+        "Sem uma estratégia adequada, a dependência da medicação pode se manter."
+      );
+    }
+
+    if (riskFactors.length === 1) {
+      riskFactors.push(
+        "A fase atual do seu processo exige uma estratégia específica para consolidar o resultado."
+      );
     }
 
     return {
       score,
       riskLevel: score >= 75 ? "Crítico" : score >= 60 ? "Alto" : "Moderado",
       personalizedMessage: centralRisk,
-      keyInsights: secondaryRisk ? [secondaryRisk] : []
+      keyInsights: riskFactors.slice(0, 2)
     };
   };
 
-  // ---------------------------
-  // 🔥 LOADING PREMIUM REALISTA
-  // ---------------------------
+  // 🔥 LOADING REALISTA
   const startAnalysis = () => {
     setLoading(true);
     setLoadingProgress(0);
@@ -121,16 +159,10 @@ const App: React.FC = () => {
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
 
-        // Fase 1: rápido até 60%
         if (prev < 60) return prev + 3;
-
-        // Fase 2: desacelera até 85%
         if (prev < 85) return prev + 1.5;
-
-        // Fase 3: quase travado até 95%
         if (prev < 95) return prev + 0.5;
 
-        // Finalização
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
@@ -156,35 +188,13 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
-
-      {currentStep >= 0 && !loading && !results && !showVsl && (
-        <div className="w-full h-[4px] bg-slate-200">
-          <div
-            className="bg-black h-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      )}
-
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
-
-            <div className="bg-teal-50 text-[#0f766e] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-teal-100">
-              Avaliação Gratuita
-            </div>
-
-            <h1 className="text-3xl font-black text-[#0f766e] leading-tight max-w-sm">
-              Diagnóstico Metabólico:
-              <br />
-              <span className="text-slate-900">Risco de Rebote</span>
+            <h1 className="text-3xl font-black text-[#0f766e]">
+              Diagnóstico Metabólico
             </h1>
-
-            <p className="text-slate-600 max-w-sm text-base leading-relaxed">
-              Descubra em 2 minutos seu risco de recuperar peso após interromper a medicação.
-            </p>
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
@@ -222,7 +232,7 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase text-base mt-6 shadow-lg"
+              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6"
             >
               Começar Avaliação Gratuita
             </button>
@@ -230,48 +240,17 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* PERGUNTAS */}
-        {isQuestionStep && !loading && !results && !showVsl && !isNewsStep && (
-          <QuizStep
-            question={QUESTIONS[currentStep]}
-            selectedOption={answers[QUESTIONS[currentStep].id] || null}
-            onSelect={handleSelectOption}
-            onNext={handleNext}
-            onBack={() => setCurrentStep(prev => prev - 1)}
-            isFirst={currentStep === 0}
-            answers={answers}
-          />
-        )}
-
-        {/* NEWS */}
-        {isNewsStep && !loading && !results && !showVsl && (
-          <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
-          </div>
-        )}
-
-        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Triagem Clínica em Andamento
             </h2>
-
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-
-            <div className="text-sm text-slate-600 space-y-2">
-              {loadingProgress > 20 && <p>✔ Histórico analisado</p>}
-              {loadingProgress > 45 && <p>✔ Fase da medicação identificada</p>}
-              {loadingProgress > 70 && <p>✔ Indicadores musculares avaliados</p>}
-              {loadingProgress > 90 && <p>✔ Classificação final estruturada</p>}
-            </div>
-
           </div>
         )}
 
@@ -287,7 +266,6 @@ const App: React.FC = () => {
             ) : (
               <ResultsView
                 results={results!}
-                answers={answers}
                 onCtaClick={() => setShowVsl(true)}
               />
             )}
