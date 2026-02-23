@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
 import QuizStep from './QuizStep';
@@ -23,11 +23,8 @@ const App: React.FC = () => {
 
   const getQuestionIndex = (): number => {
     if (currentStep < 0) return -1;
-
     if (currentStep < NEWS_STEP) return currentStep;
-
     if (currentStep === NEWS_STEP) return -1;
-
     return currentStep - 1;
   };
 
@@ -56,16 +53,23 @@ const App: React.FC = () => {
     }));
   };
 
+  // ✅ HANDLE NEXT CORRIGIDO
   const handleNext = () => {
 
-    // Bloqueia avanço se pergunta não respondida
-    if (isQuestion) {
-      const questionId = QUESTIONS[questionIndex].id;
-      if (!answers[questionId]) return;
+    if (!isQuestion) {
+      setCurrentStep(prev => prev + 1);
+      return;
     }
 
-    // Última pergunta real
-    if (isQuestion && questionIndex === QUESTIONS.length - 1) {
+    const questionId = QUESTIONS[questionIndex].id;
+
+    // Bloqueia avanço sem resposta
+    if (!answers[questionId]) return;
+
+    const isLastQuestion =
+      questionIndex === QUESTIONS.length - 1;
+
+    if (isLastQuestion) {
       startAnalysis();
       return;
     }
@@ -141,21 +145,6 @@ const App: React.FC = () => {
       setLoadingProgress(progressValue);
 
     }, 120);
-  };
-
-  // =========================
-  // 👤 SEXO (seguro)
-  // =========================
-
-  const getSexo = (): string => {
-
-    const sexoAnswer = answers["sexo"]; // use o ID real da sua pergunta
-
-    if (!sexoAnswer) return "feminina";
-
-    return sexoAnswer === "sexo_homem"
-      ? "masculina"
-      : "feminina";
   };
 
   // =========================
