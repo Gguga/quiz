@@ -271,6 +271,7 @@ const App: React.FC = () => {
             ) : (
               <ResultsView
                 results={results!}
+                answers={answers}
                 onCtaClick={() => setShowVsl(true)}
               />
             )}
