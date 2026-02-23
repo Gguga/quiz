@@ -6,8 +6,6 @@ import ResultsView from './ResultsView';
 import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
-const NEWS_POSITION = 4; // após pergunta 4
-
 const App: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState<number>(-1);
@@ -18,7 +16,7 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // 🔥 anima gráfico 0.5s após carregar
+  // 🔥 anima gráfico da capa
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
@@ -26,9 +24,47 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // =========================
-  // 🔥 CÁLCULO
-  // =========================
+  // ================================
+  // CONTROLE DE FLUXO
+  // ================================
+
+  const LAST_QUESTION_INDEX = QUESTIONS.length - 1;
+  const NEWS_INDEX = 4; // após pergunta 4
+
+  const isQuestionStep =
+    currentStep >= 0 &&
+    currentStep <= LAST_QUESTION_INDEX &&
+    currentStep !== NEWS_INDEX;
+
+  const isNewsStep = currentStep === NEWS_INDEX;
+
+  // ================================
+  // AÇÕES
+  // ================================
+
+  const handleSelectOption = (value: string) => {
+    const questionId = QUESTIONS[currentStep].id;
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleNext = () => {
+
+    // Se ainda há perguntas depois
+    if (currentStep < LAST_QUESTION_INDEX) {
+      setCurrentStep(prev => prev + 1);
+      return;
+    }
+
+    // Se é a última pergunta → iniciar análise
+    if (currentStep === LAST_QUESTION_INDEX) {
+      startAnalysis();
+    }
+  };
+
+  // ================================
+  // CÁLCULO
+  // ================================
+
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -55,9 +91,10 @@ const App: React.FC = () => {
     };
   };
 
-  // =========================
-  // 🔥 LOADING
-  // =========================
+  // ================================
+  // LOADING
+  // ================================
+
   const startAnalysis = () => {
     setLoading(true);
     setLoadingProgress(0);
@@ -85,56 +122,23 @@ const App: React.FC = () => {
     }, 140);
   };
 
-  // =========================
-  // 🔥 CONTROLE DE STEP
-  // =========================
-
-  const totalSteps = QUESTIONS.length + 1; // +1 por causa do NEWS
-
-  const isNewsStep = currentStep === NEWS_POSITION;
-
-  const isQuestionStep =
-    currentStep >= 0 &&
-    currentStep < totalSteps &&
-    !isNewsStep;
-
-  const getQuestionIndex = () => {
-    if (currentStep > NEWS_POSITION) {
-      return currentStep - 1;
-    }
-    return currentStep;
-  };
-
-  const handleSelectOption = (value: string) => {
-    const questionIndex = getQuestionIndex();
-    const questionId = QUESTIONS[questionIndex].id;
-
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
-
-  const handleNext = () => {
-
-    // Última etapa real
-    if (currentStep === totalSteps - 1) {
-      startAnalysis();
-      return;
-    }
-
-    setCurrentStep(prev => prev + 1);
-  };
-
   const progress =
-    currentStep >= 0
-      ? ((currentStep + 1) / totalSteps) * 100
+    currentStep >= 0 && currentStep <= LAST_QUESTION_INDEX
+      ? ((currentStep + 1) / QUESTIONS.length) * 100
       : 0;
 
   const getSexo = () => {
     return answers[1] === "sexo_homem" ? "masculina" : "feminina";
   };
 
+  // ================================
+  // RENDER
+  // ================================
+
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
+      {/* BARRA PROGRESSO */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
         <div className="w-full h-[4px] bg-slate-200">
           <div
@@ -146,11 +150,9 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* ===================== */}
         {/* CAPA */}
-        {/* ===================== */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
+          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
             <div className="space-y-4">
 
@@ -168,6 +170,7 @@ const App: React.FC = () => {
 
             </div>
 
+            {/* GRÁFICO */}
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
@@ -203,22 +206,18 @@ const App: React.FC = () => {
               Começar Avaliação Gratuita
             </button>
 
-            <p className="text-xs text-slate-400 pt-6">
+            <p className="text-xs text-slate-400 pt-4">
               © 2026 Protocolo Anti-Rebote
             </p>
 
           </div>
         )}
 
-        {/* ===================== */}
         {/* PERGUNTAS */}
-        {/* ===================== */}
         {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
-            question={QUESTIONS[getQuestionIndex()]}
-            selectedOption={
-              answers[QUESTIONS[getQuestionIndex()].id] || null
-            }
+            question={QUESTIONS[currentStep]}
+            selectedOption={answers[QUESTIONS[currentStep].id] || null}
             onSelect={handleSelectOption}
             onNext={handleNext}
             onBack={() => setCurrentStep(prev => prev - 1)}
@@ -226,35 +225,32 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* ===================== */}
         {/* NEWS */}
-        {/* ===================== */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
+            <NewsInterstitial onNext={() => setCurrentStep(prev => prev + 1)} />
           </div>
         )}
 
-        {/* ===================== */}
         {/* LOADING */}
-        {/* ===================== */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Triagem Clínica em Andamento
             </h2>
+
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
+
           </div>
         )}
 
-        {/* ===================== */}
-        {/* RESULTADO / VSL */}
-        {/* ===================== */}
+        {/* RESULTADO + VSL */}
         {(results || showVsl) && !loading && (
           <div className="py-6 px-4">
             {showVsl ? (
