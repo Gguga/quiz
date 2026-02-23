@@ -18,7 +18,6 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // 🔥 anima gráfico da capa
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
@@ -26,24 +25,20 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // =============================
-  // 🔁 FLUXO CORRIGIDO DEFINITIVO
-  // =============================
+  // ================= FLUXO =================
+
   const handleNext = () => {
 
-    // Se for antes do NEWS
     if (currentStep === NEWS_STEP - 1) {
       setCurrentStep(NEWS_STEP);
       return;
     }
 
-    // Se estiver no NEWS
     if (currentStep === NEWS_STEP) {
       setCurrentStep(NEWS_STEP + 1);
       return;
     }
 
-    // Última pergunta real
     if (currentStep === QUESTIONS.length - 1) {
       startAnalysis();
       return;
@@ -57,9 +52,8 @@ const App: React.FC = () => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  // =============================
-  // 📊 CÁLCULO
-  // =============================
+  // ================= CÁLCULO =================
+
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -86,9 +80,8 @@ const App: React.FC = () => {
     };
   };
 
-  // =============================
-  // ⏳ LOADING OTIMIZADO
-  // =============================
+  // ================= LOADING =================
+
   const startAnalysis = () => {
 
     setLoading(true);
@@ -96,24 +89,24 @@ const App: React.FC = () => {
 
     const result = calculateScore();
 
+    let progressValue = 0;
+
     const interval = setInterval(() => {
-      setLoadingProgress(prev => {
 
-        if (prev < 50) return prev + 2.5;
-        if (prev < 80) return prev + 1.2;
-        if (prev < 95) return prev + 0.6;
+      progressValue += Math.random() * 4 + 1;
 
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setResults(result);
-            setLoading(false);
-          }, 300);
-          return 100;
-        }
+      if (progressValue >= 100) {
+        progressValue = 100;
+        clearInterval(interval);
 
-        return prev + 0.8;
-      });
+        setTimeout(() => {
+          setResults(result);
+          setLoading(false);
+        }, 400);
+      }
+
+      setLoadingProgress(progressValue);
+
     }, 120);
   };
 
@@ -136,7 +129,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {/* BARRA PROGRESSO */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
         <div className="w-full h-[4px] bg-slate-200">
           <div
@@ -148,7 +140,7 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* ================= CAPA ================= */}
+        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
@@ -208,7 +200,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* ================= PERGUNTAS ================= */}
+        {/* PERGUNTAS */}
         {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
             question={QUESTIONS[currentStep]}
@@ -221,14 +213,14 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* ================= NEWS ================= */}
+        {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
-        {/* ================= LOADING ================= */}
+        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-8">
 
@@ -253,7 +245,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* ================= RESULTADO / VSL ================= */}
+        {/* RESULTADO + VSL */}
         {(results || showVsl) && !loading && (
           <div className="py-6 px-4">
             {showVsl ? (
