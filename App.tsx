@@ -168,7 +168,7 @@ const App: React.FC = () => {
               </h1>
 
               <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-                Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
+               Descubra se você tem estrutura para manter. Perder é só a primeira etapa.
               </h2>
             </div>
 
