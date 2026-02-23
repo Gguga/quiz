@@ -6,7 +6,7 @@ import ResultsView from './ResultsView';
 import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
-const NEWS_POSITION = 4; // após pergunta 4
+const NEWS_POSITION = 4;
 
 const App: React.FC = () => {
 
@@ -16,23 +16,9 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimateGraph(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // =========================
-  // FLUXO DE PERGUNTAS
-  // =========================
 
   const getQuestionIndex = () => {
-    if (currentStep > NEWS_POSITION) {
-      return currentStep - 1;
-    }
+    if (currentStep > NEWS_POSITION) return currentStep - 1;
     return currentStep;
   };
 
@@ -46,12 +32,10 @@ const App: React.FC = () => {
   const handleSelectOption = (value: string) => {
     const questionIndex = getQuestionIndex();
     const questionId = QUESTIONS[questionIndex].id;
-
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
   const handleNext = () => {
-
     const questionIndex = getQuestionIndex();
 
     if (questionIndex === QUESTIONS.length - 1) {
@@ -62,13 +46,8 @@ const App: React.FC = () => {
     setCurrentStep(prev => prev + 1);
   };
 
-  const progress =
-    currentStep >= 0
-      ? ((currentStep + 1) / (QUESTIONS.length + 1)) * 100
-      : 0;
-
   // =========================
-  // CÁLCULO
+  // SCORE COM FORÇADORES
   // =========================
 
   const calculateScore = (): QuizResults => {
@@ -85,7 +64,33 @@ const App: React.FC = () => {
     });
 
     let normalized = (totalWeight / maxWeight) * 100;
-    if (normalized < 45) normalized = 48;
+
+    const proteinaRefeicoes = answers[7];
+    const proteinaCalculo = answers[8];
+    const treino = answers[6];
+    const situacao = answers[4];
+    const dieta = answers[9];
+
+    if (
+      proteinaRefeicoes === "proteina_0_1" ||
+      proteinaCalculo === "proteina_nunca"
+    ) {
+      normalized = Math.max(normalized, 72);
+    }
+
+    if (treino === "forca_nao_treina") {
+      normalized = Math.max(normalized, 75);
+    }
+
+    if (situacao === "uso_parou_rebote") {
+      normalized = Math.max(normalized, 80);
+    }
+
+    if (dieta === "dieta_feeling") {
+      normalized = Math.max(normalized, 70);
+    }
+
+    if (normalized < 48) normalized = 48;
 
     const score = Math.round(normalized);
 
@@ -98,7 +103,7 @@ const App: React.FC = () => {
   };
 
   // =========================
-  // LOADING CORRIGIDO
+  // LOADING ESTRATÉGICO 5s
   // =========================
 
   const startAnalysis = () => {
@@ -107,109 +112,55 @@ const App: React.FC = () => {
     setLoadingProgress(0);
 
     const result = calculateScore();
+
     let progressValue = 0;
 
     const interval = setInterval(() => {
 
-      progressValue += 2.5;
+      progressValue += 2;
 
-      if (progressValue >= 100) {
-
+      if (progressValue >= 90) {
+        progressValue = 90;
+        setLoadingProgress(90);
         clearInterval(interval);
-        setLoadingProgress(100);
 
         setTimeout(() => {
-          setResults(result);
-          setLoading(false);
-        }, 400);
+          setLoadingProgress(100);
+
+          setTimeout(() => {
+            setResults(result);
+            setLoading(false);
+          }, 500);
+
+        }, 2000);
 
         return;
       }
 
       setLoadingProgress(progressValue);
 
-    }, 120);
-  };
-
-  const getSexo = () => {
-    return answers[1] === "sexo_homem" ? "masculina" : "feminina";
+    }, 100);
   };
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {currentStep >= 0 && !loading && !results && !showVsl && (
-        <div className="w-full h-[4px] bg-slate-200">
-          <div
-            className="bg-black h-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      )}
-
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
-
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-                Diagnóstico Gratuito
-              </p>
-
-              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
-                Risco de Rebote
-              </h1>
-
-              <h2 className="text-base md:text-lg text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 w-full mt-4">
-
-              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '22%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-700">
-                  Baixo risco
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '82%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-700">
-                  Alto risco
-                </p>
-              </div>
-
-            </div>
-
+            <h1 className="text-3xl font-black text-[#0f766e]">
+              Risco de Rebote
+            </h1>
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6"
             >
               Começar Avaliação Gratuita
             </button>
-
-            <p className="text-xs text-slate-400 pt-6">
-              ©️ 2026 Protocolo Anti-Rebote
-            </p>
-
           </div>
         )}
 
-        {/* PERGUNTAS */}
         {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
             question={QUESTIONS[getQuestionIndex()]}
@@ -223,34 +174,41 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
-          <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
-          </div>
+          <NewsInterstitial onNext={handleNext} />
         )}
 
-        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
-              Triagem Clínica em Andamento
+              Analisando seu perfil metabólico
             </h2>
+
+            <div className="space-y-2 text-sm text-slate-500 font-medium">
+
+              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
+              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
+              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
+              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
+              {loadingProgress >= 90 && <p className="font-bold text-[#0f766e]">Finalizando diagnóstico...</p>}
+
+            </div>
+
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
+
           </div>
         )}
 
-        {/* RESULTADO / VSL */}
         {(results || showVsl) && !loading && (
-          <div className="py-6 px-4">
+          <>
             {showVsl ? (
               <VslView
-                videoType={getSexo()}
                 onCheckout={() =>
                   window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
                 }
@@ -262,7 +220,7 @@ const App: React.FC = () => {
                 onCtaClick={() => setShowVsl(true)}
               />
             )}
-          </div>
+          </>
         )}
 
       </main>
