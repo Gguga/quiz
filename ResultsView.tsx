@@ -101,8 +101,7 @@ const ResultsView: React.FC<{
       {/* ESPELHO EMOCIONAL */}
       <div className="text-center max-w-md mx-auto">
         <p className="text-slate-900 font-semibold text-base leading-relaxed">
-          Seu problema não é falta de disciplina.  
-          É falta de uma estratégia adequada para essa fase.
+          Você não tem ainda uma estratégia adequada para essa fase.
         </p>
       </div>
 
@@ -110,7 +109,7 @@ const ResultsView: React.FC<{
       <div className="pt-6">
         <button
           onClick={onCtaClick}
-          className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-teal-900/40 uppercase"
+          className="w-full py-7 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-teal-900/40 uppercase"
         >
           Proteger meu emagrecimento
           
