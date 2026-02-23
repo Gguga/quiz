@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Question } from './types';
 
@@ -12,65 +11,91 @@ interface QuizStepProps {
   isLast: boolean;
 }
 
-const QuizStep: React.FC<QuizStepProps> = ({ question, selectedOption, onSelect, onNext, onBack, isFirst, isLast }) => {
-  const handleOptionClick = (value: string) => {
-    onSelect(value);
-    // Avanço rápido para manter a fluidez
-    setTimeout(() => {
-      onNext();
-    }, 180);
-  };
+const QuizStep: React.FC<QuizStepProps> = ({
+  question,
+  selectedOption,
+  onSelect,
+  onNext,
+  onBack,
+  isFirst
+}) => {
 
   return (
-    <div className="flex flex-col h-full justify-center animate-fadeIn px-4 py-2 gap-y-4">
-      {/* Título de Impacto - text-2xl ou 3xl */}
-      <div className="text-center shrink-0 px-2 space-y-3">
-        <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] leading-tight tracking-tight">
-          {question.text}
-        </h2>
-        <div className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
-          SELECIONE UMA OPÇÃO ABAIXO:
+    <div
+      key={question.id}
+      className="min-h-[88vh] w-full max-w-xl mx-auto px-6 flex flex-col"
+    >
+
+      {/* BLOCO PRINCIPAL */}
+      <div className="mt-24">
+
+        {/* PERGUNTA */}
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+            {question.text}
+          </h2>
+
+          <p className="text-slate-400 text-xs uppercase tracking-widest mt-4">
+            Selecione uma opção abaixo
+          </p>
         </div>
-      </div>
-      
-      {/* Opções com Legibilidade Elevada */}
-      <div className="flex flex-col space-y-3 w-full max-w-sm mx-auto flex-1 justify-center">
-        {question.options.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => handleOptionClick(option.value)}
-            className={`w-full flex flex-col items-center justify-center text-center py-4 px-5 rounded-[1.25rem] border-2 transition-all duration-150 active:scale-[0.97] ${
-              selectedOption === option.value
-                ? 'border-[#0f766e] bg-teal-50 text-slate-900 shadow-md ring-1 ring-[#0f766e]/20'
-                : 'border-slate-100 bg-white text-slate-700 shadow-sm'
-            }`}
-          >
-            <span className="font-extrabold text-lg md:text-xl leading-tight flex items-center justify-center">
+
+        {/* OPÇÕES */}
+        <div className="space-y-5">
+          {question.options.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => {
+                onSelect(option.value);
+                setTimeout(onNext, 180);
+              }}
+              className={`w-full py-5 rounded-2xl font-bold text-base transition-all duration-200 border
+                ${selectedOption === option.value
+                  ? 'bg-[#0f766e] text-white border-[#0f766e] shadow-md'
+                  : 'bg-white text-slate-800 border-slate-200 hover:border-[#0f766e] hover:shadow-sm'
+                }
+              `}
+            >
               {option.label}
-            </span>
-            {option.subLabel && (
-              <span className="text-sm font-medium opacity-60 mt-1.5 leading-snug max-w-[90%] mx-auto">
-                {option.subLabel}
-              </span>
-            )}
-          </button>
-        ))}
+            </button>
+          ))}
+        </div>
+
+        {/* VOLTAR */}
+        {!isFirst && (
+          <div className="mt-16 text-center">
+            <button
+              onClick={onBack}
+              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors"
+            >
+              ← Voltar pergunta
+            </button>
+          </div>
+        )}
+
       </div>
 
-      {/* Navegação Secundária Minimalista */}
-      <div className="mt-4 flex justify-center shrink-0 pb-4">
-        {!isFirst && (
-          <button 
-            onClick={onBack} 
-            className="text-slate-300 font-black text-[11px] uppercase tracking-[0.25em] px-6 py-3 opacity-60 active:opacity-100 transition-opacity"
-          >
-            ← Voltar Pergunta
-          </button>
-        )}
-      </div>
+      {/* ANIMAÇÃO SUAVE */}
+      <style>
+        {`
+          @keyframes fadeInSoft {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          div[key] {
+            animation: fadeInSoft 0.35s ease-out;
+          }
+        `}
+      </style>
+
     </div>
   );
 };
 
 export default QuizStep;
-
