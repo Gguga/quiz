@@ -23,27 +23,44 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const isQuestionStep =
-    currentStep >= 0 && currentStep < QUESTIONS.length;
+  // 🔹 NEWS entra após pergunta da caneta (index 3)
+  const NEWS_POSITION = 4;
 
-  const isNewsStep = currentStep === 2;
+  const isQuestionStep =
+    currentStep >= 0 &&
+    currentStep < QUESTIONS.length &&
+    currentStep !== NEWS_POSITION;
+
+  const isNewsStep = currentStep === NEWS_POSITION;
 
   const handleSelectOption = (value: string) => {
-    const questionId = QUESTIONS[currentStep].id;
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    const questionIndex =
+      currentStep > NEWS_POSITION
+        ? currentStep - 1
+        : currentStep;
+
+    const questionId = QUESTIONS[questionIndex].id;
+
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
   };
 
   const handleNext = () => {
-    if (currentStep < QUESTIONS.length - 1) {
+
+    if (currentStep === NEWS_POSITION - 1) {
+      setCurrentStep(NEWS_POSITION);
+      return;
+    }
+
+    if (currentStep < QUESTIONS.length) {
       setCurrentStep(prev => prev + 1);
     } else {
       startAnalysis();
     }
   };
 
-  // ---------------------------
-  // 🔥 CÁLCULO PERSONALIZADO
-  // ---------------------------
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -62,9 +79,9 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
-    // 🔹 RISCO CENTRAL
+    const fase = answers[4];
+
     let centralRisk = "";
-    const fase = answers[3];
 
     if (fase === "uso_atual_perda") {
       centralRisk = "Alto risco de dependência da medicação para manutenção do peso.";
@@ -78,7 +95,6 @@ const App: React.FC = () => {
       centralRisk = "Alto risco de dependência da medicação para manutenção do peso.";
     }
 
-    // 🔹 RISCO SECUNDÁRIO
     let secondaryRisk = "";
 
     if (
@@ -89,20 +105,16 @@ const App: React.FC = () => {
       secondaryRisk = "Ingestão proteica insuficiente para preservação muscular.";
     }
     else if (
-      answers[9] === "forca_caiu_muito" ||
-      answers[9] === "forca_caiu_pouco" ||
-      answers[9] === "forca_nao_treina"
+      answers[5] === "forca_caiu_muito" ||
+      answers[5] === "forca_caiu_pouco"
     ) {
       secondaryRisk = "Indícios de perda progressiva de massa muscular.";
     }
     else if (
-      answers[4] === "tempo_longo" ||
-      answers[4] === "tempo_eterno"
+      answers[3] === "tempo_longo" ||
+      answers[3] === "tempo_eterno"
     ) {
       secondaryRisk = "Sinais de adaptação metabólica crônica.";
-    }
-    else if (answers[6] === "agua_baixa") {
-      secondaryRisk = "Baixa sustentação comportamental para manutenção.";
     }
 
     return {
@@ -134,7 +146,8 @@ const App: React.FC = () => {
 
   const progress =
     currentStep >= 0
-      ? ((currentStep + 1) / QUESTIONS.length) * 100
+      ? ((currentStep >= NEWS_POSITION ? currentStep - 1 : currentStep) + 1) /
+        QUESTIONS.length * 100
       : 0;
 
   const getSexo = () => {
@@ -155,7 +168,7 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA COM GRÁFICO */}
+        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center p-6 text-center space-y-8 pt-20">
 
@@ -167,34 +180,6 @@ const App: React.FC = () => {
               Descubra seu risco de rebote após interromper a medicação.
             </p>
 
-            <div className="grid grid-cols-2 gap-6 w-full mt-2">
-
-              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
-                <div className="w-6 h-24 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-700"
-                    style={{ height: animateGraph ? '20%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-700">
-                  Baixo risco
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
-                <div className="w-6 h-24 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-700"
-                    style={{ height: animateGraph ? '80%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-700">
-                  Alto risco
-                </p>
-              </div>
-
-            </div>
-
             <button
               onClick={() => setCurrentStep(0)}
               className="w-full py-5 bg-[#0f766e] text-white rounded-xl font-black uppercase text-base mt-4"
@@ -205,48 +190,49 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* PERGUNTAS */}
-        {isQuestionStep && !loading && !results && !showVsl && currentStep !== 2 && (
-     <QuizStep
-  question={QUESTIONS[currentStep]}
-  selectedOption={answers[QUESTIONS[currentStep].id] || null}
-  onSelect={handleSelectOption}
-  onNext={handleNext}
-  onBack={() => setCurrentStep(prev => prev - 1)}
-  isFirst={currentStep === 0}
-  answers={answers}
-/>
+        {isQuestionStep && !loading && !results && !showVsl && (
+          <QuizStep
+            question={
+              QUESTIONS[
+                currentStep > NEWS_POSITION
+                  ? currentStep - 1
+                  : currentStep
+              ]
+            }
+            selectedOption={
+              answers[
+                QUESTIONS[
+                  currentStep > NEWS_POSITION
+                    ? currentStep - 1
+                    : currentStep
+                ].id
+              ] || null
+            }
+            onSelect={handleSelectOption}
+            onNext={handleNext}
+            onBack={() => setCurrentStep(prev => prev - 1)}
+            isFirst={currentStep === 0}
+            answers={answers}
+          />
         )}
 
-        {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
+            <NewsInterstitial onNext={() => setCurrentStep(prev => prev + 1)} />
           </div>
         )}
 
-        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Triagem Clínica em Andamento
             </h2>
-
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-
-            <div className="text-sm text-slate-600 space-y-2">
-              {loadingProgress > 20 && <p>✔ Histórico metabólico analisado</p>}
-              {loadingProgress > 40 && <p>✔ Fase da medicação identificada</p>}
-              {loadingProgress > 60 && <p>✔ Indicadores musculares avaliados</p>}
-              {loadingProgress > 80 && <p>✔ Classificação de risco estruturada</p>}
-            </div>
-
           </div>
         )}
 
