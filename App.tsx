@@ -47,6 +47,7 @@ const App: React.FC = () => {
     });
 
     let normalized = (totalWeight / maxWeight) * 100;
+
     if (normalized < 40) normalized = 42;
 
     let riskLevel = "Moderado";
@@ -70,6 +71,7 @@ const App: React.FC = () => {
     setTimeout(() => {
       setResults(result);
       setLoading(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 2200);
   };
 
@@ -105,10 +107,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-full bg-[#f5f6f7] flex flex-col font-sans overflow-hidden">
+    <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
+      {/* Barra progresso */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
-        <div className="absolute top-0 left-0 w-full h-[4px] bg-slate-200">
+        <div className="w-full h-[4px] bg-slate-200">
           <div
             className="bg-black h-full transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -116,11 +119,11 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col max-w-md mx-auto w-full justify-center">
+      <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* 🔥 CAPA ESTILO DA IMAGEM */}
+        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex-1 flex flex-col justify-center items-center p-6 text-center space-y-6">
+          <div className="flex flex-col items-center p-6 text-center space-y-6 pt-16">
 
             <div className="bg-teal-100 text-teal-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
               Avaliação Gratuita
@@ -137,25 +140,6 @@ const App: React.FC = () => {
             <p className="text-slate-600 text-base leading-relaxed">
               Descubra em <span className="font-bold">2 minutos</span> seu risco de rebote após interromper a medicação.
             </p>
-
-            {/* Comparativo Visual */}
-            <div className="grid grid-cols-2 gap-4 w-full mt-4">
-
-              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
-                <div className="w-6 h-20 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div className="absolute bottom-0 w-full h-4 bg-green-500 rounded-full"></div>
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-700">Baixo risco</p>
-              </div>
-
-              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
-                <div className="w-6 h-20 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div className="absolute bottom-0 w-full h-16 bg-red-500 rounded-full"></div>
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-700">Alto risco</p>
-              </div>
-
-            </div>
 
             <button
               onClick={() => setCurrentStep(0)}
@@ -180,16 +164,16 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* NEWS */}
+        {/* NEWS COM SCROLL FUNCIONANDO */}
         {isNewsStep && !loading && !results && !showVsl && (
-          <div className="flex-1 overflow-y-auto py-4 px-2">
+          <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
         {/* LOADING */}
         {loading && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+          <div className="flex flex-col items-center justify-center text-center p-6 pt-24">
             <h2 className="text-xl font-bold text-teal-700">
               {Math.round(loadingProgress)}%
             </h2>
@@ -207,7 +191,7 @@ const App: React.FC = () => {
 
         {/* RESULTADO / VSL */}
         {(results || showVsl) && !loading && (
-          <div className="flex-1 overflow-y-auto">
+          <div className="py-6 px-4">
             {showVsl ? (
               <VslView
                 videoType={getSexo()}
