@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
+  // 🔹 Delay gráfico 0.5s
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
@@ -26,6 +27,7 @@ const App: React.FC = () => {
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
+  // 🔹 NEWS após pergunta 4 (id 4)
   const isNewsStep = currentStep === 4;
 
   const handleSelectOption = (value: string) => {
@@ -41,7 +43,7 @@ const App: React.FC = () => {
     }
   };
 
-  // 🔥 CÁLCULO PERSONALIZADO
+  // 🔥 CÁLCULO SCORE
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -60,8 +62,8 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
-    // 🔴 RISCO CENTRAL
     const fase = answers[4];
+
     let centralRisk = "";
 
     if (fase === "uso_atual_perda") {
@@ -76,80 +78,15 @@ const App: React.FC = () => {
       centralRisk = "Risco elevado de dependência da medicação para manter o peso.";
     }
 
-    // 🔥 FATORES ESPELHADOS
-    const riskFactors: string[] = [];
-
-    // Proteína
-    if (answers[8] === "proteina_0_1") {
-      riskFactors.push(
-        "Você relatou consumir proteína em poucas refeições, o que aumenta o risco de perda muscular durante e após o uso da medicação."
-      );
-    }
-
-    if (answers[9] === "proteina_nunca" || answers[9] === "proteina_feeling") {
-      riskFactors.push(
-        "Você informou que não calcula sua ingestão proteica, o que pode comprometer a preservação da massa magra."
-      );
-    }
-
-    // Força
-    if (answers[10] === "forca_caiu_muito") {
-      riskFactors.push(
-        "Você percebeu queda significativa de força, sinal clássico de perda muscular progressiva."
-      );
-    }
-
-    if (answers[10] === "forca_nao_treina") {
-      riskFactors.push(
-        "A ausência de treino de força reduz a proteção contra perda muscular e aumenta o risco de rebote."
-      );
-    }
-
-    // Histórico
-    if (answers[3] === "tempo_longo" || answers[3] === "tempo_eterno") {
-      riskFactors.push(
-        "Seu histórico prolongado de tentativas indica maior propensão à adaptação metabólica."
-      );
-    }
-
-    // Colaterais
-    if (answers[11] === "colaterais_intensos") {
-      riskFactors.push(
-        "Os colaterais relatados sugerem possível déficit nutricional durante o processo."
-      );
-    }
-
-    if (answers[11] === "colaterais_moderados") {
-      riskFactors.push(
-        "Os sinais físicos relatados indicam que seu corpo pode estar sob estresse metabólico."
-      );
-    }
-
-    // 🔥 GARANTIR SEMPRE 2
-    if (riskFactors.length === 0) {
-      riskFactors.push(
-        "Mesmo com respostas equilibradas, existe risco silencioso de perda muscular durante o processo."
-      );
-      riskFactors.push(
-        "Sem uma estratégia adequada, a dependência da medicação pode se manter."
-      );
-    }
-
-    if (riskFactors.length === 1) {
-      riskFactors.push(
-        "A fase atual do seu processo exige uma estratégia específica para consolidar o resultado."
-      );
-    }
-
     return {
       score,
       riskLevel: score >= 75 ? "Crítico" : score >= 60 ? "Alto" : "Moderado",
       personalizedMessage: centralRisk,
-      keyInsights: riskFactors.slice(0, 2)
+      keyInsights: [] // fatores são gerados no ResultsView
     };
   };
 
-  // 🔥 LOADING REALISTA
+  // 🔥 LOADING DESACELERADO REALISTA
   const startAnalysis = () => {
     setLoading(true);
     setLoadingProgress(0);
@@ -188,16 +125,30 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
+
+      {/* PROGRESS BAR */}
+      {currentStep >= 0 && !loading && !results && !showVsl && (
+        <div className="w-full h-[4px] bg-slate-200">
+          <div
+            className="bg-[#0f766e] h-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
+
       <main className="flex-1 w-full max-w-md mx-auto">
 
+        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
+
             <h1 className="text-3xl font-black text-[#0f766e]">
               Diagnóstico Metabólico
             </h1>
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
+              {/* Baixo risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
@@ -213,6 +164,7 @@ const App: React.FC = () => {
                 </p>
               </div>
 
+              {/* Alto risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
@@ -232,7 +184,7 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6"
+              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-lg"
             >
               Começar Avaliação Gratuita
             </button>
@@ -240,20 +192,52 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {/* PERGUNTAS */}
+        {isQuestionStep && !loading && !results && !showVsl && !isNewsStep && (
+          <QuizStep
+            question={QUESTIONS[currentStep]}
+            selectedOption={answers[QUESTIONS[currentStep].id] || null}
+            onSelect={handleSelectOption}
+            onNext={handleNext}
+            onBack={() => setCurrentStep(prev => prev - 1)}
+            isFirst={currentStep === 0}
+            answers={answers}
+          />
+        )}
+
+        {/* NEWS */}
+        {isNewsStep && !loading && !results && !showVsl && (
+          <div className="py-6 px-4">
+            <NewsInterstitial onNext={handleNext} />
+          </div>
+        )}
+
+        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Triagem Clínica em Andamento
             </h2>
+
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
+
+            <div className="text-sm text-slate-600 space-y-2">
+              {loadingProgress > 20 && <p>✔ Histórico analisado</p>}
+              {loadingProgress > 45 && <p>✔ Fase da medicação identificada</p>}
+              {loadingProgress > 70 && <p>✔ Indicadores musculares avaliados</p>}
+              {loadingProgress > 90 && <p>✔ Classificação final estruturada</p>}
+            </div>
+
           </div>
         )}
 
+        {/* RESULTADO OU VSL */}
         {(results || showVsl) && !loading && (
           <div className="py-6 px-4">
             {showVsl ? (
@@ -266,6 +250,7 @@ const App: React.FC = () => {
             ) : (
               <ResultsView
                 results={results!}
+                answers={answers}
                 onCtaClick={() => setShowVsl(true)}
               />
             )}
