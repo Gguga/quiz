@@ -15,6 +15,17 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
 
+  // 🔥 animação do gráfico
+  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateGraph(true);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
@@ -46,8 +57,6 @@ const App: React.FC = () => {
     });
 
     let normalized = (totalWeight / maxWeight) * 100;
-
-    // Score mínimo estratégico
     if (normalized < 40) normalized = 42;
 
     let riskLevel = "Moderado";
@@ -103,7 +112,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {/* Barra de progresso */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
         <div className="w-full h-[4px] bg-slate-200">
           <div
@@ -117,7 +125,7 @@ const App: React.FC = () => {
 
         {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center p-6 text-center space-y-6 pt-20">
+          <div className="flex flex-col items-center p-6 text-center space-y-8 pt-20">
 
             <div className="bg-teal-100 text-teal-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
               Avaliação Gratuita
@@ -134,6 +142,41 @@ const App: React.FC = () => {
             <p className="text-slate-600 text-base leading-relaxed">
               Descubra em <span className="font-bold">2 minutos</span> seu risco de rebote após interromper a medicação.
             </p>
+
+            {/* 🔥 GRÁFICO */}
+            <div className="grid grid-cols-2 gap-6 w-full mt-2">
+
+              {/* BAIXO RISCO */}
+              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+                <div className="w-6 h-24 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-700"
+                    style={{
+                      height: animateGraph ? '20%' : '0%'
+                    }}
+                  />
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-700">
+                  Baixo risco
+                </p>
+              </div>
+
+              {/* ALTO RISCO */}
+              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+                <div className="w-6 h-24 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-700"
+                    style={{
+                      height: animateGraph ? '80%' : '0%'
+                    }}
+                  />
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-700">
+                  Alto risco
+                </p>
+              </div>
+
+            </div>
 
             <button
               onClick={() => setCurrentStep(0)}
@@ -165,55 +208,12 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* LOADING CLÍNICO */}
+        {/* LOADING */}
         {loading && (
-          <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-10">
-
-            <div className="space-y-3">
-              <h2 className="text-xl font-black text-[#0f766e] uppercase tracking-wide">
-                Triagem Clínica em Andamento
-              </h2>
-              <p className="text-slate-500 text-sm max-w-xs">
-                Seu perfil está sendo analisado com base nos critérios de consolidação metabólica.
-              </p>
-            </div>
-
-            <div className="w-full max-w-xs space-y-3 text-left text-sm">
-
-              {loadingProgress > 10 && (
-                <p className="text-slate-700">✔ Histórico de peso analisado</p>
-              )}
-
-              {loadingProgress > 30 && (
-                <p className="text-slate-700">✔ Fase da medicação identificada</p>
-              )}
-
-              {loadingProgress > 50 && (
-                <p className="text-slate-700">✔ Padrão de ingestão proteica avaliado</p>
-              )}
-
-              {loadingProgress > 70 && (
-                <p className="text-slate-700">✔ Indicadores de vulnerabilidade muscular estimados</p>
-              )}
-
-              {loadingProgress > 85 && (
-                <p className="text-slate-700">✔ Probabilidade de rebote calculada</p>
-              )}
-
-            </div>
-
-            <div className="w-full max-w-xs">
-              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                <div
-                  className="bg-[#0f766e] h-full transition-all duration-300"
-                  style={{ width: `${loadingProgress}%` }}
-                />
-              </div>
-              <p className="text-slate-400 text-xs mt-3 uppercase tracking-wider text-center">
-                Estruturando relatório personalizado...
-              </p>
-            </div>
-
+          <div className="flex flex-col items-center justify-center text-center p-6 pt-24">
+            <p className="text-slate-600 font-medium">
+              Estruturando relatório clínico...
+            </p>
           </div>
         )}
 
