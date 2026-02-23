@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // 🔹 Delay gráfico 0.5s
+  // 🔥 gráfico anima 0.5s após carregar
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
@@ -27,7 +27,7 @@ const App: React.FC = () => {
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
-  // 🔹 NEWS após pergunta 4 (id 4)
+  // NEWS entra após pergunta 4
   const isNewsStep = currentStep === 4;
 
   const handleSelectOption = (value: string) => {
@@ -43,7 +43,9 @@ const App: React.FC = () => {
     }
   };
 
-  // 🔥 CÁLCULO SCORE
+  // =========================
+  // 🔥 CÁLCULO PERSONALIZADO
+  // =========================
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -62,31 +64,17 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
-    const fase = answers[4];
-
-    let centralRisk = "";
-
-    if (fase === "uso_atual_perda") {
-      centralRisk = "Risco elevado de dependência da medicação para manter o peso.";
-    } else if (fase === "uso_atual_plato") {
-      centralRisk = "Indícios de adaptação metabólica durante o uso.";
-    } else if (fase === "uso_desmame") {
-      centralRisk = "Alto risco de rebote na fase de redução.";
-    } else if (fase === "uso_parou_rebote") {
-      centralRisk = "Reversão metabólica em curso após interrupção.";
-    } else {
-      centralRisk = "Risco elevado de dependência da medicação para manter o peso.";
-    }
-
     return {
       score,
       riskLevel: score >= 75 ? "Crítico" : score >= 60 ? "Alto" : "Moderado",
-      personalizedMessage: centralRisk,
-      keyInsights: [] // fatores são gerados no ResultsView
+      personalizedMessage: "",
+      keyInsights: []
     };
   };
 
-  // 🔥 LOADING DESACELERADO REALISTA
+  // =========================
+  // 🔥 LOADING REALISTA
+  // =========================
   const startAnalysis = () => {
     setLoading(true);
     setLoadingProgress(0);
@@ -126,11 +114,10 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {/* PROGRESS BAR */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
         <div className="w-full h-[4px] bg-slate-200">
           <div
-            className="bg-[#0f766e] h-full transition-all duration-300"
+            className="bg-black h-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -138,24 +125,28 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
+        {/* ===================== */}
+        {/* CAPA ORIGINAL RESTAURADA */}
+        {/* ===================== */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
-            <h1 className="text-3xl font-black text-[#0f766e]">
-              Diagnóstico Metabólico
+            <h1 className="text-3xl font-black text-[#0f766e] leading-tight">
+              TESTE GRATUITO
             </h1>
+
+            <p className="text-slate-600">
+              Descubra seu risco de rebote após interromper a medicação.
+            </p>
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
-              {/* Baixo risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
-                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[1900ms]"
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
                     style={{
-                      height: animateGraph ? '22%' : '0%',
-                      transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                      height: animateGraph ? '22%' : '0%'
                     }}
                   />
                 </div>
@@ -164,14 +155,12 @@ const App: React.FC = () => {
                 </p>
               </div>
 
-              {/* Alto risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[1900ms]"
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
                     style={{
-                      height: animateGraph ? '82%' : '0%',
-                      transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                      height: animateGraph ? '82%' : '0%'
                     }}
                   />
                 </div>
@@ -184,7 +173,7 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-lg"
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
             >
               Começar Avaliação Gratuita
             </button>
@@ -192,8 +181,10 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {/* ===================== */}
         {/* PERGUNTAS */}
-        {isQuestionStep && !loading && !results && !showVsl && !isNewsStep && (
+        {/* ===================== */}
+        {isQuestionStep && !loading && !results && !showVsl && currentStep !== 4 && (
           <QuizStep
             question={QUESTIONS[currentStep]}
             selectedOption={answers[QUESTIONS[currentStep].id] || null}
@@ -201,18 +192,21 @@ const App: React.FC = () => {
             onNext={handleNext}
             onBack={() => setCurrentStep(prev => prev - 1)}
             isFirst={currentStep === 0}
-            answers={answers}
           />
         )}
 
+        {/* ===================== */}
         {/* NEWS */}
+        {/* ===================== */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
+        {/* ===================== */}
         {/* LOADING */}
+        {/* ===================== */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
 
@@ -227,17 +221,12 @@ const App: React.FC = () => {
               />
             </div>
 
-            <div className="text-sm text-slate-600 space-y-2">
-              {loadingProgress > 20 && <p>✔ Histórico analisado</p>}
-              {loadingProgress > 45 && <p>✔ Fase da medicação identificada</p>}
-              {loadingProgress > 70 && <p>✔ Indicadores musculares avaliados</p>}
-              {loadingProgress > 90 && <p>✔ Classificação final estruturada</p>}
-            </div>
-
           </div>
         )}
 
-        {/* RESULTADO OU VSL */}
+        {/* ===================== */}
+        {/* RESULTADO + VSL */}
+        {/* ===================== */}
         {(results || showVsl) && !loading && (
           <div className="py-6 px-4">
             {showVsl ? (
