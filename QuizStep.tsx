@@ -8,7 +8,6 @@ interface QuizStepProps {
   onNext: () => void;
   onBack: () => void;
   isFirst: boolean;
-  answers: { [key: number]: string };
 }
 
 const QuizStep: React.FC<QuizStepProps> = ({
@@ -17,68 +16,58 @@ const QuizStep: React.FC<QuizStepProps> = ({
   onSelect,
   onNext,
   onBack,
-  isFirst,
-  answers
+  isFirst
 }) => {
 
-  // 🔹 Ajuste dinâmico de gênero para pergunta 11
-  const getDynamicText = () => {
-    if (question.id === 11) {
-      const sexo = answers[1];
-      if (sexo === "sexo_mulher") {
-        return question.text.replace("disposto(a)", "disposta");
-      }
-      if (sexo === "sexo_homem") {
-        return question.text.replace("disposto(a)", "disposto");
-      }
-    }
-    return question.text;
-  };
-
   return (
-    <div className="w-full max-w-xl mx-auto px-6 pt-24 pb-16 animate-fadeIn">
+    <div className="min-h-[88vh] w-full max-w-xl mx-auto px-6 flex flex-col animate-fadeIn">
 
-      {/* PERGUNTA */}
-      <div className="text-center mb-12">
-        <h2 className="text-2xl md:text-3xl font-black text-[#0f766e] leading-tight tracking-tight">
-          {getDynamicText()}
-        </h2>
-      </div>
+      <div className="mt-24">
 
-      {/* OPÇÕES */}
-      <div className="space-y-4">
-        {question.options.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => {
-              onSelect(option.value);
-              setTimeout(onNext, 200);
-            }}
-            className={`w-full py-5 rounded-2xl font-semibold text-base transition-all duration-200 border shadow-sm
-              ${
-                selectedOption === option.value
-                  ? 'bg-[#0f766e] text-white border-[#0f766e] shadow-lg'
-                  : 'bg-white text-slate-800 border-slate-200 hover:border-[#0f766e] hover:shadow-md'
-              }
-            `}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+            {question.text}
+          </h2>
 
-      {/* VOLTAR */}
-      {!isFirst && (
-        <div className="mt-14 text-center">
-          <button
-            onClick={onBack}
-            className="text-slate-400 text-sm uppercase tracking-widest hover:text-slate-600 transition-colors"
-          >
-            ← Voltar
-          </button>
+          <p className="text-slate-400 text-xs uppercase tracking-widest mt-4">
+            Selecione uma opção abaixo
+          </p>
         </div>
-      )}
 
+        <div className="space-y-5">
+          {question.options.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => {
+                onSelect(option.value);
+                setTimeout(() => {
+                  onNext();
+                }, 200);
+              }}
+              className={`w-full py-5 rounded-2xl font-bold text-base transition-all duration-200 border
+                ${selectedOption === option.value
+                  ? 'bg-[#0f766e] text-white border-[#0f766e] shadow-md'
+                  : 'bg-white text-slate-800 border-slate-200 hover:border-[#0f766e] hover:shadow-sm'
+                }
+              `}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {!isFirst && (
+          <div className="mt-16 text-center">
+            <button
+              onClick={onBack}
+              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors"
+            >
+              ← Voltar pergunta
+            </button>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 };
