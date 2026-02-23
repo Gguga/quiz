@@ -19,9 +19,15 @@ const App: React.FC = () => {
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimateGraph(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const timer = setTimeout(() => setAnimateGraph(true), 500);
+  return () => clearTimeout(timer);
+}, []);
+
+useEffect(() => {
+  if (currentStep >= 0) {
+    window.scrollTo(0, 0);
+  }
+}, [currentStep]);
 
   const getQuestionIndex = () => {
     if (currentStep > NEWS_POSITION) return currentStep - 1;
