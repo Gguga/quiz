@@ -12,16 +12,14 @@ const App: React.FC = () => {
   const [answers, setAnswers] = useState<UserAnswers>({});
   const [results, setResults] = useState<QuizResults | null>(null);
   const [showVsl, setShowVsl] = useState<boolean>(false);
-  const [showCommitment, setShowCommitment] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [loadingStatus, setLoadingStatus] = useState<string>("Processando dados metabólicos...");
+  const [loadingStatus, setLoadingStatus] = useState<string>("Analisando respostas...");
 
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
-  const isNewsStep = currentStep === 5; 
-  // após pergunta de efeito sanfona
+  const isNewsStep = currentStep === 5;
 
   const handleSelectOption = (value: string) => {
     const questionId = QUESTIONS[currentStep].id;
@@ -32,11 +30,10 @@ const App: React.FC = () => {
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      setShowCommitment(true);
+      startAnalysis();
     }
   };
 
-  // 🔥 SCORE CONTROLADO LOCALMENTE
   const calculateScore = (): QuizResults => {
     let totalWeight = 0;
     let maxWeight = 0;
@@ -50,8 +47,6 @@ const App: React.FC = () => {
     });
 
     let normalized = (totalWeight / maxWeight) * 100;
-
-    // 🔥 SCORE MÍNIMO ESTRATÉGICO
     if (normalized < 40) normalized = 42;
 
     let riskLevel = "Moderado";
@@ -67,7 +62,6 @@ const App: React.FC = () => {
   };
 
   const startAnalysis = () => {
-    setShowCommitment(false);
     setLoading(true);
     setLoadingProgress(0);
 
@@ -76,7 +70,7 @@ const App: React.FC = () => {
     setTimeout(() => {
       setResults(result);
       setLoading(false);
-    }, 2500);
+    }, 2200);
   };
 
   useEffect(() => {
@@ -94,8 +88,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (loadingProgress < 30) setLoadingStatus("Analisando padrão metabólico...");
-    else if (loadingProgress < 70) setLoadingStatus("Verificando risco de adaptação...");
-    else setLoadingStatus("Consolidando diagnóstico...");
+    else if (loadingProgress < 70) setLoadingStatus("Calculando risco de rebote...");
+    else setLoadingStatus("Finalizando diagnóstico...");
   }, [loadingProgress]);
 
   const progress =
@@ -111,39 +105,70 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-full bg-[#fdfbf7] flex flex-col font-sans overflow-hidden">
+    <div className="fixed inset-0 h-[100dvh] w-full bg-[#f5f6f7] flex flex-col font-sans overflow-hidden">
 
-      {currentStep >= 0 && !loading && !results && !showVsl && !showCommitment && (
-        <div className="absolute top-0 left-0 w-full h-[3px] z-50">
+      {currentStep >= 0 && !loading && !results && !showVsl && (
+        <div className="absolute top-0 left-0 w-full h-[4px] bg-slate-200">
           <div
-            className="bg-[#0f766e] h-full transition-all duration-300"
+            className="bg-black h-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
       )}
 
-      <main className="flex-1 flex flex-col pt-2 max-w-md mx-auto w-full relative h-full overflow-hidden justify-center">
+      <main className="flex-1 flex flex-col max-w-md mx-auto w-full justify-center">
 
-        {/* CAPA */}
-        {currentStep === -1 && !loading && !results && !showVsl && !showCommitment && (
-          <div className="flex-1 flex flex-col justify-center items-center p-6 text-center gap-6">
-            <h1 className="text-2xl font-black text-[#0f766e] uppercase">
-              Avaliação de Consolidação Pós-GLP-1
+        {/* 🔥 CAPA ESTILO DA IMAGEM */}
+        {currentStep === -1 && !loading && !results && !showVsl && (
+          <div className="flex-1 flex flex-col justify-center items-center p-6 text-center space-y-6">
+
+            <div className="bg-teal-100 text-teal-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+              Avaliação Gratuita
+            </div>
+
+            <h1 className="text-3xl font-black text-teal-700 leading-tight">
+              DIAGNÓSTICO METABÓLICO:
             </h1>
-            <p className="text-slate-600">
-              Descubra seu risco estrutural de rebote metabólico.
+
+            <h2 className="text-3xl font-black text-slate-900 leading-tight">
+              RISCO DE REBOTE
+            </h2>
+
+            <p className="text-slate-600 text-base leading-relaxed">
+              Descubra em <span className="font-bold">2 minutos</span> seu risco de rebote após interromper a medicação.
             </p>
+
+            {/* Comparativo Visual */}
+            <div className="grid grid-cols-2 gap-4 w-full mt-4">
+
+              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+                <div className="w-6 h-20 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div className="absolute bottom-0 w-full h-4 bg-green-500 rounded-full"></div>
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-700">Baixo risco</p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+                <div className="w-6 h-20 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div className="absolute bottom-0 w-full h-16 bg-red-500 rounded-full"></div>
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-700">Alto risco</p>
+              </div>
+
+            </div>
+
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-4 bg-[#0f766e] text-white rounded-xl font-bold uppercase"
+              className="w-full py-5 bg-[#0f766e] text-white rounded-xl font-black uppercase text-base mt-4"
             >
-              iniciar avaliação
+              Começar avaliação gratuita
             </button>
+
           </div>
         )}
 
         {/* PERGUNTAS */}
-        {isQuestionStep && !loading && !results && !showVsl && !showCommitment && currentStep !== 5 && (
+        {isQuestionStep && !loading && !results && !showVsl && currentStep !== 5 && (
           <QuizStep
             question={QUESTIONS[currentStep]}
             selectedOption={answers[QUESTIONS[currentStep].id] || null}
@@ -156,43 +181,25 @@ const App: React.FC = () => {
         )}
 
         {/* NEWS */}
-        {isNewsStep && !loading && !results && !showVsl && !showCommitment && (
+        {isNewsStep && !loading && !results && !showVsl && (
           <div className="flex-1 overflow-y-auto py-4 px-2">
             <NewsInterstitial onNext={handleNext} />
-          </div>
-        )}
-
-        {/* 🔥 MINI COMPROMISSO */}
-        {showCommitment && !loading && !results && (
-          <div className="flex-1 flex flex-col justify-center items-center p-6 text-center gap-6">
-            <h2 className="text-xl font-bold text-slate-900 leading-snug">
-              Deseja receber seu diagnóstico personalizado agora?
-            </h2>
-            <p className="text-slate-500 text-sm max-w-sm">
-              Seu perfil será analisado com base nas respostas fornecidas para identificar seu nível de vulnerabilidade metabólica.
-            </p>
-            <button
-              onClick={startAnalysis}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase"
-            >
-              gerar diagnóstico
-            </button>
           </div>
         )}
 
         {/* LOADING */}
         {loading && (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
-            <h2 className="text-xl font-bold text-[#0f766e]">
+            <h2 className="text-xl font-bold text-teal-700">
               {Math.round(loadingProgress)}%
             </h2>
-            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden mt-4">
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden mt-4">
               <div
-                className="bg-[#0f766e] h-full transition-all duration-300"
+                className="bg-teal-700 h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-            <p className="text-slate-400 mt-3 text-xs uppercase tracking-wider">
+            <p className="text-slate-500 mt-3 text-xs uppercase tracking-wider">
               {loadingStatus}
             </p>
           </div>
