@@ -207,15 +207,15 @@ const App: React.FC = () => {
 
         {/* PERGUNTAS */}
         {isQuestionStep && !loading && !results && !showVsl && currentStep !== 2 && (
-          <QuizStep
-            question={QUESTIONS[currentStep]}
-            selectedOption={answers[QUESTIONS[currentStep].id] || null}
-            onSelect={handleSelectOption}
-            onNext={handleNext}
-            onBack={() => setCurrentStep(prev => prev - 1)}
-            isFirst={currentStep === 0}
-            isLast={currentStep === QUESTIONS.length - 1}
-          />
+     <QuizStep
+  question={QUESTIONS[currentStep]}
+  selectedOption={answers[QUESTIONS[currentStep].id] || null}
+  onSelect={handleSelectOption}
+  onNext={handleNext}
+  onBack={() => setCurrentStep(prev => prev - 1)}
+  isFirst={currentStep === 0}
+  answers={answers}
+/>
         )}
 
         {/* NEWS */}
