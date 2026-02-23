@@ -7,51 +7,44 @@ const ResultsView: React.FC<{
   onCtaClick: () => void;
 }> = ({ results, answers, onCtaClick }) => {
 
-  const generateEmotionalMirror = () => {
-    const fase = answers[4];
+  const generateRiskFactors = () => {
+    const factors: string[] = [];
 
-    if (fase === "uso_atual_perda") {
-      return "Seu emagrecimento ainda depende da medicação.";
-    }
-
-    if (fase === "uso_atual_plato") {
-      return "Seu corpo já começou a se adaptar ao uso da medicação.";
-    }
-
-    if (fase === "uso_desmame") {
-      return "A fase de redução é onde a maioria perde o controle do peso.";
-    }
-
-    if (fase === "uso_parou_rebote") {
-      return "O reganho não é falta de disciplina. É fisiologia.";
-    }
-
-    return "Seu resultado ainda não está protegido.";
-  };
-
-  const generateBehaviorInsight = () => {
-
-    if (answers[3] === "tempo_eterno" || answers[3] === "tempo_longo") {
-      return "Seu histórico prolongado de tentativas aumenta a adaptação metabólica.";
-    }
-
+    // 🔹 Proteína baixa
     if (answers[8] === "proteina_0_1") {
-      return "Sua ingestão proteica atual não sustenta preservação muscular.";
+      factors.push("Ingestão proteica insuficiente para preservação muscular.");
     }
 
-    if (answers[10] === "forca_caiu_muito") {
-      return "A queda de força indica possível perda muscular em curso.";
+    if (answers[9] === "proteina_nunca" || answers[9] === "proteina_feeling") {
+      factors.push("Proteína não está estrategicamente calculada.");
     }
 
+    // 🔹 Força / treino
+    if (
+      answers[10] === "forca_caiu_muito" ||
+      answers[10] === "forca_nao_treina"
+    ) {
+      factors.push("Ausência de estímulo adequado para manutenção muscular.");
+    }
+
+    // 🔹 Histórico longo
+    if (
+      answers[3] === "tempo_longo" ||
+      answers[3] === "tempo_eterno"
+    ) {
+      factors.push("Histórico prolongado de tentativas aumenta adaptação metabólica.");
+    }
+
+    // 🔹 Sintomas
     if (answers[11] === "colaterais_frequentes") {
-      return "Seus sintomas indicam impacto metabólico relevante.";
+      factors.push("Sintomas indicam impacto metabólico relevante.");
     }
 
-    return null;
+    // Limitar a 3
+    return factors.slice(0, 3);
   };
 
-  const emotionalMirror = generateEmotionalMirror();
-  const behaviorInsight = generateBehaviorInsight();
+  const riskFactors = generateRiskFactors();
 
   return (
     <div className="w-full max-w-xl mx-auto px-6 pb-24 pt-16 space-y-12 animate-fadeIn">
@@ -63,7 +56,6 @@ const ResultsView: React.FC<{
           Diagnóstico Concluído
         </div>
 
-        {/* 🔴 PERCENTUAL EM VERMELHO */}
         <div className="flex flex-col items-center">
           <h2 className="text-7xl font-black text-red-600 tracking-tighter">
             {results.score}%
@@ -75,42 +67,42 @@ const ResultsView: React.FC<{
 
       </div>
 
-      {/* FRASE CENTRAL DRAMÁTICA */}
-      <div className="text-center space-y-4">
+      {/* FRASE CENTRAL */}
+      <div className="text-center">
         <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug max-w-md mx-auto">
           Risco elevado de dependência da medicação para manter o peso.
         </h3>
       </div>
 
-      {/* CAIXA CLÍNICA */}
-      {results.keyInsights.length > 0 && (
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
-          <p className="text-amber-800 font-semibold text-sm leading-relaxed">
-            {results.keyInsights[0]}
+      {/* BULLETS PERSONALIZADOS */}
+      {riskFactors.length > 0 && (
+        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 space-y-3">
+          <p className="text-amber-900 font-bold text-sm uppercase tracking-wider">
+            Fatores que aumentam seu risco:
           </p>
+
+          <ul className="space-y-2">
+            {riskFactors.map((factor, index) => (
+              <li key={index} className="text-amber-800 text-sm font-medium leading-relaxed">
+                • {factor}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
-      {/* INSIGHT ESPECÍFICO */}
-      {behaviorInsight && (
-        <div className="text-center max-w-md mx-auto">
-          <p className="text-slate-700 font-medium text-base leading-relaxed">
-            {behaviorInsight}
-          </p>
-        </div>
-      )}
-
-      {/* ESPELHO EMOCIONAL */}
+      {/* CONSEQUÊNCIA CLÍNICA */}
       <div className="text-center max-w-md mx-auto">
-        <p className="text-slate-800 font-medium text-base leading-relaxed">
-          {emotionalMirror}
+        <p className="text-slate-700 font-medium text-base leading-relaxed">
+          Esse padrão aumenta a adaptação metabólica e reduz sua capacidade de manter o peso sem apoio da medicação.
         </p>
       </div>
 
-      {/* PONTE */}
+      {/* ESPELHO EMOCIONAL */}
       <div className="text-center max-w-md mx-auto">
-        <p className="text-slate-600 text-sm leading-relaxed">
-          Existe uma forma de proteger seu resultado durante e após o uso da medicação.
+        <p className="text-slate-900 font-semibold text-base leading-relaxed">
+          Seu problema não é falta de disciplina.  
+          É falta de uma estratégia adequada para essa fase.
         </p>
       </div>
 
