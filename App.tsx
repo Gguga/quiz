@@ -18,18 +18,16 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // Anima gráfico da capa
+  // anima gráfico da capa
   useEffect(() => {
     const timer = setTimeout(() => setAnimateGraph(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Scroll automático ao mudar pergunta
+  // 🔥 SCROLL 100% GARANTIDO EM TODAS AS TELAS
   useEffect(() => {
-    if (currentStep >= 0) {
-      window.scrollTo(0, 0);
-    }
-  }, [currentStep]);
+    window.scrollTo(0, 0);
+  }, [currentStep, results, showVsl, loading]);
 
   const getQuestionIndex = () => {
     if (currentStep > NEWS_POSITION) return currentStep - 1;
@@ -59,10 +57,6 @@ const App: React.FC = () => {
 
     setCurrentStep(prev => prev + 1);
   };
-
-  // =============================
-  // SCORE POR GATILHO
-  // =============================
 
   const calculateScore = (): QuizResults => {
 
@@ -114,10 +108,6 @@ const App: React.FC = () => {
       keyInsights: []
     };
   };
-
-  // =============================
-  // LOADING COM ETAPAS
-  // =============================
 
   const startAnalysis = () => {
 
@@ -220,7 +210,6 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* PERGUNTAS */}
         {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
             question={QUESTIONS[getQuestionIndex()]}
@@ -234,14 +223,12 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
-        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
 
@@ -271,7 +258,6 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* RESULTADO */}
         {results && !loading && !showVsl && (
           <ResultsView
             results={results}
@@ -280,7 +266,6 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* VSL */}
         {showVsl && !loading && (
           <VslView />
         )}
