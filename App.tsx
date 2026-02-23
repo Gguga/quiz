@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
 import QuizStep from './QuizStep';
 import ResultsView from './ResultsView';
-import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
 const NEWS_POSITION = 4;
@@ -13,7 +12,6 @@ const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(-1);
   const [answers, setAnswers] = useState<UserAnswers>({});
   const [results, setResults] = useState<QuizResults | null>(null);
-  const [showVsl, setShowVsl] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
 
@@ -47,63 +45,74 @@ const App: React.FC = () => {
   };
 
   // =========================
-  // SCORE COM FORÇADORES
+  // 🚨 SCORE BASEADO EM GATILHO
   // =========================
 
   const calculateScore = (): QuizResults => {
 
-    let totalWeight = 0;
-    let maxWeight = 0;
+    const criticalAnswers = [
+      "uso_parou_rebote",
+      "forca_nao_treina",
+      "forca_caiu_muito",
+      "proteina_0_1",
+      "proteina_nunca",
+      "dieta_feeling"
+    ];
 
-    QUESTIONS.forEach(q => {
-      const maxOptionWeight = Math.max(...q.options.map(o => o.weight));
-      maxWeight += maxOptionWeight;
+    const moderateAnswers = [
+      "uso_atual_plato",
+      "forca_irregular",
+      "proteina_2",
+      "dieta_reduzi",
+      "colateral_varios",
+      "tempo_longo",
+      "tempo_eterno"
+    ];
 
-      const selected = q.options.find(o => o.value === answers[q.id]);
-      if (selected) totalWeight += selected.weight;
+    let criticalCount = 0;
+    let moderateCount = 0;
+
+    Object.values(answers).forEach(value => {
+      if (criticalAnswers.includes(value)) {
+        criticalCount++;
+      } else if (moderateAnswers.includes(value)) {
+        moderateCount++;
+      }
     });
 
-    let normalized = (totalWeight / maxWeight) * 100;
+    let score = 0;
+    let riskLevel: "Baixo" | "Moderado" | "Alto" | "Crítico" = "Baixo";
 
-    const proteinaRefeicoes = answers[7];
-    const proteinaCalculo = answers[8];
-    const treino = answers[6];
-    const situacao = answers[4];
-    const dieta = answers[9];
-
-    if (
-      proteinaRefeicoes === "proteina_0_1" ||
-      proteinaCalculo === "proteina_nunca"
-    ) {
-      normalized = Math.max(normalized, 72);
+    if (criticalCount >= 2) {
+      score = 85;
+      riskLevel = "Crítico";
     }
 
-    if (treino === "forca_nao_treina") {
-      normalized = Math.max(normalized, 75);
+    else if (criticalCount === 1) {
+      score = 72;
+      riskLevel = "Alto";
     }
 
-    if (situacao === "uso_parou_rebote") {
-      normalized = Math.max(normalized, 80);
+    else if (moderateCount >= 1) {
+      score = 60;
+      riskLevel = "Moderado";
     }
 
-    if (dieta === "dieta_feeling") {
-      normalized = Math.max(normalized, 70);
+    else {
+      score = 48;
+      riskLevel = "Baixo";
     }
-
-    if (normalized < 48) normalized = 48;
-
-    const score = Math.round(normalized);
 
     return {
       score,
-      riskLevel: score >= 75 ? "Crítico" : score >= 60 ? "Alto" : "Moderado",
+      riskLevel,
       personalizedMessage: "",
       keyInsights: []
     };
   };
 
   // =========================
-  // LOADING ESTRATÉGICO 5s
+  // LOADING 5s COM TRAVA 90%
   // =========================
 
   const startAnalysis = () => {
@@ -112,7 +121,6 @@ const App: React.FC = () => {
     setLoadingProgress(0);
 
     const result = calculateScore();
-
     let progressValue = 0;
 
     const interval = setInterval(() => {
@@ -147,7 +155,7 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {currentStep === -1 && !loading && !results && !showVsl && (
+        {currentStep === -1 && !loading && !results && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
             <h1 className="text-3xl font-black text-[#0f766e]">
               Risco de Rebote
@@ -161,7 +169,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {isQuestionStep && !loading && !results && !showVsl && (
+        {isQuestionStep && !loading && !results && (
           <QuizStep
             question={QUESTIONS[getQuestionIndex()]}
             selectedOption={
@@ -174,7 +182,7 @@ const App: React.FC = () => {
           />
         )}
 
-        {isNewsStep && !loading && !results && !showVsl && (
+        {isNewsStep && !loading && !results && (
           <NewsInterstitial onNext={handleNext} />
         )}
 
@@ -184,16 +192,6 @@ const App: React.FC = () => {
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando seu perfil metabólico
             </h2>
-
-            <div className="space-y-2 text-sm text-slate-500 font-medium">
-
-              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
-              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
-              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
-              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
-              {loadingProgress >= 90 && <p className="font-bold text-[#0f766e]">Finalizando diagnóstico...</p>}
-
-            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
@@ -205,22 +203,12 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {(results || showVsl) && !loading && (
-          <>
-            {showVsl ? (
-              <VslView
-                onCheckout={() =>
-                  window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
-                }
-              />
-            ) : (
-              <ResultsView
-                results={results!}
-                answers={answers}
-                onCtaClick={() => setShowVsl(true)}
-              />
-            )}
-          </>
+        {results && !loading && (
+          <ResultsView
+            results={results}
+            answers={answers}
+            onCtaClick={() => {}}
+          />
         )}
 
       </main>
