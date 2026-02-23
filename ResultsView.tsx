@@ -21,66 +21,106 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   const proteinaRef = answers[7];
   const proteinaCalc = answers[8];
   const dieta = answers[9];
+  const colateral = answers[10];
 
-  let perfil = "";
-  let descricao = "";
+  type Fator = {
+    peso: number;
+    texto: string;
+  };
 
-  // 🔴 REBOTE ESTRUTURAL
-  if (
-    situacao === "uso_parou_rebote" &&
-    (treino === "forca_nao_treina" || quedaForca === "forca_caiu_muito")
-  ) {
-    perfil = "Rebote Estrutural";
-    descricao =
-      "O peso já começou a voltar após a medicação.\n\n" +
-      "Ao mesmo tempo, houve queda de força ou falta de treino consistente.\n\n" +
-      "Isso indica que a base muscular enfraqueceu. Sem essa proteção, o metabolismo desacelera.\n\n" +
-      "Quando a estrutura não sustenta o emagrecimento, o corpo tende a recuperar o peso.";
+  const fatores: Fator[] = [];
+
+  // 🔴 Fatores Críticos
+
+  if (situacao === "uso_parou_rebote") {
+    fatores.push({
+      peso: 3,
+      texto: "O peso já começou a retornar após a interrupção da medicação."
+    });
   }
 
-  // 🟠 PLATÔ ADAPTATIVO
-  else if (
-    situacao === "uso_atual_plato" &&
-    (dieta === "dieta_feeling" || dieta === "dieta_reduzi")
-  ) {
-    perfil = "Platô Adaptativo";
-    descricao =
-      "Mesmo com a medicação ativa, o peso parou de responder.\n\n" +
-      "A alimentação está mais focada em reduzir quantidades do que em construir uma estratégia metabólica sólida.\n\n" +
-      "Com o tempo, o corpo se adapta. Ele aprende a funcionar com menos e passa a resistir à perda de peso.";
+  if (treino === "forca_nao_treina") {
+    fatores.push({
+      peso: 3,
+      texto: "Não há estímulo consistente de musculação para preservar massa muscular."
+    });
   }
 
-  // 🟡 VULNERABILIDADE MUSCULAR
-  else if (
-    (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") &&
-    (treino === "forca_irregular" || treino === "forca_nao_treina")
-  ) {
-    perfil = "Vulnerabilidade Muscular";
-    descricao =
-      "A ingestão de proteína está abaixo do ideal e o treino de força não é consistente.\n\n" +
-      "Isso compromete a preservação da massa muscular.\n\n" +
-      "Quando o músculo diminui, o gasto energético também cai. Um metabolismo mais lento facilita o retorno do peso.";
+  if (quedaForca === "forca_caiu_muito") {
+    fatores.push({
+      peso: 3,
+      texto: "Houve queda significativa de força durante o processo."
+    });
   }
 
-  // 🔵 CICLO METABÓLICO CRÔNICO
-  else if (
-    (tempo === "tempo_longo" || tempo === "tempo_eterno") &&
-    (idade === "idade_40_49" || idade === "idade_50_plus")
-  ) {
-    perfil = "Ciclo Metabólico Crônico";
-    descricao =
-      "Existe um histórico prolongado de tentativas de emagrecimento.\n\n" +
-      "Além disso, o metabolismo já não responde com a mesma facilidade de antes.\n\n" +
-      "Cada ciclo deixa adaptações acumuladas. Manter o peso agora exige mais estrutura do que no passado.";
+  if (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") {
+    fatores.push({
+      peso: 3,
+      texto: "A ingestão de proteína está abaixo do necessário para proteger a massa magra."
+    });
   }
 
-  // 🟣 TRANSIÇÃO VULNERÁVEL (fallback)
-  else {
-    perfil = "Estrutura Metabólica em Transição";
-    descricao =
-      "A estrutura alimentar e metabólica ainda não está totalmente consolidada.\n\n" +
-      "Sem uma estratégia clara de proteção muscular e metabólica, o risco de recuperação de peso aumenta após a retirada da medicação.";
+  if (dieta === "dieta_feeling") {
+    fatores.push({
+      peso: 2,
+      texto: "A alimentação está sendo ajustada sem uma estratégia metabólica estruturada."
+    });
   }
+
+  // 🟠 Moderados
+
+  if (situacao === "uso_atual_plato") {
+    fatores.push({
+      peso: 2,
+      texto: "O peso parou de responder mesmo com a medicação ativa."
+    });
+  }
+
+  if (treino === "forca_irregular") {
+    fatores.push({
+      peso: 2,
+      texto: "O treino de força não é feito de forma consistente."
+    });
+  }
+
+  if (proteinaRef === "proteina_2") {
+    fatores.push({
+      peso: 2,
+      texto: "A distribuição de proteína ao longo do dia ainda é limitada."
+    });
+  }
+
+  if (tempo === "tempo_longo" || tempo === "tempo_eterno") {
+    fatores.push({
+      peso: 1,
+      texto: "Existe um histórico prolongado de tentativas de emagrecimento."
+    });
+  }
+
+  if (idade === "idade_40_49" || idade === "idade_50_plus") {
+    fatores.push({
+      peso: 1,
+      texto: "O metabolismo já não responde com a mesma facilidade de anos anteriores."
+    });
+  }
+
+  if (colateral === "colateral_varios") {
+    fatores.push({
+      peso: 1,
+      texto: "Há sinais de instabilidade física durante o processo."
+    });
+  }
+
+  // Ordena por peso
+  fatores.sort((a, b) => b.peso - a.peso);
+
+  const principais = fatores.slice(0, 2);
+
+  const descricao = principais
+    .map(f => f.texto)
+    .join("\n\n") +
+    "\n\n" +
+    "Esse conjunto indica que o emagrecimento ainda não está sustentado por uma base metabólica sólida.";
 
   return (
     <div className="w-full max-w-xl mx-auto px-6 pb-20 pt-12 space-y-10 animate-fadeIn">
@@ -98,10 +138,6 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
           {results.riskLevel}
         </p>
-
-        <h3 className="text-xl font-black text-[#0f766e]">
-          {perfil}
-        </h3>
 
       </div>
 
