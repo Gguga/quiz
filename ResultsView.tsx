@@ -30,7 +30,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
   const fatores: Fator[] = [];
 
-  // 🔴 Fatores Críticos
+  // 🔴 CRÍTICOS
 
   if (situacao === "uso_parou_rebote") {
     fatores.push({
@@ -67,7 +67,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
     });
   }
 
-  // 🟠 Moderados
+  // 🟠 MODERADOS
 
   if (situacao === "uso_atual_plato") {
     fatores.push({
@@ -111,16 +111,27 @@ const ResultsView: React.FC<ResultsViewProps> = ({
     });
   }
 
-  // Ordena por peso
   fatores.sort((a, b) => b.peso - a.peso);
-
   const principais = fatores.slice(0, 2);
 
-  const descricao = principais
-    .map(f => f.texto)
-    .join("\n\n") +
+  const descricao =
+    principais.map(f => f.texto).join("\n\n") +
     "\n\n" +
     "Esse conjunto indica que o emagrecimento ainda não está sustentado por uma base metabólica sólida.";
+
+  // 🎨 COR DINÂMICA POR NÍVEL
+
+  let colorClass = "text-green-600";
+
+  if (results.riskLevel === "Crítico") {
+    colorClass = "text-red-700";
+  } else if (results.riskLevel === "Alto") {
+    colorClass = "text-red-600";
+  } else if (results.riskLevel === "Moderado") {
+    colorClass = "text-amber-600";
+  } else {
+    colorClass = "text-green-600";
+  }
 
   return (
     <div className="w-full max-w-xl mx-auto px-6 pb-20 pt-12 space-y-10 animate-fadeIn">
@@ -131,11 +142,11 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           Risco estimado de rebote
         </p>
 
-        <div className="text-7xl font-black text-slate-900">
+        <div className={`text-7xl font-black ${colorClass}`}>
           {results.score}%
         </div>
 
-        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
+        <p className={`text-sm font-bold uppercase tracking-wide ${colorClass}`}>
           {results.riskLevel}
         </p>
 
