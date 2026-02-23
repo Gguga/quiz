@@ -1,84 +1,141 @@
-
 import React from 'react';
-import { QuizResults } from './types';
+import { QuizResults, UserAnswers } from './types';
 
-const ResultsView: React.FC<{results: QuizResults, onCtaClick: () => void}> = ({ results, onCtaClick }) => {
-  const displayRisk = results.riskLevel === 'Crítico' ? 'Elevado' : results.riskLevel;
+const ResultsView: React.FC<{
+  results: QuizResults;
+  answers: UserAnswers;
+  onCtaClick: () => void;
+}> = ({ results, answers, onCtaClick }) => {
+
+  // 🔹 Insight específico baseado nas respostas
+  const generateBehaviorInsight = () => {
+
+    if (answers[8] === "proteina_0_1") {
+      return "Sua ingestão proteica atual não sustenta preservação muscular.";
+    }
+
+    if (answers[9] === "proteina_nunca" || answers[9] === "proteina_feeling") {
+      return "Sua proteína não está estrategicamente calculada.";
+    }
+
+    if (answers[10] === "forca_caiu_muito") {
+      return "Sua queda de força indica perda muscular ativa.";
+    }
+
+    if (answers[3] === "tempo_eterno" || answers[3] === "tempo_longo") {
+      return "Seu histórico prolongado de tentativas aumenta a adaptação metabólica.";
+    }
+
+    if (answers[11] === "colaterais_frequentes") {
+      return "Seus sintomas indicam impacto metabólico e nutricional relevante.";
+    }
+
+    return null;
+  };
+
+  const generateEmotionalMirror = () => {
+
+    const fase = answers[4];
+
+    if (fase === "uso_atual_perda") {
+      return "O resultado está acontecendo. Mas ainda depende da medicação.";
+    }
+
+    if (fase === "uso_atual_plato") {
+      return "O platô que você sente não é psicológico. É fisiológico.";
+    }
+
+    if (fase === "uso_desmame") {
+      return "A fase de redução é onde a maioria perde o controle do processo.";
+    }
+
+    if (fase === "uso_parou_rebote") {
+      return "O reganho não é falta de força. É ausência de estrutura estratégica.";
+    }
+
+    return "Seu resultado ainda não está consolidado.";
+  };
+
+  const behaviorInsight = generateBehaviorInsight();
+  const emotionalMirror = generateEmotionalMirror();
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-8 animate-fadeIn px-6 pb-20">
+    <div className="w-full max-w-xl mx-auto px-6 pb-24 pt-16 space-y-12 animate-fadeIn">
+
+      {/* HEADER */}
+      <div className="text-center space-y-6">
+
+        <div className="inline-block bg-teal-50 text-[#0f766e] px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest border border-teal-100">
+          Diagnóstico Concluído
+        </div>
+
+        <div className="flex flex-col items-center">
+          <h2 className="text-7xl font-black text-slate-900 tracking-tighter">
+            {results.score}%
+          </h2>
+          <p className="text-slate-500 font-semibold text-xs uppercase tracking-[0.25em] mt-3">
+            Risco de Rebote Identificado
+          </p>
+        </div>
+
+      </div>
+
+      {/* RISCO CENTRAL */}
       <div className="text-center space-y-4">
-        <div className="inline-block bg-teal-50 text-[#0f766e] px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-teal-100">
-          Triagem Concluída
-        </div>
-        <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight tracking-tight">
-          Análise de Risco e <br/><span className="text-[#0f766e]">Protocolo de Intervenção</span>
-        </h2>
+        <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug max-w-md mx-auto">
+          {results.personalizedMessage}
+        </h3>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
-        <div className="p-8 md:p-10 text-center space-y-8">
-          
-          <div className="space-y-4">
-            <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-              results.riskLevel === 'Alto' ? 'text-amber-700 bg-amber-50 border-amber-100' : 'text-teal-700 bg-teal-50 border-teal-100'
-            }`}>
-              Nível de Atenção: {displayRisk}
-            </span>
-            <div className="flex flex-col items-center justify-center">
-              <h3 className="text-7xl font-black text-slate-900 tracking-tighter">{results.score}%</h3>
-              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">
-                Probabilidade de Adaptação Metabólica
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-rose-50 p-5 rounded-2xl border border-rose-100">
-            <p className="text-rose-700 font-bold text-sm md:text-base leading-snug">
-              <span className="text-rose-800 font-black">ALERTA:</span> Risco alto de reganho, importante corrigir a estrutura alimentar agora.
-            </p>
-          </div>
-
-          <div className="text-left space-y-4">
-            <p className="text-slate-600 font-medium text-sm md:text-base leading-relaxed">
-              Você apresenta um perfil com <span className="font-bold text-slate-900">vulnerabilidade à perda de massa magra</span> e platô metabólico.
-            </p>
-            <p className="text-slate-600 font-medium text-sm md:text-base leading-relaxed">
-              Esse padrão indica que a retirada da medicação sem uma estratégia de transição resultará no efeito rebote.
-            </p>
-          </div>
-
-          <div className="py-4 border-t border-slate-100">
-             <p className="text-[#0f766e] font-black text-sm md:text-base leading-snug">
-               ✅ Perfil qualificado para o protocolo de blindagem metabólica.
-             </p>
-          </div>
+      {/* RISCO SECUNDÁRIO */}
+      {results.keyInsights.length > 0 && (
+        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
+          <p className="text-amber-800 font-semibold text-sm leading-relaxed">
+            {results.keyInsights[0]}
+          </p>
         </div>
+      )}
 
-        <div className="p-8 bg-slate-900 text-white text-center space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold leading-tight uppercase tracking-tight">
-              Acessar seu <span className="text-teal-400">Protocolo Anti-Rebote</span>
-            </h3>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-              Manual prático para proteger seu investimento e seu novo peso.
-            </p>
-          </div>
-          
-          <button
-            onClick={onCtaClick}
-            className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-teal-900/40 uppercase animate-pulse"
-          >
-            CONHECER O PROTOCOLO
-          </button>
+      {/* INSIGHT COMPORTAMENTAL */}
+      {behaviorInsight && (
+        <div className="text-center max-w-md mx-auto">
+          <p className="text-slate-700 font-medium text-base leading-relaxed">
+            {behaviorInsight}
+          </p>
         </div>
-      </div>
+      )}
 
-      <div className="px-4 text-center">
-        <p className="text-slate-400 font-medium text-[10px] leading-relaxed max-w-sm mx-auto uppercase tracking-tighter">
-          *Este material tem caráter informativo e não substitui consulta médica ou nutricional presencial.
+      {/* ESPELHO EMOCIONAL */}
+      <div className="text-center max-w-md mx-auto">
+        <p className="text-slate-700 font-medium text-base leading-relaxed">
+          {emotionalMirror}
         </p>
       </div>
+
+      {/* PONTE */}
+      <div className="text-center max-w-md mx-auto">
+        <p className="text-slate-600 text-sm leading-relaxed">
+          Existe uma forma de proteger seu resultado durante e após o uso da medicação.
+        </p>
+      </div>
+
+      {/* CTA */}
+      <div className="pt-6">
+        <button
+          onClick={onCtaClick}
+          className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-teal-900/40 uppercase"
+        >
+          Acessar Protocolo Anti-Rebote
+        </button>
+      </div>
+
+      {/* DISCLAIMER */}
+      <div className="text-center pt-4">
+        <p className="text-slate-400 font-medium text-[10px] leading-relaxed max-w-sm mx-auto uppercase tracking-tighter">
+          *Este diagnóstico tem caráter informativo e não substitui avaliação médica presencial.
+        </p>
+      </div>
+
     </div>
   );
 };
