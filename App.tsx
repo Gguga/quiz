@@ -16,42 +16,39 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimateGraph(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // =========================
   // 🧠 INDEX REAL DA PERGUNTA
   // =========================
 
-  const getQuestionIndex = () => {
+  const getQuestionIndex = (): number => {
+    if (currentStep < 0) return -1;
+
     if (currentStep < NEWS_STEP) return currentStep;
-    if (currentStep > NEWS_STEP) return currentStep - 1;
-    return -1;
+
+    if (currentStep === NEWS_STEP) return -1;
+
+    return currentStep - 1;
   };
+
+  const questionIndex = getQuestionIndex();
 
   const isCover = currentStep === -1;
   const isNews = currentStep === NEWS_STEP;
-  const questionIndex = getQuestionIndex();
 
   const isQuestion =
-    currentStep >= 0 &&
     questionIndex >= 0 &&
-    questionIndex < QUESTIONS.length &&
-    !isNews;
+    questionIndex < QUESTIONS.length;
 
   // =========================
   // 🟢 RESPOSTAS
   // =========================
 
   const handleSelectOption = (value: string) => {
-    const qIndex = getQuestionIndex();
-    const questionId = QUESTIONS[qIndex].id;
+
+    if (!isQuestion) return;
+
+    const questionId = QUESTIONS[questionIndex].id;
 
     setAnswers(prev => ({
       ...prev,
@@ -61,13 +58,23 @@ const App: React.FC = () => {
 
   const handleNext = () => {
 
+    // Bloqueia avanço se pergunta não respondida
+    if (isQuestion) {
+      const questionId = QUESTIONS[questionIndex].id;
+      if (!answers[questionId]) return;
+    }
+
     // Última pergunta real
-    if (questionIndex === QUESTIONS.length - 1) {
+    if (isQuestion && questionIndex === QUESTIONS.length - 1) {
       startAnalysis();
       return;
     }
 
     setCurrentStep(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    setCurrentStep(prev => Math.max(-1, prev - 1));
   };
 
   // =========================
@@ -80,6 +87,9 @@ const App: React.FC = () => {
     let maxWeight = 0;
 
     QUESTIONS.forEach(q => {
+
+      if (!q.options || q.options.length === 0) return;
+
       const maxOptionWeight = Math.max(...q.options.map(o => o.weight));
       maxWeight += maxOptionWeight;
 
@@ -87,11 +97,15 @@ const App: React.FC = () => {
       if (selected) totalWeight += selected.weight;
     });
 
-    let normalized = (totalWeight / maxWeight) * 100;
-    if (normalized < 45) normalized = 48;
+    const normalized =
+      maxWeight > 0
+        ? (totalWeight / maxWeight) * 100
+        : 0;
+
+    const finalScore = normalized < 45 ? 48 : normalized;
 
     return {
-      score: Math.round(normalized),
+      score: Math.round(finalScore),
       riskLevel: "Alto",
       personalizedMessage: "",
       keyInsights: []
@@ -129,8 +143,19 @@ const App: React.FC = () => {
     }, 120);
   };
 
-  const getSexo = () => {
-    return answers[1] === "sexo_homem" ? "masculina" : "feminina";
+  // =========================
+  // 👤 SEXO (seguro)
+  // =========================
+
+  const getSexo = (): string => {
+
+    const sexoAnswer = answers["sexo"]; // use o ID real da sua pergunta
+
+    if (!sexoAnswer) return "feminina";
+
+    return sexoAnswer === "sexo_homem"
+      ? "masculina"
+      : "feminina";
   };
 
   // =========================
@@ -183,14 +208,16 @@ const App: React.FC = () => {
             }
             onSelect={handleSelectOption}
             onNext={handleNext}
-            onBack={() => setCurrentStep(prev => prev - 1)}
+            onBack={handleBack}
             isFirst={questionIndex === 0}
           />
         )}
 
         {/* NEWS */}
         {isNews && !loading && !results && (
-          <NewsInterstitial onNext={() => setCurrentStep(prev => prev + 1)} />
+          <NewsInterstitial
+            onNext={() => setCurrentStep(prev => prev + 1)}
+          />
         )}
 
         {/* LOADING */}
