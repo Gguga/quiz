@@ -16,23 +16,18 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
+  // 🔥 Delay 0.5s para gráfico
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
-    }, 1500);
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
-  const isNewsStep = currentStep === 3; 
-  // ordem nova:
-  // 0 sexo
-  // 1 idade
-  // 2 tempo tentando
-  // 3 situação caneta
-  // 4 NEWS
+  const isNewsStep = currentStep === 4;
 
   const handleSelectOption = (value: string) => {
     const questionId = QUESTIONS[currentStep].id;
@@ -68,12 +63,12 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
-    // 🔹 RISCO CENTRAL (fase agora é id 4)
-    let centralRisk = "";
     const fase = answers[4];
 
+    let centralRisk = "";
+
     if (fase === "uso_atual_perda") {
-      centralRisk = "Alto risco de dependência da medicação para manter o peso.";
+      centralRisk = "Risco elevado de dependência da medicação para manter o peso.";
     } else if (fase === "uso_atual_plato") {
       centralRisk = "Indícios de adaptação metabólica durante o uso.";
     } else if (fase === "uso_desmame") {
@@ -81,10 +76,9 @@ const App: React.FC = () => {
     } else if (fase === "uso_parou_rebote") {
       centralRisk = "Reversão metabólica em curso após interrupção.";
     } else {
-      centralRisk = "Risco elevado de manutenção dependente da medicação.";
+      centralRisk = "Risco elevado de dependência da medicação para manter o peso.";
     }
 
-    // 🔹 RISCO SECUNDÁRIO
     let secondaryRisk = "";
 
     if (
@@ -96,7 +90,6 @@ const App: React.FC = () => {
     }
     else if (
       answers[10] === "forca_caiu_muito" ||
-      answers[10] === "forca_caiu_pouco" ||
       answers[10] === "forca_nao_treina"
     ) {
       secondaryRisk = "Indícios de perda progressiva de massa muscular.";
@@ -116,6 +109,9 @@ const App: React.FC = () => {
     };
   };
 
+  // ---------------------------
+  // 🔥 LOADING PREMIUM REALISTA
+  // ---------------------------
   const startAnalysis = () => {
     setLoading(true);
     setLoadingProgress(0);
@@ -124,15 +120,29 @@ const App: React.FC = () => {
 
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
+
+        // Fase 1: rápido até 60%
+        if (prev < 60) return prev + 3;
+
+        // Fase 2: desacelera até 85%
+        if (prev < 85) return prev + 1.5;
+
+        // Fase 3: quase travado até 95%
+        if (prev < 95) return prev + 0.5;
+
+        // Finalização
         if (prev >= 100) {
           clearInterval(interval);
-          setResults(result);
-          setLoading(false);
+          setTimeout(() => {
+            setResults(result);
+            setLoading(false);
+          }, 400);
           return 100;
         }
-        return prev + 4;
+
+        return prev + 1;
       });
-    }, 120);
+    }, 140);
   };
 
   const progress =
@@ -158,7 +168,7 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA REFINADA */}
+        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
@@ -181,8 +191,11 @@ const App: React.FC = () => {
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
-                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-700"
-                    style={{ height: animateGraph ? '20%' : '0%' }}
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[1900ms]"
+                    style={{
+                      height: animateGraph ? '22%' : '0%',
+                      transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                    }}
                   />
                 </div>
                 <p className="mt-4 text-sm font-semibold text-slate-700">
@@ -193,8 +206,11 @@ const App: React.FC = () => {
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-700"
-                    style={{ height: animateGraph ? '80%' : '0%' }}
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[1900ms]"
+                    style={{
+                      height: animateGraph ? '82%' : '0%',
+                      transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                    }}
                   />
                 </div>
                 <p className="mt-4 text-sm font-semibold text-slate-700">
@@ -251,9 +267,9 @@ const App: React.FC = () => {
 
             <div className="text-sm text-slate-600 space-y-2">
               {loadingProgress > 20 && <p>✔ Histórico analisado</p>}
-              {loadingProgress > 40 && <p>✔ Fase da medicação identificada</p>}
-              {loadingProgress > 60 && <p>✔ Indicadores musculares avaliados</p>}
-              {loadingProgress > 80 && <p>✔ Classificação estruturada</p>}
+              {loadingProgress > 45 && <p>✔ Fase da medicação identificada</p>}
+              {loadingProgress > 70 && <p>✔ Indicadores musculares avaliados</p>}
+              {loadingProgress > 90 && <p>✔ Classificação final estruturada</p>}
             </div>
 
           </div>
