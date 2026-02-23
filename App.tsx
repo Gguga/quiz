@@ -19,9 +19,7 @@ const App: React.FC = () => {
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimateGraph(true);
-    }, 500);
+    const timer = setTimeout(() => setAnimateGraph(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -54,9 +52,9 @@ const App: React.FC = () => {
     setCurrentStep(prev => prev + 1);
   };
 
-  // =========================
-  // SCORE POR GATILHO
-  // =========================
+  // =============================
+  // SCORE POR GATILHO REAL
+  // =============================
 
   const calculateScore = (): QuizResults => {
 
@@ -88,18 +86,16 @@ const App: React.FC = () => {
     });
 
     let score = 48;
-    let riskLevel: "Baixo" | "Moderado" | "Alto" | "Crítico" = "Baixo";
+    let riskLevel: "Moderado" | "Alto" | "Crítico" = "Moderado";
 
     if (criticalCount >= 2) {
-      score = 85;
+      score = 88;
       riskLevel = "Crítico";
-    }
-    else if (criticalCount === 1) {
-      score = 72;
+    } else if (criticalCount === 1) {
+      score = 75;
       riskLevel = "Alto";
-    }
-    else if (moderateCount >= 1) {
-      score = 60;
+    } else if (moderateCount >= 2) {
+      score = 65;
       riskLevel = "Moderado";
     }
 
@@ -111,9 +107,9 @@ const App: React.FC = () => {
     };
   };
 
-  // =========================
-  // LOADING
-  // =========================
+  // =============================
+  // LOADING 5 SEGUNDOS COM TRAVA
+  // =============================
 
   const startAnalysis = () => {
 
@@ -121,41 +117,43 @@ const App: React.FC = () => {
     setLoadingProgress(0);
 
     const result = calculateScore();
-    let progressValue = 0;
+
+    let progress = 0;
 
     const interval = setInterval(() => {
 
-      progressValue += 2;
-
-      if (progressValue >= 90) {
-        progressValue = 90;
-        setLoadingProgress(90);
+      if (progress < 90) {
+        progress += 3;
+        setLoadingProgress(progress);
+      } else {
         clearInterval(interval);
 
         setTimeout(() => {
           setLoadingProgress(100);
-
-          setTimeout(() => {
-            setResults(result);
-            setLoading(false);
-          }, 500);
-
-        }, 2000);
-
-        return;
+          setResults(result);
+          setLoading(false);
+        }, 1200);
       }
 
-      setLoadingProgress(progressValue);
-
-    }, 100);
+    }, 150);
   };
 
-  // =========================
-  // RENDER
-  // =========================
+  const progressBar =
+    currentStep >= 0
+      ? ((currentStep + 1) / (QUESTIONS.length + 1)) * 100
+      : 0;
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
+
+      {currentStep >= 0 && !loading && !results && !showVsl && (
+        <div className="w-full h-[4px] bg-slate-200">
+          <div
+            className="bg-black h-full transition-all duration-300"
+            style={{ width: `${progressBar}%` }}
+          />
+        </div>
+      )}
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
@@ -179,6 +177,7 @@ const App: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
+              {/* Baixo risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
@@ -191,11 +190,14 @@ const App: React.FC = () => {
                 </p>
               </div>
 
+              {/* Alto risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div
-                  className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
-                  style={{ height: animateGraph ? '82%' : '0%' }}
-                />
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '82%' : '0%' }}
+                  />
+                </div>
                 <p className="mt-4 text-sm font-semibold text-slate-700">
                   Alto risco
                 </p>
@@ -209,6 +211,10 @@ const App: React.FC = () => {
             >
               Começar Avaliação Gratuita
             </button>
+
+            <p className="text-xs text-slate-400 pt-6">
+              ©️ 2026 Protocolo Anti-Rebote
+            </p>
 
           </div>
         )}
@@ -229,16 +235,17 @@ const App: React.FC = () => {
 
         {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
-          <NewsInterstitial onNext={handleNext} />
+          <div className="py-6 px-4">
+            <NewsInterstitial onNext={handleNext} />
+          </div>
         )}
 
         {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
-              Analisando seu perfil metabólico
+              Analisando Estrutura Metabólica
             </h2>
-
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
@@ -258,8 +265,12 @@ const App: React.FC = () => {
         )}
 
         {/* VSL */}
-        {showVsl && (
-          <VslView />
+        {showVsl && !loading && (
+          <VslView
+            onCheckout={() =>
+              window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
+            }
+          />
         )}
 
       </main>
