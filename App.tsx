@@ -6,6 +6,8 @@ import ResultsView from './ResultsView';
 import VslView from './components/VslView';
 import NewsInterstitial from './components/NewsInterstitial';
 
+const NEWS_STEP = 4; // após pergunta 4 (index 3)
+
 const App: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState<number>(-1);
@@ -23,42 +25,54 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const TOTAL_STEPS = QUESTIONS.length + 1; // +1 para news
+  // =========================
+  // 🧠 INDEX REAL DA PERGUNTA
+  // =========================
+
+  const getQuestionIndex = () => {
+    if (currentStep < NEWS_STEP) return currentStep;
+    if (currentStep > NEWS_STEP) return currentStep - 1;
+    return -1;
+  };
 
   const isCover = currentStep === -1;
-  const isNews = currentStep === 4;
+  const isNews = currentStep === NEWS_STEP;
+  const questionIndex = getQuestionIndex();
+
   const isQuestion =
     currentStep >= 0 &&
-    currentStep < QUESTIONS.length &&
+    questionIndex >= 0 &&
+    questionIndex < QUESTIONS.length &&
     !isNews;
 
+  // =========================
+  // 🟢 RESPOSTAS
+  // =========================
+
   const handleSelectOption = (value: string) => {
-    const questionId = QUESTIONS[currentStep].id;
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    const qIndex = getQuestionIndex();
+    const questionId = QUESTIONS[qIndex].id;
+
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
   };
 
   const handleNext = () => {
 
-    // Ir para NEWS
-    if (currentStep === 3) {
-      setCurrentStep(4);
-      return;
-    }
-
-    // Sair da NEWS
-    if (currentStep === 4) {
-      setCurrentStep(5);
-      return;
-    }
-
     // Última pergunta real
-    if (currentStep === QUESTIONS.length - 1) {
+    if (questionIndex === QUESTIONS.length - 1) {
       startAnalysis();
       return;
     }
 
     setCurrentStep(prev => prev + 1);
   };
+
+  // =========================
+  // 🔢 SCORE
+  // =========================
 
   const calculateScore = (): QuizResults => {
 
@@ -83,6 +97,10 @@ const App: React.FC = () => {
       keyInsights: []
     };
   };
+
+  // =========================
+  // ⏳ LOADING
+  // =========================
 
   const startAnalysis = () => {
 
@@ -115,6 +133,10 @@ const App: React.FC = () => {
     return answers[1] === "sexo_homem" ? "masculina" : "feminina";
   };
 
+  // =========================
+  // 🎨 RENDER
+  // =========================
+
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
@@ -145,25 +167,30 @@ const App: React.FC = () => {
               Começar Avaliação Gratuita
             </button>
 
+            <p className="text-xs text-slate-400 pt-6">
+              ©️ 2026 Protocolo Anti-Rebote
+            </p>
+
           </div>
         )}
 
         {/* PERGUNTAS */}
         {isQuestion && !loading && !results && (
           <QuizStep
-            question={QUESTIONS[currentStep]}
-            selectedOption={answers[QUESTIONS[currentStep].id] || null}
+            question={QUESTIONS[questionIndex]}
+            selectedOption={
+              answers[QUESTIONS[questionIndex].id] || null
+            }
             onSelect={handleSelectOption}
             onNext={handleNext}
             onBack={() => setCurrentStep(prev => prev - 1)}
-            isFirst={currentStep === 0}
-            isLast={currentStep === QUESTIONS.length - 1}
+            isFirst={questionIndex === 0}
           />
         )}
 
         {/* NEWS */}
         {isNews && !loading && !results && (
-          <NewsInterstitial onNext={handleNext} />
+          <NewsInterstitial onNext={() => setCurrentStep(prev => prev + 1)} />
         )}
 
         {/* LOADING */}
@@ -183,7 +210,7 @@ const App: React.FC = () => {
         )}
 
         {/* RESULTADO */}
-        {results && !loading && (
+        {results && !loading && !showVsl && (
           <ResultsView
             results={results}
             answers={answers}
@@ -194,7 +221,6 @@ const App: React.FC = () => {
         {/* VSL */}
         {showVsl && !loading && (
           <VslView
-            videoType={getSexo()}
             onCheckout={() =>
               window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
             }
