@@ -168,7 +168,7 @@ const App: React.FC = () => {
               </h1>
 
               <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-               Descubra se você tem estrutura para manter. Perder é só a primeira etapa.
+               Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
               </h2>
             </div>
 
