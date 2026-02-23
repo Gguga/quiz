@@ -23,44 +23,33 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // 🔹 NEWS entra após pergunta da caneta (index 3)
-  const NEWS_POSITION = 4;
-
   const isQuestionStep =
-    currentStep >= 0 &&
-    currentStep < QUESTIONS.length &&
-    currentStep !== NEWS_POSITION;
+    currentStep >= 0 && currentStep < QUESTIONS.length;
 
-  const isNewsStep = currentStep === NEWS_POSITION;
+  const isNewsStep = currentStep === 3; 
+  // ordem nova:
+  // 0 sexo
+  // 1 idade
+  // 2 tempo tentando
+  // 3 situação caneta
+  // 4 NEWS
 
   const handleSelectOption = (value: string) => {
-    const questionIndex =
-      currentStep > NEWS_POSITION
-        ? currentStep - 1
-        : currentStep;
-
-    const questionId = QUESTIONS[questionIndex].id;
-
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
+    const questionId = QUESTIONS[currentStep].id;
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
   const handleNext = () => {
-
-    if (currentStep === NEWS_POSITION - 1) {
-      setCurrentStep(NEWS_POSITION);
-      return;
-    }
-
-    if (currentStep < QUESTIONS.length) {
+    if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
       startAnalysis();
     }
   };
 
+  // ---------------------------
+  // 🔥 CÁLCULO PERSONALIZADO
+  // ---------------------------
   const calculateScore = (): QuizResults => {
 
     let totalWeight = 0;
@@ -79,34 +68,36 @@ const App: React.FC = () => {
 
     const score = Math.round(normalized);
 
+    // 🔹 RISCO CENTRAL (fase agora é id 4)
+    let centralRisk = "";
     const fase = answers[4];
 
-    let centralRisk = "";
-
     if (fase === "uso_atual_perda") {
-      centralRisk = "Alto risco de dependência da medicação para manutenção do peso.";
+      centralRisk = "Alto risco de dependência da medicação para manter o peso.";
     } else if (fase === "uso_atual_plato") {
-      centralRisk = "Indícios de adaptação metabólica durante o uso da medicação.";
+      centralRisk = "Indícios de adaptação metabólica durante o uso.";
     } else if (fase === "uso_desmame") {
-      centralRisk = "Alto risco de rebote durante a fase de redução da medicação.";
+      centralRisk = "Alto risco de rebote na fase de redução.";
     } else if (fase === "uso_parou_rebote") {
-      centralRisk = "Reversão metabólica em curso após interrupção da medicação.";
+      centralRisk = "Reversão metabólica em curso após interrupção.";
     } else {
-      centralRisk = "Alto risco de dependência da medicação para manutenção do peso.";
+      centralRisk = "Risco elevado de manutenção dependente da medicação.";
     }
 
+    // 🔹 RISCO SECUNDÁRIO
     let secondaryRisk = "";
 
     if (
-      answers[7] === "proteina_0_1" ||
-      answers[8] === "proteina_nunca" ||
-      answers[8] === "proteina_feeling"
+      answers[8] === "proteina_0_1" ||
+      answers[9] === "proteina_nunca" ||
+      answers[9] === "proteina_feeling"
     ) {
       secondaryRisk = "Ingestão proteica insuficiente para preservação muscular.";
     }
     else if (
-      answers[5] === "forca_caiu_muito" ||
-      answers[5] === "forca_caiu_pouco"
+      answers[10] === "forca_caiu_muito" ||
+      answers[10] === "forca_caiu_pouco" ||
+      answers[10] === "forca_nao_treina"
     ) {
       secondaryRisk = "Indícios de perda progressiva de massa muscular.";
     }
@@ -139,15 +130,14 @@ const App: React.FC = () => {
           setLoading(false);
           return 100;
         }
-        return prev + 5;
+        return prev + 4;
       });
     }, 120);
   };
 
   const progress =
     currentStep >= 0
-      ? ((currentStep >= NEWS_POSITION ? currentStep - 1 : currentStep) + 1) /
-        QUESTIONS.length * 100
+      ? ((currentStep + 1) / QUESTIONS.length) * 100
       : 0;
 
   const getSexo = () => {
@@ -168,46 +158,67 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
+        {/* CAPA REFINADA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center p-6 text-center space-y-8 pt-20">
+          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
-            <h1 className="text-3xl font-black text-[#0f766e] leading-tight">
-              TESTE GRATUITO
+            <div className="bg-teal-50 text-[#0f766e] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-teal-100">
+              Avaliação Gratuita
+            </div>
+
+            <h1 className="text-3xl font-black text-[#0f766e] leading-tight max-w-sm">
+              Diagnóstico Metabólico:
+              <br />
+              <span className="text-slate-900">Risco de Rebote</span>
             </h1>
 
-            <p className="text-slate-600">
-              Descubra seu risco de rebote após interromper a medicação.
+            <p className="text-slate-600 max-w-sm text-base leading-relaxed">
+              Descubra em 2 minutos seu risco de recuperar peso após interromper a medicação.
             </p>
+
+            <div className="grid grid-cols-2 gap-6 w-full mt-4">
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-700"
+                    style={{ height: animateGraph ? '20%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Baixo risco
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-700"
+                    style={{ height: animateGraph ? '80%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Alto risco
+                </p>
+              </div>
+
+            </div>
 
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-xl font-black uppercase text-base mt-4"
+              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-black uppercase text-base mt-6 shadow-lg"
             >
-              Começar avaliação gratuita
+              Começar Avaliação Gratuita
             </button>
 
           </div>
         )}
 
-        {isQuestionStep && !loading && !results && !showVsl && (
+        {/* PERGUNTAS */}
+        {isQuestionStep && !loading && !results && !showVsl && !isNewsStep && (
           <QuizStep
-            question={
-              QUESTIONS[
-                currentStep > NEWS_POSITION
-                  ? currentStep - 1
-                  : currentStep
-              ]
-            }
-            selectedOption={
-              answers[
-                QUESTIONS[
-                  currentStep > NEWS_POSITION
-                    ? currentStep - 1
-                    : currentStep
-                ].id
-              ] || null
-            }
+            question={QUESTIONS[currentStep]}
+            selectedOption={answers[QUESTIONS[currentStep].id] || null}
             onSelect={handleSelectOption}
             onNext={handleNext}
             onBack={() => setCurrentStep(prev => prev - 1)}
@@ -216,23 +227,35 @@ const App: React.FC = () => {
           />
         )}
 
+        {/* NEWS */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
-            <NewsInterstitial onNext={() => setCurrentStep(prev => prev + 1)} />
+            <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
+        {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Triagem Clínica em Andamento
             </h2>
+
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
+
+            <div className="text-sm text-slate-600 space-y-2">
+              {loadingProgress > 20 && <p>✔ Histórico analisado</p>}
+              {loadingProgress > 40 && <p>✔ Fase da medicação identificada</p>}
+              {loadingProgress > 60 && <p>✔ Indicadores musculares avaliados</p>}
+              {loadingProgress > 80 && <p>✔ Classificação estruturada</p>}
+            </div>
+
           </div>
         )}
 
