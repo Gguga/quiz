@@ -131,13 +131,21 @@ const App: React.FC = () => {
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
 
-            <h1 className="text-3xl font-black text-[#0f766e] leading-tight">
-              TESTE GRATUITO
-            </h1>
+         <div className="space-y-4 text-center">
 
-            <p className="text-slate-600">
-              Descubra seu risco de rebote após interromper a medicação.
-            </p>
+  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+    Diagnóstico Gratuito
+  </p>
+
+  <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+    Risco de Rebote
+  </h1>
+
+  <h2 className="text-base md:text-lg text-slate-600 max-w-sm mx-auto leading-relaxed">
+    Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
+  </h2>
+
+</div>
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
