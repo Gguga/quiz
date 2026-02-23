@@ -7,57 +7,51 @@ const ResultsView: React.FC<{
   onCtaClick: () => void;
 }> = ({ results, answers, onCtaClick }) => {
 
-  // 🔹 Insight específico baseado nas respostas
+  const generateEmotionalMirror = () => {
+    const fase = answers[4];
+
+    if (fase === "uso_atual_perda") {
+      return "Seu emagrecimento ainda depende da medicação.";
+    }
+
+    if (fase === "uso_atual_plato") {
+      return "Seu corpo já começou a se adaptar ao uso da medicação.";
+    }
+
+    if (fase === "uso_desmame") {
+      return "A fase de redução é onde a maioria perde o controle do peso.";
+    }
+
+    if (fase === "uso_parou_rebote") {
+      return "O reganho não é falta de disciplina. É fisiologia.";
+    }
+
+    return "Seu resultado ainda não está protegido.";
+  };
+
   const generateBehaviorInsight = () => {
-
-    if (answers[8] === "proteina_0_1") {
-      return "Sua ingestão proteica atual não sustenta preservação muscular.";
-    }
-
-    if (answers[9] === "proteina_nunca" || answers[9] === "proteina_feeling") {
-      return "Sua proteína não está estrategicamente calculada.";
-    }
-
-    if (answers[10] === "forca_caiu_muito") {
-      return "Sua queda de força indica perda muscular ativa.";
-    }
 
     if (answers[3] === "tempo_eterno" || answers[3] === "tempo_longo") {
       return "Seu histórico prolongado de tentativas aumenta a adaptação metabólica.";
     }
 
+    if (answers[8] === "proteina_0_1") {
+      return "Sua ingestão proteica atual não sustenta preservação muscular.";
+    }
+
+    if (answers[10] === "forca_caiu_muito") {
+      return "A queda de força indica possível perda muscular em curso.";
+    }
+
     if (answers[11] === "colaterais_frequentes") {
-      return "Seus sintomas indicam impacto metabólico e nutricional relevante.";
+      return "Seus sintomas indicam impacto metabólico relevante.";
     }
 
     return null;
   };
 
-  const generateEmotionalMirror = () => {
-
-    const fase = answers[4];
-
-    if (fase === "uso_atual_perda") {
-      return "O resultado está acontecendo. Mas ainda depende da medicação.";
-    }
-
-    if (fase === "uso_atual_plato") {
-      return "O platô que você sente não é psicológico. É fisiológico.";
-    }
-
-    if (fase === "uso_desmame") {
-      return "A fase de redução é onde a maioria perde o controle do processo.";
-    }
-
-    if (fase === "uso_parou_rebote") {
-      return "O reganho não é falta de força. É ausência de estrutura estratégica.";
-    }
-
-    return "Seu resultado ainda não está consolidado.";
-  };
-
-  const behaviorInsight = generateBehaviorInsight();
   const emotionalMirror = generateEmotionalMirror();
+  const behaviorInsight = generateBehaviorInsight();
 
   return (
     <div className="w-full max-w-xl mx-auto px-6 pb-24 pt-16 space-y-12 animate-fadeIn">
@@ -69,8 +63,9 @@ const ResultsView: React.FC<{
           Diagnóstico Concluído
         </div>
 
+        {/* 🔴 PERCENTUAL EM VERMELHO */}
         <div className="flex flex-col items-center">
-          <h2 className="text-7xl font-black text-slate-900 tracking-tighter">
+          <h2 className="text-7xl font-black text-red-600 tracking-tighter">
             {results.score}%
           </h2>
           <p className="text-slate-500 font-semibold text-xs uppercase tracking-[0.25em] mt-3">
@@ -80,14 +75,14 @@ const ResultsView: React.FC<{
 
       </div>
 
-      {/* RISCO CENTRAL */}
+      {/* FRASE CENTRAL DRAMÁTICA */}
       <div className="text-center space-y-4">
         <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug max-w-md mx-auto">
-          {results.personalizedMessage}
+          Risco elevado de dependência da medicação para manter o peso.
         </h3>
       </div>
 
-      {/* RISCO SECUNDÁRIO */}
+      {/* CAIXA CLÍNICA */}
       {results.keyInsights.length > 0 && (
         <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
           <p className="text-amber-800 font-semibold text-sm leading-relaxed">
@@ -96,7 +91,7 @@ const ResultsView: React.FC<{
         </div>
       )}
 
-      {/* INSIGHT COMPORTAMENTAL */}
+      {/* INSIGHT ESPECÍFICO */}
       {behaviorInsight && (
         <div className="text-center max-w-md mx-auto">
           <p className="text-slate-700 font-medium text-base leading-relaxed">
@@ -107,7 +102,7 @@ const ResultsView: React.FC<{
 
       {/* ESPELHO EMOCIONAL */}
       <div className="text-center max-w-md mx-auto">
-        <p className="text-slate-700 font-medium text-base leading-relaxed">
+        <p className="text-slate-800 font-medium text-base leading-relaxed">
           {emotionalMirror}
         </p>
       </div>
