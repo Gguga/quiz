@@ -18,16 +18,18 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
+  // Anima gráfico da capa
   useEffect(() => {
-  const timer = setTimeout(() => setAnimateGraph(true), 500);
-  return () => clearTimeout(timer);
-}, []);
+    const timer = setTimeout(() => setAnimateGraph(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-useEffect(() => {
-  if (currentStep >= 0) {
-    window.scrollTo(0, 0);
-  }
-}, [currentStep]);
+  // Scroll automático ao mudar pergunta
+  useEffect(() => {
+    if (currentStep >= 0) {
+      window.scrollTo(0, 0);
+    }
+  }, [currentStep]);
 
   const getQuestionIndex = () => {
     if (currentStep > NEWS_POSITION) return currentStep - 1;
@@ -59,7 +61,7 @@ useEffect(() => {
   };
 
   // =============================
-  // SCORE POR GATILHO REAL
+  // SCORE POR GATILHO
   // =============================
 
   const calculateScore = (): QuizResults => {
@@ -114,7 +116,7 @@ useEffect(() => {
   };
 
   // =============================
-  // LOADING 5 SEGUNDOS COM TRAVA
+  // LOADING COM ETAPAS
   // =============================
 
   const startAnalysis = () => {
@@ -123,7 +125,6 @@ useEffect(() => {
     setLoadingProgress(0);
 
     const result = calculateScore();
-
     let progress = 0;
 
     const interval = setInterval(() => {
@@ -183,7 +184,6 @@ useEffect(() => {
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
-              {/* Baixo risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
@@ -196,7 +196,6 @@ useEffect(() => {
                 </p>
               </div>
 
-              {/* Alto risco */}
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
@@ -217,10 +216,6 @@ useEffect(() => {
             >
               Começar Avaliação Gratuita
             </button>
-
-            <p className="text-xs text-slate-400 pt-6">
-              ©️ 2026 Protocolo Anti-Rebote
-            </p>
 
           </div>
         )}
@@ -249,15 +244,30 @@ useEffect(() => {
         {/* LOADING */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando Estrutura Metabólica
             </h2>
+
+            <div className="space-y-2 text-sm text-slate-500 font-medium">
+              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
+              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
+              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
+              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
+              {loadingProgress >= 90 && (
+                <p className="font-bold text-[#0f766e]">
+                  Finalizando diagnóstico...
+                </p>
+              )}
+            </div>
+
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
+
           </div>
         )}
 
@@ -272,11 +282,7 @@ useEffect(() => {
 
         {/* VSL */}
         {showVsl && !loading && (
-          <VslView
-            onCheckout={() =>
-              window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
-            }
-          />
+          <VslView />
         )}
 
       </main>
