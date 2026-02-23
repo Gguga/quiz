@@ -84,4 +84,3 @@ const ResultsView: React.FC<{results: QuizResults, onCtaClick: () => void}> = ({
 };
 
 export default ResultsView;
-
