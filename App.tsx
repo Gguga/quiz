@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // 🔥 gráfico anima 0.5s após carregar
+  // 🔥 anima gráfico 0.5s após carregar
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateGraph(true);
@@ -27,7 +27,6 @@ const App: React.FC = () => {
   const isQuestionStep =
     currentStep >= 0 && currentStep < QUESTIONS.length;
 
-  // NEWS entra após pergunta 4
   const isNewsStep = currentStep === 4;
 
   const handleSelectOption = (value: string) => {
@@ -44,7 +43,7 @@ const App: React.FC = () => {
   };
 
   // =========================
-  // 🔥 CÁLCULO PERSONALIZADO
+  // 🔥 CÁLCULO
   // =========================
   const calculateScore = (): QuizResults => {
 
@@ -73,7 +72,7 @@ const App: React.FC = () => {
   };
 
   // =========================
-  // 🔥 LOADING REALISTA
+  // 🔥 LOADING
   // =========================
   const startAnalysis = () => {
     setLoading(true);
@@ -126,26 +125,26 @@ const App: React.FC = () => {
       <main className="flex-1 w-full max-w-md mx-auto">
 
         {/* ===================== */}
-        {/* CAPA ORIGINAL RESTAURADA */}
+        {/* CAPA */}
         {/* ===================== */}
         {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-24">
+          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
 
-         <div className="space-y-4 text-center">
+            <div className="space-y-4">
 
-  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-    Diagnóstico Gratuito
-  </p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Diagnóstico Gratuito
+              </p>
 
-  <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
-    Risco de Rebote
-  </h1>
+              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+                Risco de Rebote
+              </h1>
 
-  <h2 className="text-base md:text-lg text-slate-600 max-w-sm mx-auto leading-relaxed">
-    Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
-  </h2>
+              <h2 className="text-base md:text-lg text-slate-600 max-w-sm mx-auto leading-relaxed">
+                Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
+              </h2>
 
-</div>
+            </div>
 
             <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
@@ -153,9 +152,7 @@ const App: React.FC = () => {
                 <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
                   <div
                     className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
-                    style={{
-                      height: animateGraph ? '22%' : '0%'
-                    }}
+                    style={{ height: animateGraph ? '22%' : '0%' }}
                   />
                 </div>
                 <p className="mt-4 text-sm font-semibold text-slate-700">
@@ -164,12 +161,12 @@ const App: React.FC = () => {
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                <div
+                  className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden"
+                >
                   <div
                     className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
-                    style={{
-                      height: animateGraph ? '82%' : '0%'
-                    }}
+                    style={{ height: animateGraph ? '82%' : '0%' }}
                   />
                 </div>
                 <p className="mt-4 text-sm font-semibold text-slate-700">
@@ -186,12 +183,14 @@ const App: React.FC = () => {
               Começar Avaliação Gratuita
             </button>
 
+            <p className="text-xs text-slate-400 pt-6">
+              © 2026 Protocolo Anti-Rebote
+            </p>
+
           </div>
         )}
 
-        {/* ===================== */}
         {/* PERGUNTAS */}
-        {/* ===================== */}
         {isQuestionStep && !loading && !results && !showVsl && currentStep !== 4 && (
           <QuizStep
             question={QUESTIONS[currentStep]}
@@ -203,38 +202,29 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* ===================== */}
         {/* NEWS */}
-        {/* ===================== */}
         {isNewsStep && !loading && !results && !showVsl && (
           <div className="py-6 px-4">
             <NewsInterstitial onNext={handleNext} />
           </div>
         )}
 
-        {/* ===================== */}
         {/* LOADING */}
-        {/* ===================== */}
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Triagem Clínica em Andamento
             </h2>
-
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-
           </div>
         )}
 
-        {/* ===================== */}
-        {/* RESULTADO + VSL */}
-        {/* ===================== */}
+        {/* RESULTADO / VSL */}
         {(results || showVsl) && !loading && (
           <div className="py-6 px-4">
             {showVsl ? (
