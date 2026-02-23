@@ -1,173 +1,273 @@
-import React from 'react';
-import { QuizResults, UserAnswers } from './types';
+import React, { useState, useEffect } from 'react';
+import { QUESTIONS } from './constants';
+import { UserAnswers, QuizResults } from './types';
+import QuizStep from './QuizStep';
+import ResultsView from './ResultsView';
+import VslView from './components/VslView';
+import NewsInterstitial from './components/NewsInterstitial';
 
-const ResultsView: React.FC<{
-  results: QuizResults;
-  answers: UserAnswers;
-  onCtaClick: () => void;
-}> = ({ results, answers, onCtaClick }) => {
+const NEWS_POSITION = 4; // após pergunta 4 (id 4)
 
-  const generateRiskFactors = () => {
-    const factors: string[] = [];
+const App: React.FC = () => {
 
-    // 🔹 Proteína baixa (id 7)
-    if (answers[7] === "proteina_0_1") {
-      factors.push(
-        "Você relatou consumir proteína em poucas refeições, o que aumenta o risco de perda muscular."
-      );
+  const [currentStep, setCurrentStep] = useState<number>(-1);
+  const [answers, setAnswers] = useState<UserAnswers>({});
+  const [results, setResults] = useState<QuizResults | null>(null);
+  const [showVsl, setShowVsl] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateGraph(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // =========================
+  // 🔥 FLUXO DE PERGUNTAS
+  // =========================
+
+  const getQuestionIndex = () => {
+    if (currentStep > NEWS_POSITION) {
+      return currentStep - 1;
     }
-
-    // 🔹 Proteína não calculada (id 8)
-    if (
-      answers[8] === "proteina_nunca" ||
-      answers[8] === "proteina_feeling"
-    ) {
-      factors.push(
-        "Sua ingestão proteica não está estrategicamente calculada para preservar massa magra."
-      );
-    }
-
-    // 🔹 Força caiu (id 5)
-    if (answers[5] === "forca_caiu_muito") {
-      factors.push(
-        "A queda significativa de força é um indicativo de perda muscular progressiva."
-      );
-    }
-
-    // 🔹 Não treina (id 6)
-    if (answers[6] === "forca_nao_treina") {
-      factors.push(
-        "A ausência de musculação reduz sua proteção contra perda muscular."
-      );
-    }
-
-    // 🔹 Histórico longo (id 3)
-    if (
-      answers[3] === "tempo_longo" ||
-      answers[3] === "tempo_eterno"
-    ) {
-      factors.push(
-        "Seu histórico prolongado de tentativas aumenta a adaptação metabólica."
-      );
-    }
-
-    // 🔹 Dieta não estruturada (id 9)
-    if (
-      answers[9] === "dieta_reduzi" ||
-      answers[9] === "dieta_feeling"
-    ) {
-      factors.push(
-        "Sua dieta não foi estruturada para proteger o metabolismo durante e após a medicação."
-      );
-    }
-
-    // 🔹 Colaterais (id 10)
-    if (
-      answers[10] === "colateral_varios" ||
-      answers[10] === "colateral_cansaco"
-    ) {
-      factors.push(
-        "Os sinais relatados indicam possível estresse metabólico no processo."
-      );
-    }
-
-    // 🔥 GARANTIR SEMPRE 2
-    if (factors.length === 0) {
-      factors.push(
-        "Existe risco silencioso de perda muscular mesmo sem sintomas aparentes."
-      );
-      factors.push(
-        "Sem estratégia específica, a dependência da medicação pode se manter."
-      );
-    }
-
-    if (factors.length === 1) {
-      factors.push(
-        "A fase atual exige um plano específico para consolidar o resultado."
-      );
-    }
-
-    return factors.slice(0, 2);
+    return currentStep;
   };
 
-  const riskFactors = generateRiskFactors();
+  const isNewsStep = currentStep === NEWS_POSITION;
+
+  const isQuestionStep =
+    currentStep >= 0 &&
+    currentStep < QUESTIONS.length + 1 &&
+    !isNewsStep;
+
+  const handleSelectOption = (value: string) => {
+    const questionIndex = getQuestionIndex();
+    const questionId = QUESTIONS[questionIndex].id;
+
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleNext = () => {
+
+    const questionIndex = getQuestionIndex();
+
+    // Se estamos na última pergunta real
+    if (questionIndex === QUESTIONS.length - 1) {
+      startAnalysis();
+      return;
+    }
+
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const progress =
+    currentStep >= 0
+      ? ((currentStep + 1) / (QUESTIONS.length + 1)) * 100
+      : 0;
+
+  // =========================
+  // 🔥 CÁLCULO
+  // =========================
+
+  const calculateScore = (): QuizResults => {
+
+    let totalWeight = 0;
+    let maxWeight = 0;
+
+    QUESTIONS.forEach(q => {
+      const maxOptionWeight = Math.max(...q.options.map(o => o.weight));
+      maxWeight += maxOptionWeight;
+
+      const selected = q.options.find(o => o.value === answers[q.id]);
+      if (selected) totalWeight += selected.weight;
+    });
+
+    let normalized = (totalWeight / maxWeight) * 100;
+    if (normalized < 45) normalized = 48;
+
+    const score = Math.round(normalized);
+
+    return {
+      score,
+      riskLevel: score >= 75 ? "Crítico" : score >= 60 ? "Alto" : "Moderado",
+      personalizedMessage: "",
+      keyInsights: []
+    };
+  };
+
+  // =========================
+  // 🔥 LOADING
+  // =========================
+
+  const startAnalysis = () => {
+    setLoading(true);
+    setLoadingProgress(0);
+
+    const result = calculateScore();
+
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+
+        if (prev < 60) return prev + 3;
+        if (prev < 85) return prev + 1.5;
+        if (prev < 95) return prev + 0.5;
+
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setResults(result);
+            setLoading(false);
+          }, 400);
+          return 100;
+        }
+
+        return prev + 1;
+      });
+    }, 140);
+  };
+
+  const getSexo = () => {
+    return answers[1] === "sexo_homem" ? "masculina" : "feminina";
+  };
 
   return (
-    <div className="w-full max-w-xl mx-auto px-6 pb-24 pt-16 space-y-12 animate-fadeIn">
+    <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {/* HEADER */}
-      <div className="text-center space-y-6">
-
-        <div className="inline-block bg-teal-50 text-[#0f766e] px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest border border-teal-100">
-          Diagnóstico Concluído
+      {currentStep >= 0 && !loading && !results && !showVsl && (
+        <div className="w-full h-[4px] bg-slate-200">
+          <div
+            className="bg-black h-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
         </div>
+      )}
 
-        <div className="flex flex-col items-center">
-          <h2 className="text-7xl font-black text-red-600 tracking-tighter">
-            {results.score}%
-          </h2>
-          <p className="text-slate-500 font-semibold text-xs uppercase tracking-[0.25em] mt-3">
-            Risco de Rebote Identificado
-          </p>
-        </div>
+      <main className="flex-1 w-full max-w-md mx-auto">
 
-      </div>
+        {/* ===================== */}
+        {/* CAPA */}
+        {/* ===================== */}
+        {currentStep === -1 && !loading && !results && !showVsl && (
+          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
 
-      {/* FRASE CENTRAL */}
-      <div className="text-center">
-        <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug max-w-md mx-auto">
-          {results.personalizedMessage}
-        </h3>
-      </div>
+            <div className="space-y-4">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Diagnóstico Gratuito
+              </p>
 
-      {/* BULLETS PERSONALIZADOS */}
-      <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 space-y-3">
-        <p className="text-amber-900 font-bold text-sm uppercase tracking-wider">
-          Fatores que aumentam seu risco:
-        </p>
+              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+                Risco de Rebote
+              </h1>
 
-        <ul className="space-y-2">
-          {riskFactors.map((factor, index) => (
-            <li key={index} className="text-amber-800 text-sm font-medium leading-relaxed">
-              • {factor}
-            </li>
-          ))}
-        </ul>
-      </div>
+              <h2 className="text-base md:text-lg text-slate-600 max-w-sm mx-auto leading-relaxed">
+                Descubra em 2 minutos seu risco de recuperar o peso após interromper a medicação.
+              </h2>
+            </div>
 
-      {/* CONSEQUÊNCIA CLÍNICA */}
-      <div className="text-center max-w-md mx-auto">
-        <p className="text-slate-700 font-medium text-base leading-relaxed">
-          Esse padrão aumenta a adaptação metabólica e reduz sua capacidade de manter o peso sem apoio da medicação.
-        </p>
-      </div>
+            <div className="grid grid-cols-2 gap-6 w-full mt-4">
 
-      {/* ESPELHO EMOCIONAL */}
-      <div className="text-center max-w-md mx-auto">
-        <p className="text-slate-900 font-semibold text-base leading-relaxed">
-          Seu problema não é falta de disciplina, mas ausência de estratégia adequada.
-        </p>
-      </div>
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '22%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Baixo risco
+                </p>
+              </div>
 
-      {/* CTA */}
-      <div className="pt-6">
-        <button
-          onClick={onCtaClick}
-          className="w-full py-7 px-8 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-base md:text-lg leading-tight tracking-wide transition-all shadow-xl shadow-teal-900/40 uppercase"
-        >
-          Proteger Meu Emagrecimento Agora
-        </button>
-      </div>
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '82%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Alto risco
+                </p>
+              </div>
 
-      {/* DISCLAIMER */}
-      <div className="text-center pt-4">
-        <p className="text-slate-400 font-medium text-[10px] leading-relaxed max-w-sm mx-auto uppercase tracking-tighter">
-          *Este diagnóstico tem caráter informativo e não substitui avaliação médica presencial.
-        </p>
-      </div>
+            </div>
 
+            <button
+              onClick={() => setCurrentStep(0)}
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
+            >
+              Começar Avaliação Gratuita
+            </button>
+
+            <p className="text-xs text-slate-400 pt-6">
+              © 2026 Protocolo Anti-Rebote
+            </p>
+
+          </div>
+        )}
+
+        {/* PERGUNTAS */}
+        {isQuestionStep && !loading && !results && !showVsl && (
+          <QuizStep
+            question={QUESTIONS[getQuestionIndex()]}
+            selectedOption={
+              answers[QUESTIONS[getQuestionIndex()].id] || null
+            }
+            onSelect={handleSelectOption}
+            onNext={handleNext}
+            onBack={() => setCurrentStep(prev => prev - 1)}
+            isFirst={currentStep === 0}
+          />
+        )}
+
+        {/* NEWS */}
+        {isNewsStep && !loading && !results && !showVsl && (
+          <div className="py-6 px-4">
+            <NewsInterstitial onNext={handleNext} />
+          </div>
+        )}
+
+        {/* LOADING */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+            <h2 className="text-xl font-black text-[#0f766e] uppercase">
+              Triagem Clínica em Andamento
+            </h2>
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div
+                className="bg-[#0f766e] h-full transition-all duration-300"
+                style={{ width: `${loadingProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* RESULTADO / VSL */}
+        {(results || showVsl) && !loading && (
+          <div className="py-6 px-4">
+            {showVsl ? (
+              <VslView
+                videoType={getSexo()}
+                onCheckout={() =>
+                  window.open('https://lp.metodopsc.com.br/psc-v1/', '_blank')
+                }
+              />
+            ) : (
+              <ResultsView
+                results={results!}
+                answers={answers}
+                onCtaClick={() => setShowVsl(true)}
+              />
+            )}
+          </div>
+        )}
+
+      </main>
     </div>
   );
 };
 
-export default ResultsView;
+export default App;
