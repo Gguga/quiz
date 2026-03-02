@@ -25,27 +25,35 @@ const QuizStep: React.FC<QuizStepProps> = ({
   };
 
   return (
-    <div className="min-h-[88vh] w-full max-w-xl mx-auto px-6 flex flex-col animate-fadeIn">
+    <div
+      key={question.id}
+      className="min-h-[88vh] w-full max-w-lg mx-auto px-6 flex flex-col justify-center"
+    >
 
-      <div className="mt-24">
+      <div className="animate-fadeInUp">
 
-        <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0f766e] leading-tight tracking-tight">
             {question.text}
           </h2>
 
-          <p className="text-slate-400 text-xs uppercase tracking-widest mt-4">
+          <p className="text-slate-400 text-xs uppercase tracking-widest mt-5">
             Selecione uma opção abaixo
           </p>
         </div>
 
-        <div className="space-y-5">
-          {question.options.map((option) => (
+        <div className="space-y-4">
+          {question.options.map((option, index) => (
             <button
               key={option.value}
               type="button"
               onClick={() => handleOptionClick(option.value)}
-              className="w-full py-5 rounded-2xl font-bold text-base border bg-white text-slate-800 border-slate-200 transition-all duration-200 hover:border-slate-200 focus:outline-none focus:ring-0 focus:border-slate-200 active:outline-none active:ring-0"
+              style={{ animationDelay: `${index * 70}ms` }}
+              className="option-animate w-full py-5 rounded-2xl font-semibold text-base
+                         bg-white text-slate-800 border border-slate-200
+                         transition-all duration-200
+                         active:scale-[0.98]
+                         focus:outline-none"
             >
               {option.label}
             </button>
@@ -53,11 +61,11 @@ const QuizStep: React.FC<QuizStepProps> = ({
         </div>
 
         {!isFirst && (
-          <div className="mt-16 text-center">
+          <div className="mt-14 text-center">
             <button
               type="button"
               onClick={onBack}
-              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors focus:outline-none focus:ring-0"
+              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors"
             >
               ← Voltar pergunta
             </button>
