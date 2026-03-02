@@ -29,18 +29,16 @@ const QuizStep: React.FC<QuizStepProps> = ({
       key={question.id}
       className="min-h-screen w-full max-w-md mx-auto px-6 flex flex-col"
     >
-
-      {/* Espaçamento superior consistente */}
-      <div className="pt-24 flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col justify-center">
 
         {/* Pergunta */}
         <div className="text-center mb-14">
 
-          <h2 className="text-3xl md:text-4xl font-extrabold text-teal-800 leading-[1.15] tracking-tight max-w-xs mx-auto">
+          <h2 className="text-3xl md:text-4xl font-semibold text-teal-800 leading-[1.15] tracking-tight max-w-xs mx-auto">
             {question.text}
           </h2>
 
-          <p className="text-slate-400 text-xs uppercase tracking-[0.25em] mt-6">
+          <p className="text-slate-400 text-[11px] uppercase tracking-[0.25em] mt-6">
             Selecione uma opção
           </p>
 
@@ -59,7 +57,6 @@ const QuizStep: React.FC<QuizStepProps> = ({
                          shadow-sm
                          transition-all duration-200
                          active:scale-[0.97]
-                         hover:shadow-md
                          focus:outline-none"
             >
               {option.label}
@@ -67,13 +64,13 @@ const QuizStep: React.FC<QuizStepProps> = ({
           ))}
         </div>
 
-        {/* Botão voltar */}
+        {/* Voltar */}
         {!isFirst && (
           <div className="mt-16 text-center">
             <button
               type="button"
               onClick={onBack}
-              className="text-slate-400 text-xs uppercase tracking-[0.25em] hover:text-slate-600 transition-colors"
+              className="text-slate-400 text-xs uppercase tracking-[0.25em]"
             >
               ← Voltar
             </button>
