@@ -88,37 +88,26 @@ const App: React.FC = () => {
     let score = 48;
     let riskLevel: "Moderado" | "Alto" | "Crítico" = "Moderado";
 
-    // 🔴 2 críticas
     if (criticalCount >= 2) {
       score = 90;
       riskLevel = "Crítico";
     }
-
-    // 🔴 1 crítica + 1 moderada
     else if (criticalCount === 1 && moderateCount >= 1) {
       score = 90;
       riskLevel = "Crítico";
     }
-
-    // 🔴 1 crítica isolada
     else if (criticalCount === 1) {
       score = 75;
       riskLevel = "Alto";
     }
-
-    // 🟠 2 moderadas
     else if (moderateCount >= 2) {
       score = 75;
       riskLevel = "Alto";
     }
-
-    // 🟡 1 moderada
     else if (moderateCount === 1) {
       score = 65;
       riskLevel = "Moderado";
     }
-
-    // 🔥 PERFIS PERSONALIZADOS (mantido exatamente igual)
 
     let eixoTransicao = 0;
     let eixoMuscular = 0;
@@ -157,23 +146,18 @@ const App: React.FC = () => {
     if (dominante === "transicao" && secundario === "muscular") {
       personalizedMessage = "Seu corpo já iniciou ajustes desde a redução da medicação. Quando isso acontece sem proteção muscular suficiente, o metabolismo desacelera aos poucos. Existe um ponto específico nessa fase que define se o peso estabiliza ou começa a subir silenciosamente.";
     }
-
     else if (dominante === "transicao" && secundario === "proteina") {
       personalizedMessage = "O emagrecimento aconteceu, mas a base alimentar ainda não sustenta totalmente essa fase. Sem proteína estratégica, o corpo tende a compensar quando a dose diminui. Existe um detalhe nessa transição que muda completamente o desfecho.";
     }
-
     else if (dominante === "muscular" && secundario === "proteina") {
       personalizedMessage = "A proteção da massa muscular não está completa. Quando ingestão e estrutura alimentar não acompanham o processo, o metabolismo reduz gasto energético gradualmente. Existe um ajuste simples que evita essa queda silenciosa.";
     }
-
     else if (dominante === "proteina" && secundario === "transicao") {
       personalizedMessage = "A alimentação ainda depende muito da medicação para manter o controle. Sem organização estratégica da ingestão, o metabolismo desacelera na retirada. Existe uma forma específica de estruturar essa fase.";
     }
-
     else if (dominante === "adaptacao" && secundario === "transicao") {
       personalizedMessage = "Seu corpo demonstra sensibilidade às mudanças. Na fase pós-medicação, pequenos ajustes alimentares fazem grande diferença no resultado final. Existe um momento chave nessa transição que poucos antecipam.";
     }
-
     else {
       personalizedMessage = "Existe consciência alimentar e organização. Isso já mostra uma base acima da média. O ponto crítico agora está na fase posterior à medicação, onde pequenos ajustes fazem grande diferença a longo prazo.";
     }
@@ -260,6 +244,7 @@ const App: React.FC = () => {
 
         {isQuestionStep && !loading && !results && !showVsl && (
           <QuizStep
+            key={currentStep}   // ✅ CORREÇÃO INSERIDA
             question={QUESTIONS[getQuestionIndex()]}
             selectedOption={
               answers[QUESTIONS[getQuestionIndex()].id] || null
