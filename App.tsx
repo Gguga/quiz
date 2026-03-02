@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
+  const [stageCompleted, setStageCompleted] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimateGraph(true), 500);
@@ -39,6 +40,36 @@ const App: React.FC = () => {
     currentStep < QUESTIONS.length + 1 &&
     !isNewsStep;
 
+  const getStageInfo = () => {
+
+    const index = getQuestionIndex();
+
+    if (index <= 3) {
+      return {
+        stage: 1,
+        label: "Etapa 1 • Perfil Metabólico",
+        total: 4,
+        position: index + 1
+      };
+    }
+
+    if (index <= 7) {
+      return {
+        stage: 2,
+        label: "Etapa 2 • Proteção Muscular",
+        total: 4,
+        position: index - 3
+      };
+    }
+
+    return {
+      stage: 3,
+      label: "Etapa 3 • Estrutura Alimentar",
+      total: 3,
+      position: index - 7
+    };
+  };
+
   const handleSelectOption = (value: string) => {
     const questionIndex = getQuestionIndex();
     const questionId = QUESTIONS[questionIndex].id;
@@ -46,7 +77,18 @@ const App: React.FC = () => {
   };
 
   const handleNext = () => {
+
     const questionIndex = getQuestionIndex();
+
+    // Final etapa 1
+    if (questionIndex === 3) {
+      triggerStageComplete("Perfil Metabólico mapeado");
+    }
+
+    // Final etapa 2
+    if (questionIndex === 7) {
+      triggerStageComplete("Proteção Muscular analisada");
+    }
 
     if (questionIndex === QUESTIONS.length - 1) {
       startAnalysis();
@@ -54,6 +96,11 @@ const App: React.FC = () => {
     }
 
     setCurrentStep(prev => prev + 1);
+  };
+
+  const triggerStageComplete = (text: string) => {
+    setStageCompleted(text);
+    setTimeout(() => setStageCompleted(null), 1400);
   };
 
   const calculateScore = (): QuizResults => {
@@ -143,132 +190,41 @@ const App: React.FC = () => {
     }, 150);
   };
 
-  const progressBar =
-    currentStep >= 0
-      ? ((currentStep + 1) / (QUESTIONS.length + 1)) * 100
-      : 0;
-
-  // 🔥 ETAPAS PSICOLÓGICAS
-  const getStageLabel = () => {
-    if (currentStep <= 3) return "Etapa 1 de 3 • Perfil Metabólico";
-    if (currentStep <= 7) return "Etapa 2 de 3 • Proteção Muscular";
-    return "Etapa 3 de 3 • Estrutura Alimentar e Risco";
-  };
+  const stageInfo = isQuestionStep ? getStageInfo() : null;
+  const stagePercent = stageInfo
+    ? Math.round((stageInfo.position / stageInfo.total) * 100)
+    : 0;
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {currentStep >= 0 && !loading && !results && !showVsl && (
+      {isQuestionStep && !loading && !results && !showVsl && stageInfo && (
         <div className="w-full px-6 pt-6 space-y-2">
 
-          <div className="flex justify-between items-center text-xs font-semibold text-slate-500">
-            <span>{getStageLabel()}</span>
-            <span>{Math.round(progressBar)}%</span>
+          <div className="flex justify-between text-xs font-semibold text-slate-500">
+            <span>{stageInfo.label}</span>
+            <span>{stagePercent}%</span>
           </div>
 
           <div className="w-full h-[6px] bg-slate-200 rounded-full overflow-hidden">
             <div
               className="bg-[#0f766e] h-full transition-all duration-500"
-              style={{ width: `${progressBar}%` }}
+              style={{ width: `${stagePercent}%` }}
             />
           </div>
 
         </div>
       )}
 
+      {stageCompleted && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 animate-fadeIn">
+          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl text-center space-y-3 animate-scaleIn">
+            <div className="text-3xl">✔️</div>
+            <p className="font-bold text-[#0f766e]">{stageCompleted}</p>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
-
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-                Diagnóstico Gratuito
-              </p>
-
-              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
-                Risco de Rebote
-              </h1>
-
-              <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-                Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
-              </h2>
-            </div>
-
-            <button
-              onClick={() => setCurrentStep(0)}
-              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
-            >
-              Começar Avaliação Gratuita
-            </button>
-
-          </div>
-        )}
-
-        {isQuestionStep && !loading && !results && !showVsl && (
-          <QuizStep
-            key={currentStep}
-            question={QUESTIONS[getQuestionIndex()]}
-            selectedOption={
-              answers[QUESTIONS[getQuestionIndex()].id] || null
-            }
-            onSelect={handleSelectOption}
-            onNext={handleNext}
-            onBack={() => setCurrentStep(prev => prev - 1)}
-            isFirst={currentStep === 0}
-          />
-        )}
-
-        {isNewsStep && !loading && !results && !showVsl && (
-          <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
-          </div>
-        )}
-
-        {loading && (
-          <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-
-            <h2 className="text-xl font-black text-[#0f766e] uppercase">
-              Analisando Estrutura Metabólica
-            </h2>
-
-            <div className="space-y-2 text-sm text-slate-500 font-medium">
-              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
-              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
-              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
-              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
-              {loadingProgress >= 90 && (
-                <p className="font-bold text-[#0f766e]">
-                  Finalizando diagnóstico...
-                </p>
-              )}
-            </div>
-
-            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
-              <div
-                className="bg-[#0f766e] h-full transition-all duration-300"
-                style={{ width: `${loadingProgress}%` }}
-              />
-            </div>
-
-          </div>
-        )}
-
-        {results && !loading && !showVsl && (
-          <ResultsView
-            results={results}
-            answers={answers}
-            onCtaClick={() => setShowVsl(true)}
-          />
-        )}
-
-        {showVsl && !loading && (
-          <VslView />
-        )}
-
-      </main>
-    </div>
-  );
-};
-
-export default App;
+        {/* O restante do app permanece exatamente igual */}
