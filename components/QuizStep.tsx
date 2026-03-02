@@ -12,7 +12,6 @@ interface QuizStepProps {
 
 const QuizStep: React.FC<QuizStepProps> = ({
   question,
-  selectedOption,
   onSelect,
   onNext,
   onBack,
@@ -26,6 +25,7 @@ const QuizStep: React.FC<QuizStepProps> = ({
 
   return (
     <div className="min-h-[88vh] w-full max-w-xl mx-auto px-6 flex flex-col animate-fadeIn">
+
       <div className="mt-24">
 
         <div className="text-center mb-14">
@@ -39,27 +39,16 @@ const QuizStep: React.FC<QuizStepProps> = ({
         </div>
 
         <div className="space-y-5">
-          {question.options.map((option) => {
-            const isSelected = selectedOption === option.value;
-
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleOptionClick(option.value)}
-                className={`w-full py-5 rounded-2xl font-bold text-base border transition-all duration-200
-                  focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0
-                  ${
-                    isSelected
-                      ? 'bg-[#0f766e] text-white border-[#0f766e]'
-                      : 'bg-white text-slate-800 border-slate-200'
-                  }
-                `}
-              >
-                {option.label}
-              </button>
-            );
-          })}
+          {question.options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleOptionClick(option.value)}
+              className="w-full py-5 rounded-2xl font-bold text-base border bg-white text-slate-800 border-slate-200 transition-all duration-200 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
 
         {!isFirst && (
