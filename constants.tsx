@@ -98,7 +98,7 @@ export const QUESTIONS: Question[] = [
   // 9️⃣ DIETA PENSADA PARA PROTEGER
   {
     id: 9,
-    text: "Sua dieta atual foi pensada para proteger seu metabolismo e manter o peso durante e após o uso da medicação?",
+    text: "Sua dieta atual foi pensada pra emagrecer com qualidade e conseguir manter depois?",
     options: [
       { label: "Sim, já foi pensada para essa fase", value: "dieta_protecao_sim", weight: 0 },
       { label: "Está focada apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
@@ -110,7 +110,7 @@ export const QUESTIONS: Question[] = [
   // 🔟 COLATERAIS
   {
     id: 10,
-    text: "Desde que iniciou a medicação, você percebeu algum destes efeitos?",
+    text: "Durante o uso, você percebeu algum destes efeitos?",
     options: [
       { label: "Cansaço constante / falta de energia", value: "colateral_cansaco", weight: 25 },
       { label: "Náusea ou constipação frequente", value: "colateral_digestivo", weight: 20 },
@@ -122,7 +122,7 @@ export const QUESTIONS: Question[] = [
   // 1️⃣1️⃣ MICRO COMPROMISSO
   {
     id: 11,
-    text: "Você estaria disposto(a) a seguir uma estratégia personalizada para proteger seus resultados durante e após o uso da medicação?",
+    text: "Você estaria disposto(a) a ajustar sua alimentação agora para manter o peso quando reduzir ou parar a medicação?",
     options: [
       { label: "Sim", value: "compromisso_sim", weight: 0 },
       { label: "Talvez", value: "compromisso_talvez", weight: 5 },
