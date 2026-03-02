@@ -7,8 +7,8 @@ export const QUESTIONS: Question[] = [
     id: 1,
     text: "Você é:",
     options: [
-      { label: "👨 Homem", value: "sexo_homem", weight: 0 },
-      { label: "👩 Mulher", value: "sexo_mulher", weight: 0 }
+      { label: "Homem", value: "sexo_homem", weight: 0 },
+      { label: "Mulher", value: "sexo_mulher", weight: 0 }
     ]
   },
 
@@ -17,9 +17,9 @@ export const QUESTIONS: Question[] = [
     id: 2,
     text: "Qual sua faixa etária?",
     options: [
-      { label: "18–29", value: "idade_18_29", weight: 5 },
-      { label: "30–39", value: "idade_30_39", weight: 10 },
-      { label: "40–49", value: "idade_40_49", weight: 20 },
+      { label: "18 a 29", value: "idade_18_29", weight: 5 },
+      { label: "30 a 39", value: "idade_30_39", weight: 10 },
+      { label: "40 a 49", value: "idade_40_49", weight: 20 },
       { label: "50+", value: "idade_50_plus", weight: 30 }
     ]
   },
@@ -53,21 +53,23 @@ export const QUESTIONS: Question[] = [
   // 5️⃣ FORÇA APÓS MEDICAÇÃO
   {
     id: 5,
-    text: "Depois que começou a usar a medicação, sua força:",
+    text: "Depois que começou a usar a medicação, sua força/energia",
     options: [
-      { label: "Caiu bastante", value: "forca_caiu_muito", weight: 45 },
-      { label: "Caiu um pouco", value: "forca_caiu_pouco", weight: 25 },
-      { label: "Está igual ou melhor", value: "forca_estavel", weight: 0 }
+      { label: "Caíram bastante", value: "forca_caiu_muito", weight: 45 },
+      { label: "Caíram um pouco", value: "forca_caiu_pouco", weight: 25 },
+      { label: "Não reparei tanto", value: "forca_estavel", weight: 10 }
+      { label: "Estão iguais ou melhoraram", value: "forca_estavel", weight: 0 }
     ]
   },
 
   // 6️⃣ TREINO DE FORÇA
   {
     id: 6,
-    text: "Você faz musculação com foco em manter ou ganhar força?",
+    text: "Atualmente você treina musculação ou outro treino de força?",
     options: [
       { label: "Sim, treino estruturado", value: "forca_progressao", weight: 0 },
       { label: "Treino sem muita estratégia", value: "forca_irregular", weight: 25 },
+       { label: "Só faço caminhada ou cardio", value: "forca_nao_treina", weight: 50 }
       { label: "Não faço musculação", value: "forca_nao_treina", weight: 50 }
     ]
   },
@@ -75,11 +77,11 @@ export const QUESTIONS: Question[] = [
   // 7️⃣ PROTEÍNA POR REFEIÇÃO
   {
     id: 7,
-    text: "Em quantas refeições do dia você consome proteína de verdade?",
+    text: "Em quantas refeições do dia você consome boas quantidades de proteína?",
     options: [
       { label: "0–1", value: "proteina_0_1", weight: 55 },
       { label: "2", value: "proteina_2", weight: 35 },
-      { label: "3", value: "proteina_3", weight: 15 },
+      { label: "3", value: "proteina_3", weight: 10 },
       { label: "4 ou mais", value: "proteina_4_plus", weight: 0 }
     ]
   },
@@ -87,7 +89,7 @@ export const QUESTIONS: Question[] = [
   // 8️⃣ PROTEÍNA CALCULADA
   {
     id: 8,
-    text: "Você sabe quantos gramas de proteína consome por dia?",
+    text: "Você sabe quanto de proteína precisa comer por dia?",
     options: [
       { label: "Sim, calculo por peso corporal", value: "proteina_calculada", weight: 0 },
       { label: "Tenho noção aproximada", value: "proteina_feeling", weight: 40 },
@@ -122,7 +124,7 @@ export const QUESTIONS: Question[] = [
   // 1️⃣1️⃣ MICRO COMPROMISSO
   {
     id: 11,
-    text: "Você estaria disposto(a) a ajustar sua alimentação agora para manter o peso quando reduzir ou parar a medicação?",
+    text: "Você estaria disposto(a) a ajustar sua alimentação e rotina aproveitar ao máximo a medicação e reduzir o risco de rebote depois?",
     options: [
       { label: "Sim", value: "compromisso_sim", weight: 0 },
       { label: "Talvez", value: "compromisso_talvez", weight: 5 },
