@@ -41,7 +41,6 @@ const App: React.FC = () => {
     !isNewsStep;
 
   const getStageInfo = () => {
-
     const index = getQuestionIndex();
 
     if (index <= 3) {
@@ -79,7 +78,6 @@ const App: React.FC = () => {
   };
 
   const handleNext = () => {
-
     const questionIndex = getQuestionIndex();
 
     if (questionIndex === 3) {
@@ -151,51 +149,51 @@ const App: React.FC = () => {
       riskLevel = "Moderado";
     }
 
-    // 🔥 PERSONALIZAÇÃO POR RESPOSTA (SEM MUDAR ESTRUTURA)
+    // 🔥 PERSONALIZAÇÃO SEGURA (SEM ÍNDICE NUMÉRICO)
 
     let messageParts: string[] = [];
 
-    // Força
-    if (answers[5] === "forca_caiu_muito") {
-      messageParts.push("Sua força caiu bastante após iniciar a medicação, o que indica possível perda de massa muscular.");
-    }
+    Object.values(answers).forEach(value => {
 
-    if (answers[6] === "forca_nao_treina") {
-      messageParts.push("Sem treino de força ativo, o corpo tende a reduzir o metabolismo com mais facilidade.");
-    }
+      if (value === "forca_caiu_muito") {
+        messageParts.push("Sua força caiu bastante após iniciar a medicação, o que indica possível perda de massa muscular.");
+      }
 
-    // Proteína
-    if (answers[7] === "proteina_2") {
-      messageParts.push("Consumir proteína em apenas duas refeições pode não ser suficiente para proteger sua massa magra.");
-    }
+      if (value === "forca_nao_treina") {
+        messageParts.push("Sem treino de força ativo, o corpo tende a reduzir o metabolismo com mais facilidade.");
+      }
 
-    if (answers[8] === "proteina_feeling") {
-      messageParts.push("Ter apenas uma noção aproximada da proteína ingerida deixa margem para déficit proteico sem perceber.");
-    }
+      if (value === "proteina_2") {
+        messageParts.push("Consumir proteína em apenas duas refeições pode não ser suficiente para proteger sua massa magra.");
+      }
 
-    if (answers[8] === "proteina_nunca") {
-      messageParts.push("Não calcular proteína diariamente aumenta o risco de perda muscular durante o emagrecimento.");
-    }
+      if (value === "proteina_feeling") {
+        messageParts.push("Ter apenas uma noção aproximada da proteína ingerida deixa margem para déficit proteico sem perceber.");
+      }
 
-    // Dieta
-    if (answers[9] === "dieta_reduzi") {
-      messageParts.push("Apenas reduzir quantidades não garante proteção metabólica na fase pós-medicação.");
-    }
+      if (value === "proteina_nunca") {
+        messageParts.push("Não calcular proteína diariamente aumenta o risco de perda muscular durante o emagrecimento.");
+      }
 
-    if (answers[9] === "dieta_feeling") {
-      messageParts.push("Ajustar tudo no feeling pode funcionar no curto prazo, mas não sustenta o peso a longo prazo.");
-    }
+      if (value === "dieta_reduzi") {
+        messageParts.push("Apenas reduzir quantidades não garante proteção metabólica na fase pós-medicação.");
+      }
 
-    // Caneta / fase
-    if (answers[4] === "uso_desmame") {
-      messageParts.push("A fase de redução da dose é justamente quando o risco de rebote começa a aumentar.");
-    }
+      if (value === "dieta_feeling") {
+        messageParts.push("Ajustar tudo no feeling pode funcionar no curto prazo, mas não sustenta o peso a longo prazo.");
+      }
 
-    if (answers[4] === "uso_parou_rebote") {
-      messageParts.push("O início de reganho mostra que o corpo já está reagindo à retirada da medicação.");
-    }
+      if (value === "uso_desmame") {
+        messageParts.push("A fase de redução da dose é justamente quando o risco de rebote começa a aumentar.");
+      }
 
-    let personalizedMessage =
+      if (value === "uso_parou_rebote") {
+        messageParts.push("O início de reganho mostra que o corpo já está reagindo à retirada da medicação.");
+      }
+
+    });
+
+    const personalizedMessage =
       messageParts.length > 0
         ? messageParts.join(" ")
         : "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.";
@@ -209,7 +207,6 @@ const App: React.FC = () => {
   };
 
   const startAnalysis = () => {
-
     setLoading(true);
     setLoadingProgress(0);
 
@@ -306,6 +303,7 @@ const App: React.FC = () => {
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando Estrutura Metabólica
             </h2>
+
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
                 className="bg-[#0f766e] h-full transition-all duration-300"
