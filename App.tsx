@@ -88,18 +88,37 @@ const App: React.FC = () => {
     let score = 48;
     let riskLevel: "Moderado" | "Alto" | "Crítico" = "Moderado";
 
+    // 🔴 2 críticas
     if (criticalCount >= 2) {
-      score = 88;
+      score = 90;
       riskLevel = "Crítico";
-    } else if (criticalCount === 1) {
+    }
+
+    // 🔴 1 crítica + 1 moderada
+    else if (criticalCount === 1 && moderateCount >= 1) {
+      score = 90;
+      riskLevel = "Crítico";
+    }
+
+    // 🔴 1 crítica isolada
+    else if (criticalCount === 1) {
       score = 75;
       riskLevel = "Alto";
-    } else if (moderateCount >= 2) {
+    }
+
+    // 🟠 2 moderadas
+    else if (moderateCount >= 2) {
+      score = 75;
+      riskLevel = "Alto";
+    }
+
+    // 🟡 1 moderada
+    else if (moderateCount === 1) {
       score = 65;
       riskLevel = "Moderado";
     }
 
-    // 🔥 PERFIS PERSONALIZADOS
+    // 🔥 PERFIS PERSONALIZADOS (mantido exatamente igual)
 
     let eixoTransicao = 0;
     let eixoMuscular = 0;
