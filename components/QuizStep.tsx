@@ -24,23 +24,6 @@ const QuizStep: React.FC<QuizStepProps> = ({
     onNext();
   };
 
-  const baseBtn =
-    "w-full py-5 rounded-2xl font-bold text-base border transition-all duration-200 " +
-    "focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 " +
-    "active:outline-none " +
-    // ✅ sobrescreve CSS global de hover/focus deixando SEMPRE cinza quando não selecionado
-    "hover:!border-slate-200 hover:!shadow-none " +
-    "focus:!border-slate-200 focus:!shadow-none " +
-    "focus-visible:!border-slate-200 focus-visible:!shadow-none " +
-    "active:!border-slate-200 active:!shadow-none";
-
-  const selectedBtn =
-    "bg-[#0f766e] text-white !border-[#0f766e] shadow-md " +
-    "hover:!border-[#0f766e] focus:!border-[#0f766e] focus-visible:!border-[#0f766e] active:!border-[#0f766e]";
-
-  const unselectedBtn =
-    "bg-white text-slate-800 !border-slate-200";
-
   return (
     <div className="min-h-[88vh] w-full max-w-xl mx-auto px-6 flex flex-col animate-fadeIn">
       <div className="mt-24">
@@ -64,7 +47,14 @@ const QuizStep: React.FC<QuizStepProps> = ({
                 key={option.value}
                 type="button"
                 onClick={() => handleOptionClick(option.value)}
-                className={`${baseBtn} ${isSelected ? selectedBtn : unselectedBtn}`}
+                className={`w-full py-5 rounded-2xl font-bold text-base border transition-all duration-200
+                  focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0
+                  ${
+                    isSelected
+                      ? 'bg-[#0f766e] text-white border-[#0f766e]'
+                      : 'bg-white text-slate-800 border-slate-200'
+                  }
+                `}
               >
                 {option.label}
               </button>
@@ -77,7 +67,7 @@ const QuizStep: React.FC<QuizStepProps> = ({
             <button
               type="button"
               onClick={onBack}
-              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors focus:outline-none focus:ring-0"
             >
               ← Voltar pergunta
             </button>
