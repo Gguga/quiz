@@ -122,11 +122,11 @@ export const QUESTIONS: Question[] = [
   // 1️⃣1️⃣ COMPROMISSO
   {
     id: 11,
-    text: "Você estaria disposto(a) a ajustar sua alimentação e rotina para aproveitar melhor a medicação e reduzir o risco de recuperar peso depois?",
+    text: "Você quer emagrecer com qualidade e garantir que seu peso não volte depois?",
     options: [
-      { label: "Sim", value: "compromisso_sim", weight: 0 },
-      { label: "Talvez", value: "compromisso_talvez", weight: 5 },
-      { label: "Não tenho certeza", value: "compromisso_duvida", weight: 10 }
+      { label: "Sim, quero manter meu resultado", value: "compromisso_sim", weight: 0 },
+      { label: "Quero entender melhor como funciona", value: "compromisso_talvez", weight: 5 },
+      { label: "Não sei se faria tanta diferença", value: "compromisso_duvida", weight: 10 }
     ]
   }
 
