@@ -16,6 +16,13 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [showVsl, setShowVsl] = useState<boolean>(false);
+  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
+  const [stageCompleted, setStageCompleted] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimateGraph(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,14 +40,55 @@ const App: React.FC = () => {
     currentStep < QUESTIONS.length + 1 &&
     !isNewsStep;
 
+  const getStageInfo = () => {
+
+    const index = getQuestionIndex();
+
+    if (index <= 3) {
+      return {
+        label: "Etapa 1 • Perfil Metabólico",
+        total: 4,
+        position: index + 1
+      };
+    }
+
+    if (index <= 7) {
+      return {
+        label: "Etapa 2 • Proteção Muscular",
+        total: 4,
+        position: index - 3
+      };
+    }
+
+    return {
+      label: "Etapa 3 • Estrutura Alimentar",
+      total: 3,
+      position: index - 7
+    };
+  };
+
   const handleSelectOption = (value: string) => {
     const questionIndex = getQuestionIndex();
     const questionId = QUESTIONS[questionIndex].id;
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
+  const triggerStageComplete = (text: string) => {
+    setStageCompleted(text);
+    setTimeout(() => setStageCompleted(null), 1200);
+  };
+
   const handleNext = () => {
+
     const questionIndex = getQuestionIndex();
+
+    if (questionIndex === 3) {
+      triggerStageComplete("Perfil Metabólico mapeado");
+    }
+
+    if (questionIndex === 7) {
+      triggerStageComplete("Proteção Muscular analisada");
+    }
 
     if (questionIndex === QUESTIONS.length - 1) {
       startAnalysis();
@@ -106,8 +154,7 @@ const App: React.FC = () => {
     return {
       score,
       riskLevel,
-      personalizedMessage:
-        "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
+      personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
       keyInsights: []
     };
   };
@@ -138,20 +185,36 @@ const App: React.FC = () => {
     }, 150);
   };
 
-  const progressBar =
-    currentStep >= 0
-      ? ((currentStep + 1) / (QUESTIONS.length + 1)) * 100
-      : 0;
+  const stageInfo = isQuestionStep ? getStageInfo() : null;
+  const stagePercent = stageInfo
+    ? Math.round((stageInfo.position / stageInfo.total) * 100)
+    : 0;
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {currentStep >= 0 && !loading && !results && !showVsl && (
-        <div className="w-full h-[4px] bg-slate-200">
-          <div
-            className="bg-black h-full transition-all duration-300"
-            style={{ width: `${progressBar}%` }}
-          />
+      {isQuestionStep && !loading && !results && !showVsl && stageInfo && (
+        <div className="w-full px-6 pt-6 space-y-2">
+          <div className="flex justify-between text-xs font-semibold text-slate-500">
+            <span>{stageInfo.label}</span>
+            <span>{stagePercent}%</span>
+          </div>
+
+          <div className="w-full h-[6px] bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="bg-[#0f766e] h-full transition-all duration-500"
+              style={{ width: `${stagePercent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {stageCompleted && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl text-center space-y-3">
+            <div className="text-3xl">✔️</div>
+            <p className="font-bold text-[#0f766e]">{stageCompleted}</p>
+          </div>
         </div>
       )}
 
@@ -161,11 +224,11 @@ const App: React.FC = () => {
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
 
             <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
                 Diagnóstico Gratuito
               </p>
 
-              <h1 className="text-3xl font-black text-[#0f766e]">
+              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
                 Risco de Rebote
               </h1>
 
@@ -174,12 +237,42 @@ const App: React.FC = () => {
               </h2>
             </div>
 
+            <div className="grid grid-cols-2 gap-6 w-full mt-4">
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '22%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Baixo risco
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '82%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Alto risco
+                </p>
+              </div>
+            </div>
+
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-5 bg-[#0f766e] text-white rounded-2xl font-bold uppercase mt-6 shadow-lg"
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
             >
               Começar Avaliação Gratuita
             </button>
+
+            <p className="text-xs text-slate-400 pt-6">
+              © 2026 Protocolo Anti-Rebote
+            </p>
 
           </div>
         )}
@@ -206,10 +299,21 @@ const App: React.FC = () => {
 
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
-
-            <h2 className="text-xl font-bold text-[#0f766e] uppercase">
+            <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando Estrutura Metabólica
             </h2>
+
+            <div className="space-y-2 text-sm text-slate-500 font-medium">
+              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
+              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
+              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
+              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
+              {loadingProgress >= 90 && (
+                <p className="font-bold text-[#0f766e]">
+                  Finalizando diagnóstico...
+                </p>
+              )}
+            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
@@ -217,7 +321,6 @@ const App: React.FC = () => {
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-
           </div>
         )}
 
@@ -229,9 +332,7 @@ const App: React.FC = () => {
           />
         )}
 
-        {showVsl && !loading && (
-          <VslView />
-        )}
+        {showVsl && !loading && <VslView />}
 
       </main>
     </div>
