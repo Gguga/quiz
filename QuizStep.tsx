@@ -21,7 +21,10 @@ const QuizStep: React.FC<QuizStepProps> = ({
 
   const handleOptionClick = (value: string) => {
     onSelect(value);
-    onNext(); // chama direto, sem timeout
+
+    requestAnimationFrame(() => {
+      onNext();
+    });
   };
 
   return (
@@ -46,6 +49,7 @@ const QuizStep: React.FC<QuizStepProps> = ({
               type="button"
               onClick={() => handleOptionClick(option.value)}
               className={`w-full py-5 rounded-2xl font-bold text-base transition-all duration-200 border
+                focus:outline-none focus:ring-0
                 ${selectedOption === option.value
                   ? 'bg-[#0f766e] text-white border-[#0f766e] shadow-md'
                   : 'bg-white text-slate-800 border-slate-200 hover:border-[#0f766e] hover:shadow-sm'
@@ -62,7 +66,7 @@ const QuizStep: React.FC<QuizStepProps> = ({
             <button
               type="button"
               onClick={onBack}
-              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors"
+              className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors focus:outline-none"
             >
               ← Voltar pergunta
             </button>
