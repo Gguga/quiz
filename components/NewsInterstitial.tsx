@@ -31,16 +31,16 @@ const NewsInterstitial: React.FC<NewsInterstitialProps> = ({ onNext }) => {
 
           {/* SUBTÍTULO */}
           <p className="text-sm text-slate-700 leading-snug font-medium">
-            Estudo clínico publicado na <span className="font-bold">JAMA</span> acompanhou pacientes após a suspensão do tratamento com agonistas de GLP-1.
+            Estudo clínico publicado na <span className="font-bold">JAMA</span> acompanhou pacientes após a suspensão do tratamento.
           </p>
 
           {/* BLOCO IMPACTO */}
           <div className="bg-[#cc0000] p-4 rounded-xl">
             <p className="text-white text-sm font-semibold leading-snug">
-              A pergunta não é se a caneta funciona.
+              A 'caneta' funciona e é uma excelente ferramenta...
             </p>
             <p className="text-white text-sm font-black mt-1">
-              É se você está preparado para manter o peso sem ela.
+             Mas você tem estrutura pra manter o peso sem ela?
             </p>
           </div>
 
@@ -49,7 +49,7 @@ const NewsInterstitial: React.FC<NewsInterstitialProps> = ({ onNext }) => {
             onClick={onNext}
             className="w-full py-4 bg-[#0f766e] text-white rounded-xl font-black uppercase text-sm tracking-wide shadow-md hover:bg-[#0d6b63] transition"
           >
-            Continuar diagnóstico
+            Continuar avaliação
           </button>
 
         </div>
