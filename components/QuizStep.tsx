@@ -19,6 +19,11 @@ const QuizStep: React.FC<QuizStepProps> = ({
   isFirst
 }) => {
 
+  const handleOptionClick = (value: string) => {
+    onSelect(value);
+    onNext();
+  };
+
   return (
     <div className="min-h-[88vh] w-full max-w-xl mx-auto px-6 flex flex-col animate-fadeIn">
 
@@ -38,16 +43,13 @@ const QuizStep: React.FC<QuizStepProps> = ({
           {question.options.map((option) => (
             <button
               key={option.value}
-              onClick={() => {
-                onSelect(option.value);
-                setTimeout(() => {
-                  onNext();
-                }, 200);
-              }}
-              className={`w-full py-5 rounded-2xl font-bold text-base transition-all duration-200 border
-                ${selectedOption === option.value
-                  ? 'bg-[#0f766e] text-white border-[#0f766e] shadow-md'
-                  : 'bg-white text-slate-800 border-slate-200 hover:border-[#0f766e] hover:shadow-sm'
+              type="button"
+              onClick={() => handleOptionClick(option.value)}
+              className={`w-full py-5 rounded-2xl font-bold text-base border transition-all duration-200
+                ${
+                  selectedOption === option.value
+                    ? 'bg-[#0f766e] text-white border-[#0f766e]'
+                    : 'bg-white text-slate-800 border-slate-200'
                 }
               `}
             >
@@ -59,6 +61,7 @@ const QuizStep: React.FC<QuizStepProps> = ({
         {!isFirst && (
           <div className="mt-16 text-center">
             <button
+              type="button"
               onClick={onBack}
               className="text-slate-400 text-xs uppercase tracking-widest hover:text-slate-600 transition-colors"
             >
