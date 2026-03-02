@@ -162,7 +162,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         onClick={onCtaClick}
         className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl uppercase"
       >
-        Ver protocolo recomendado
+        Quero entender o que está faltando
       </button>
 
     </div>
