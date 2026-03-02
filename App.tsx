@@ -18,13 +18,11 @@ const App: React.FC = () => {
   const [showVsl, setShowVsl] = useState<boolean>(false);
   const [animateGraph, setAnimateGraph] = useState<boolean>(false);
 
-  // anima gráfico da capa
   useEffect(() => {
     const timer = setTimeout(() => setAnimateGraph(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // 🔥 SCROLL 100% GARANTIDO EM TODAS AS TELAS
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep, results, showVsl, loading]);
@@ -101,10 +99,70 @@ const App: React.FC = () => {
       riskLevel = "Moderado";
     }
 
+    // 🔥 PERFIS PERSONALIZADOS
+
+    let eixoTransicao = 0;
+    let eixoMuscular = 0;
+    let eixoProteina = 0;
+    let eixoAdaptacao = 0;
+
+    Object.values(answers).forEach(value => {
+
+      if (["uso_parou_rebote","uso_desmame","uso_atual_plato","tempo_longo","tempo_eterno"].includes(value))
+        eixoTransicao++;
+
+      if (["forca_caiu_muito","forca_caiu_pouco","forca_nao_treina","forca_irregular"].includes(value))
+        eixoMuscular++;
+
+      if (["proteina_0_1","proteina_2","proteina_nunca","proteina_feeling","dieta_feeling","dieta_reduzi"].includes(value))
+        eixoProteina++;
+
+      if (["colateral_varios","colateral_cansaco","colateral_digestivo","idade_40_49","idade_50_plus"].includes(value))
+        eixoAdaptacao++;
+    });
+
+    const eixos = [
+      { nome: "transicao", valor: eixoTransicao },
+      { nome: "muscular", valor: eixoMuscular },
+      { nome: "proteina", valor: eixoProteina },
+      { nome: "adaptacao", valor: eixoAdaptacao }
+    ];
+
+    eixos.sort((a, b) => b.valor - a.valor);
+
+    const dominante = eixos[0].nome;
+    const secundario = eixos[1].nome;
+
+    let personalizedMessage = "";
+
+    if (dominante === "transicao" && secundario === "muscular") {
+      personalizedMessage = "Seu corpo já iniciou ajustes desde a redução da medicação. Quando isso acontece sem proteção muscular suficiente, o metabolismo desacelera aos poucos. Existe um ponto específico nessa fase que define se o peso estabiliza ou começa a subir silenciosamente.";
+    }
+
+    else if (dominante === "transicao" && secundario === "proteina") {
+      personalizedMessage = "O emagrecimento aconteceu, mas a base alimentar ainda não sustenta totalmente essa fase. Sem proteína estratégica, o corpo tende a compensar quando a dose diminui. Existe um detalhe nessa transição que muda completamente o desfecho.";
+    }
+
+    else if (dominante === "muscular" && secundario === "proteina") {
+      personalizedMessage = "A proteção da massa muscular não está completa. Quando ingestão e estrutura alimentar não acompanham o processo, o metabolismo reduz gasto energético gradualmente. Existe um ajuste simples que evita essa queda silenciosa.";
+    }
+
+    else if (dominante === "proteina" && secundario === "transicao") {
+      personalizedMessage = "A alimentação ainda depende muito da medicação para manter o controle. Sem organização estratégica da ingestão, o metabolismo desacelera na retirada. Existe uma forma específica de estruturar essa fase.";
+    }
+
+    else if (dominante === "adaptacao" && secundario === "transicao") {
+      personalizedMessage = "Seu corpo demonstra sensibilidade às mudanças. Na fase pós-medicação, pequenos ajustes alimentares fazem grande diferença no resultado final. Existe um momento chave nessa transição que poucos antecipam.";
+    }
+
+    else {
+      personalizedMessage = "Existe consciência alimentar e organização. Isso já mostra uma base acima da média. O ponto crítico agora está na fase posterior à medicação, onde pequenos ajustes fazem grande diferença a longo prazo.";
+    }
+
     return {
       score,
       riskLevel,
-      personalizedMessage: "",
+      personalizedMessage,
       keyInsights: []
     };
   };
@@ -154,7 +212,6 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {/* CAPA */}
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
 
@@ -168,36 +225,8 @@ const App: React.FC = () => {
               </h1>
 
               <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-               Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
+                Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
               </h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 w-full mt-4">
-
-              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '22%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-700">
-                  Baixo risco
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '82%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-700">
-                  Alto risco
-                </p>
-              </div>
-
             </div>
 
             <button
@@ -235,18 +264,6 @@ const App: React.FC = () => {
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando Estrutura Metabólica
             </h2>
-
-            <div className="space-y-2 text-sm text-slate-500 font-medium">
-              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
-              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
-              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
-              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
-              {loadingProgress >= 90 && (
-                <p className="font-bold text-[#0f766e]">
-                  Finalizando diagnóstico...
-                </p>
-              )}
-            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
