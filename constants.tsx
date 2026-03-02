@@ -48,16 +48,14 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // (NEWS INTERSTITIAL ENTRA AQUI NO APP)
-
-  // 5️⃣ FORÇA APÓS MEDICAÇÃO
+  // 5️⃣ FORÇA / ENERGIA
   {
     id: 5,
-    text: "Depois que começou a usar a medicação, sua força/energia",
+    text: "Depois que começou a usar a medicação, sua força ou energia:",
     options: [
       { label: "Caíram bastante", value: "forca_caiu_muito", weight: 45 },
       { label: "Caíram um pouco", value: "forca_caiu_pouco", weight: 25 },
-      { label: "Não reparei tanto", value: "forca_estavel", weight: 10 }
+      { label: "Não reparei tanta diferença", value: "forca_estavel_medio", weight: 10 },
       { label: "Estão iguais ou melhoraram", value: "forca_estavel", weight: 0 }
     ]
   },
@@ -69,7 +67,7 @@ export const QUESTIONS: Question[] = [
     options: [
       { label: "Sim, treino estruturado", value: "forca_progressao", weight: 0 },
       { label: "Treino sem muita estratégia", value: "forca_irregular", weight: 25 },
-       { label: "Só faço caminhada ou cardio", value: "forca_nao_treina", weight: 50 }
+      { label: "Só faço caminhada ou cardio", value: "forca_cardio", weight: 45 },
       { label: "Não faço musculação", value: "forca_nao_treina", weight: 50 }
     ]
   },
@@ -97,10 +95,10 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 9️⃣ DIETA PENSADA PARA PROTEGER
+  // 9️⃣ DIETA
   {
     id: 9,
-    text: "Sua dieta atual foi pensada pra emagrecer com qualidade e conseguir manter depois?",
+    text: "Sua dieta atual foi pensada para emagrecer com qualidade e conseguir manter depois?",
     options: [
       { label: "Sim, já foi pensada para essa fase", value: "dieta_protecao_sim", weight: 0 },
       { label: "Está focada apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
@@ -121,10 +119,10 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 1️⃣1️⃣ MICRO COMPROMISSO
+  // 1️⃣1️⃣ COMPROMISSO
   {
     id: 11,
-    text: "Você estaria disposto(a) a ajustar sua alimentação e rotina aproveitar ao máximo a medicação e reduzir o risco de rebote depois?",
+    text: "Você estaria disposto(a) a ajustar sua alimentação e rotina para aproveitar melhor a medicação e reduzir o risco de recuperar peso depois?",
     options: [
       { label: "Sim", value: "compromisso_sim", weight: 0 },
       { label: "Talvez", value: "compromisso_talvez", weight: 5 },
