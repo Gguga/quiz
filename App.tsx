@@ -41,6 +41,7 @@ const App: React.FC = () => {
     !isNewsStep;
 
   const getStageInfo = () => {
+
     const index = getQuestionIndex();
 
     if (index <= 3) {
@@ -78,6 +79,7 @@ const App: React.FC = () => {
   };
 
   const handleNext = () => {
+
     const questionIndex = getQuestionIndex();
 
     if (questionIndex === 3) {
@@ -149,64 +151,16 @@ const App: React.FC = () => {
       riskLevel = "Moderado";
     }
 
-    // 🔥 PERSONALIZAÇÃO SEGURA (SEM ÍNDICE NUMÉRICO)
-
-    let messageParts: string[] = [];
-
-    Object.values(answers).forEach(value => {
-
-      if (value === "forca_caiu_muito") {
-        messageParts.push("Sua força caiu bastante após iniciar a medicação, o que indica possível perda de massa muscular.");
-      }
-
-      if (value === "forca_nao_treina") {
-        messageParts.push("Sem treino de força ativo, o corpo tende a reduzir o metabolismo com mais facilidade.");
-      }
-
-      if (value === "proteina_2") {
-        messageParts.push("Consumir proteína em apenas duas refeições pode não ser suficiente para proteger sua massa magra.");
-      }
-
-      if (value === "proteina_feeling") {
-        messageParts.push("Ter apenas uma noção aproximada da proteína ingerida deixa margem para déficit proteico sem perceber.");
-      }
-
-      if (value === "proteina_nunca") {
-        messageParts.push("Não calcular proteína diariamente aumenta o risco de perda muscular durante o emagrecimento.");
-      }
-
-      if (value === "dieta_reduzi") {
-        messageParts.push("Apenas reduzir quantidades não garante proteção metabólica na fase pós-medicação.");
-      }
-
-      if (value === "dieta_feeling") {
-        messageParts.push("Ajustar tudo no feeling pode funcionar no curto prazo, mas não sustenta o peso a longo prazo.");
-      }
-
-      if (value === "uso_desmame") {
-        messageParts.push("A fase de redução da dose é justamente quando o risco de rebote começa a aumentar.");
-      }
-
-      if (value === "uso_parou_rebote") {
-        messageParts.push("O início de reganho mostra que o corpo já está reagindo à retirada da medicação.");
-      }
-
-    });
-
-    const personalizedMessage =
-      messageParts.length > 0
-        ? messageParts.join(" ")
-        : "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.";
-
     return {
       score,
       riskLevel,
-      personalizedMessage,
+      personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
       keyInsights: []
     };
   };
 
   const startAnalysis = () => {
+
     setLoading(true);
     setLoadingProgress(0);
 
@@ -232,9 +186,10 @@ const App: React.FC = () => {
   };
 
   const stageInfo = isQuestionStep ? getStageInfo() : null;
-  const stagePercent = stageInfo
-    ? Math.round((stageInfo.position / stageInfo.total) * 100)
-    : 0;
+  const stagePercent =
+    stageInfo
+      ? Math.round((stageInfo.position / stageInfo.total) * 100)
+      : 0;
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
@@ -255,20 +210,58 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {stageCompleted && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl text-center space-y-3">
+            <div className="text-3xl">✔️</div>
+            <p className="font-bold text-[#0f766e]">{stageCompleted}</p>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 w-full max-w-md mx-auto">
 
         {currentStep === -1 && !loading && !results && !showVsl && (
           <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
+
             <div className="space-y-4">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
                 Diagnóstico Gratuito
               </p>
+
               <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
                 Risco de Rebote
               </h1>
+
               <h2 className="text-base text-slate-600 max-w-sm mx-auto">
                 Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
               </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 w-full mt-4">
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '22%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Baixo risco
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
+                    style={{ height: animateGraph ? '82%' : '0%' }}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">
+                  Alto risco
+                </p>
+              </div>
             </div>
 
             <button
@@ -281,6 +274,7 @@ const App: React.FC = () => {
             <p className="text-xs text-slate-400 pt-6">
               © 2026 Protocolo Anti-Rebote
             </p>
+
           </div>
         )}
 
@@ -298,11 +292,29 @@ const App: React.FC = () => {
           />
         )}
 
+        {isNewsStep && !loading && !results && !showVsl && (
+          <div className="py-6 px-4">
+            <NewsInterstitial onNext={handleNext} />
+          </div>
+        )}
+
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Analisando Estrutura Metabólica
             </h2>
+
+            <div className="space-y-2 text-sm text-slate-500 font-medium">
+              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
+              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
+              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
+              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
+              {loadingProgress >= 90 && (
+                <p className="font-bold text-[#0f766e]">
+                  Finalizando diagnóstico...
+                </p>
+              )}
+            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
