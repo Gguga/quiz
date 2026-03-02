@@ -37,10 +37,11 @@ const NewsInterstitial: React.FC<NewsInterstitialProps> = ({ onNext }) => {
           {/* BLOCO IMPACTO */}
           <div className="bg-[#cc0000] p-4 rounded-xl">
             <p className="text-white text-sm font-semibold leading-snug">
-              A 'caneta' funciona e é uma excelente ferramenta...
+              A pergunta não é se elas funcionam.
             </p>
+            
             <p className="text-white text-sm font-black mt-1">
-             Mas você tem estrutura pra manter o peso sem ela?
+             Mas sim: Você vai conseguir manter depois?
             </p>
           </div>
 
