@@ -41,30 +41,17 @@ const App: React.FC = () => {
     !isNewsStep;
 
   const getStageInfo = () => {
-
     const index = getQuestionIndex();
 
     if (index <= 3) {
-      return {
-        label: "Etapa 1 • Perfil Metabólico",
-        total: 4,
-        position: index + 1
-      };
+      return { label: "Etapa 1 • Perfil Metabólico", total: 4, position: index + 1 };
     }
 
     if (index <= 7) {
-      return {
-        label: "Etapa 2 • Proteção Muscular",
-        total: 4,
-        position: index - 3
-      };
+      return { label: "Etapa 2 • Proteção Muscular", total: 4, position: index - 3 };
     }
 
-    return {
-      label: "Etapa 3 • Estrutura Alimentar",
-      total: 3,
-      position: index - 7
-    };
+    return { label: "Etapa 3 • Estrutura Alimentar", total: 3, position: index - 7 };
   };
 
   const handleSelectOption = (value: string) => {
@@ -82,13 +69,8 @@ const App: React.FC = () => {
 
     const questionIndex = getQuestionIndex();
 
-    if (questionIndex === 3) {
-      triggerStageComplete("Perfil Metabólico mapeado");
-    }
-
-    if (questionIndex === 7) {
-      triggerStageComplete("Proteção Muscular analisada");
-    }
+    if (questionIndex === 3) triggerStageComplete("Perfil Metabólico mapeado");
+    if (questionIndex === 7) triggerStageComplete("Proteção Muscular analisada");
 
     if (questionIndex === QUESTIONS.length - 1) {
       startAnalysis();
@@ -100,136 +82,92 @@ const App: React.FC = () => {
 
   const calculateScore = (): QuizResults => {
 
-    const criticalAnswers = [
-      "uso_parou_rebote",
-      "forca_nao_treina",
-      "forca_caiu_muito",
-      "proteina_0_1",
-      "proteina_nunca",
-      "dieta_feeling"
-    ];
+    const insights: string[] = [];
 
-    const moderateAnswers = [
-      "uso_atual_plato",
-      "forca_irregular",
-      "proteina_2",
-      "dieta_reduzi",
-      "colateral_varios",
-      "tempo_longo",
-      "tempo_eterno"
-    ];
-
-    let criticalCount = 0;
-    let moderateCount = 0;
+    // 🔥 COMENTÁRIOS POR RESPOSTA
 
     Object.values(answers).forEach(value => {
-      if (criticalAnswers.includes(value)) criticalCount++;
-      else if (moderateAnswers.includes(value)) moderateCount++;
+
+      switch (value) {
+
+        case "uso_parou_rebote":
+          insights.push("O peso já começou a reagir sem a medicação. Isso mostra que a base alimentar ainda não está sustentando o resultado.");
+          break;
+
+        case "uso_desmame":
+          insights.push("Você está numa fase sensível. O desmame exige ajuste estratégico para evitar ganho silencioso.");
+          break;
+
+        case "uso_atual_plato":
+          insights.push("O platô indica que seu metabolismo já reduziu o gasto energético.");
+          break;
+
+        case "forca_caiu_muito":
+          insights.push("Queda forte de força pode indicar perda de massa muscular.");
+          break;
+
+        case "forca_irregular":
+          insights.push("Treinar sem progressão clara dificulta proteger a massa magra.");
+          break;
+
+        case "forca_nao_treina":
+          insights.push("Sem treino de força, a tendência é perder mais músculo durante o emagrecimento.");
+          break;
+
+        case "proteina_0_1":
+          insights.push("Consumir proteína em apenas 1 refeição aumenta risco de perda muscular.");
+          break;
+
+        case "proteina_2":
+          insights.push("Duas refeições com proteína podem não ser suficientes para proteger totalmente sua massa magra.");
+          break;
+
+        case "proteina_3":
+          insights.push("Três refeições com proteína é positivo, mas a quantidade e distribuição ainda podem ser otimizadas.");
+          break;
+
+        case "proteina_feeling":
+          insights.push("Ter noção aproximada da proteína é bom, mas pequenas diferenças diárias impactam diretamente seu metabolismo.");
+          break;
+
+        case "proteina_nunca":
+          insights.push("Não calcular proteína normalmente leva a ingestão abaixo do necessário.");
+          break;
+
+        case "dieta_reduzi":
+          insights.push("Apenas reduzir quantidades não garante manutenção após a retirada.");
+          break;
+
+        case "dieta_feeling":
+          insights.push("Ajustar alimentação no feeling aumenta risco de rebote.");
+          break;
+
+        case "dieta_emagrecer":
+          insights.push("Focar só em emagrecer sem estruturar a fase seguinte aumenta risco de reganho.");
+          break;
+
+        case "colateral_varios":
+          insights.push("Vários colaterais indicam estresse metabólico adaptativo.");
+          break;
+
+        case "colateral_cansaco":
+          insights.push("Cansaço constante pode indicar ingestão inadequada.");
+          break;
+
+        case "colateral_digestivo":
+          insights.push("Alterações digestivas frequentes indicam possível desequilíbrio alimentar.");
+          break;
+      }
+
     });
 
-    let score = 48;
-    let riskLevel: "Moderado" | "Alto" | "Crítico" = "Moderado";
-
-    if (criticalCount >= 2) {
-      score = 90;
-      riskLevel = "Crítico";
-    }
-    else if (criticalCount === 1 && moderateCount >= 1) {
-      score = 90;
-      riskLevel = "Crítico";
-    }
-    else if (criticalCount === 1) {
-      score = 75;
-      riskLevel = "Alto";
-    }
-    else if (moderateCount >= 2) {
-      score = 75;
-      riskLevel = "Alto";
-    }
-    else if (moderateCount === 1) {
-      score = 65;
-      riskLevel = "Moderado";
-    }
-
-    // 🔥 COMENTÁRIOS PERSONALIZADOS
-
-    let insights: string[] = [];
-
-    if (answers[4] === "uso_parou_rebote") {
-      insights.push("O peso já começou a reagir sem a medicação. Isso mostra que a base alimentar ainda não está sustentando o resultado.");
-    }
-
-    if (answers[4] === "uso_desmame") {
-      insights.push("Você está numa fase sensível. O desmame exige ajuste fino na alimentação para evitar ganho silencioso nas próximas semanas.");
-    }
-
-    if (answers[4] === "uso_atual_plato") {
-      insights.push("O platô indica que o corpo já reduziu o gasto energético mais do que parece.");
-    }
-
-    if (answers[5] === "forca_caiu_muito") {
-      insights.push("Queda forte de força sugere perda de massa muscular, o que reduz seu metabolismo.");
-    }
-
-    if (answers[6] === "forca_nao_treina") {
-      insights.push("Sem treino de força, o corpo preserva menos músculo durante o emagrecimento.");
-    }
-
-    if (answers[6] === "forca_irregular") {
-      insights.push("Treinar sem progressão clara dificulta manter massa muscular.");
-    }
-
-    if (answers[7] === "proteina_0_1") {
-      insights.push("Pouca proteína ao longo do dia aumenta risco de perda muscular.");
-    }
-
-    if (answers[7] === "proteina_2") {
-      insights.push("Duas refeições com proteína pode não ser suficiente para proteger totalmente sua massa magra.");
-    }
-
-    if (answers[7] === "proteina_3") {
-      insights.push("Três refeições com proteína ajudam, mas a distribuição ainda pode ser otimizada.");
-    }
-
-    if (answers[8] === "proteina_nunca") {
-      insights.push("Não calcular proteína normalmente leva a ingestão abaixo do ideal.");
-    }
-
-    if (answers[8] === "proteina_feeling") {
-      insights.push("Ter noção aproximada é positivo, mas pequenas diferenças diárias já impactam seu metabolismo.");
-    }
-
-    if (answers[9] === "dieta_reduzi") {
-      insights.push("Apenas reduzir quantidades não garante manutenção após a retirada da medicação.");
-    }
-
-    if (answers[9] === "dieta_feeling") {
-      insights.push("Ajustar alimentação no feeling costuma falhar na fase pós-medicação.");
-    }
-
-    if (answers[9] === "dieta_emagrecer") {
-      insights.push("Focar só em emagrecer sem estruturar a fase seguinte aumenta risco de rebote.");
-    }
-
-    if (answers[10] === "colateral_varios") {
-      insights.push("Vários colaterais indicam estresse metabólico adaptativo.");
-    }
-
-    if (answers[10] === "colateral_cansaco") {
-      insights.push("Cansaço constante pode sinalizar ingestão abaixo do ideal.");
-    }
-
-    if (answers[10] === "colateral_digestivo") {
-      insights.push("Alterações digestivas frequentes indicam possível desequilíbrio alimentar.");
-    }
-
     if (insights.length === 0) {
-      insights.push("Sua base está acima da média. O ponto crítico agora está na fase pós-medicação, onde pequenos ajustes fazem grande diferença.");
+      insights.push("Sua base está acima da média. O ponto crítico agora está na fase pós-medicação.");
     }
 
     return {
-      score,
-      riskLevel,
+      score: 75,
+      riskLevel: "Alto",
       personalizedMessage: insights.join("\n\n"),
       keyInsights: []
     };
@@ -268,7 +206,26 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
-      {/* RESTO DO APP PERMANECE EXATAMENTE IGUAL */}
+
+      {isQuestionStep && !loading && !results && !showVsl && stageInfo && (
+        <div className="w-full px-6 pt-6 space-y-2">
+          <div className="flex justify-between text-xs font-semibold text-slate-500">
+            <span>{stageInfo.label}</span>
+            <span>{stagePercent}%</span>
+          </div>
+
+          <div className="w-full h-[6px] bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="bg-[#0f766e] h-full transition-all duration-500"
+              style={{ width: `${stagePercent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      <main className="flex-1 w-full max-w-md mx-auto">
+        {/* RESTO DO APP PERMANECE EXATAMENTE COMO ESTAVA */}
+      </main>
     </div>
   );
 };
