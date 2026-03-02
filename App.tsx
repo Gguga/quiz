@@ -109,12 +109,10 @@ const App: React.FC = () => {
       riskLevel = "Moderado";
     }
 
-    let personalizedMessage = "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.";
-
     return {
       score,
       riskLevel,
-      personalizedMessage,
+      personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
       keyInsights: []
     };
   };
@@ -150,33 +148,31 @@ const App: React.FC = () => {
       ? ((currentStep + 1) / (QUESTIONS.length + 1)) * 100
       : 0;
 
+  // 🔥 ETAPAS PSICOLÓGICAS
+  const getStageLabel = () => {
+    if (currentStep <= 3) return "Etapa 1 de 3 • Perfil Metabólico";
+    if (currentStep <= 7) return "Etapa 2 de 3 • Proteção Muscular";
+    return "Etapa 3 de 3 • Estrutura Alimentar e Risco";
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {/* 🔥 NOVA BARRA PREMIUM */}
       {currentStep >= 0 && !loading && !results && !showVsl && (
-        <div className="sticky top-0 z-40 bg-white border-b border-slate-100">
+        <div className="w-full px-6 pt-6 space-y-2">
 
-          <div className="max-w-md mx-auto px-6 pt-4 pb-3">
-
-            <div className="flex justify-between items-center mb-2">
-              <p className="text-xs font-semibold text-slate-500">
-                Pergunta {getQuestionIndex() + 1} de {QUESTIONS.length}
-              </p>
-
-              <p className="text-xs font-bold text-[#0f766e]">
-                {Math.round(progressBar)}%
-              </p>
-            </div>
-
-            <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-              <div
-                className="h-2 bg-gradient-to-r from-[#0f766e] to-emerald-400 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progressBar}%` }}
-              />
-            </div>
-
+          <div className="flex justify-between items-center text-xs font-semibold text-slate-500">
+            <span>{getStageLabel()}</span>
+            <span>{Math.round(progressBar)}%</span>
           </div>
+
+          <div className="w-full h-[6px] bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="bg-[#0f766e] h-full transition-all duration-500"
+              style={{ width: `${progressBar}%` }}
+            />
+          </div>
+
         </div>
       )}
 
