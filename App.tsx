@@ -14,54 +14,26 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [showVsl, setShowVsl] = useState<boolean>(false);
-  const [animateGraph, setAnimateGraph] = useState<boolean>(false);
-  const [stageCompleted, setStageCompleted] = useState<string | null>(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimateGraph(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const [initializing, setInitializing] = useState<boolean>(false);
+  const [initProgress, setInitProgress] = useState<number>(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep, results, showVsl, loading]);
 
-  const getQuestionIndex = () => {
-    return currentStep;
-  };
+  const getQuestionIndex = () => currentStep;
 
   const isQuestionStep =
     currentStep >= 0 &&
     currentStep < QUESTIONS.length;
 
-  const getStageInfo = () => {
+  const getManipulatedProgress = (index: number) => {
 
-    const index = getQuestionIndex();
+    const map = [
+      18,27,39,52,61,70,79,86,92,96,100
+    ];
 
-    if (index <= 3) {
-      return {
-        label: "Etapa 1 • Perfil Metabólico",
-        total: 4,
-        position: index,
-        isLast: index === 3
-      };
-    }
-
-    if (index <= 7) {
-      return {
-        label: "Etapa 2 • Proteção Muscular",
-        total: 4,
-        position: index - 4,
-        isLast: index === 7
-      };
-    }
-
-    return {
-      label: "Etapa 3 • Estrutura Alimentar",
-      total: 3,
-      position: index - 8,
-      isLast: index === 10
-    };
+    return map[index] || 100;
   };
 
   const handleSelectOption = (value: string) => {
@@ -70,22 +42,9 @@ const App: React.FC = () => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  const triggerStageComplete = (text: string) => {
-    setStageCompleted(text);
-    setTimeout(() => setStageCompleted(null), 1400);
-  };
-
   const handleNext = () => {
 
     const questionIndex = getQuestionIndex();
-
-    if (questionIndex === 3) {
-      triggerStageComplete("Perfil metabólico identificado");
-    }
-
-    if (questionIndex === 7) {
-      triggerStageComplete("Proteção muscular analisada");
-    }
 
     if (questionIndex === QUESTIONS.length - 1) {
       startAnalysis();
@@ -143,46 +102,7 @@ const App: React.FC = () => {
     const indiceMetabolico =
       100 - score + Math.floor(Math.random() * 6) - 3;
 
-    let comparacaoPopulacional = "";
-
-    if (riskLevel === "Crítico") {
-      comparacaoPopulacional =
-        "Seu perfil apresenta um padrão metabólico frequentemente associado a alto risco de recuperação de peso.";
-    }
-    else if (riskLevel === "Alto") {
-      comparacaoPopulacional =
-        "Seu perfil apresenta características acima da média observada em outros usuários avaliados.";
-    }
-    else {
-      comparacaoPopulacional =
-        "Seu perfil está dentro de uma faixa intermediária observada neste diagnóstico.";
-    }
-
     const insights: string[] = [];
-
-    if (answers[6] === "forca_nao_treina") {
-      insights.push("Ausência de estímulo de musculação para preservar massa muscular");
-    }
-
-    if (answers[5] === "forca_caiu_muito") {
-      insights.push("Queda de força detectada durante o processo de emagrecimento");
-    }
-
-    if (answers[7] === "proteina_0_1" || answers[8] === "proteina_nunca") {
-      insights.push("Ingestão de proteína abaixo da faixa de preservação muscular");
-    }
-
-    if (answers[4] === "uso_parou_rebote") {
-      insights.push("Sinais iniciais de recuperação de peso após interrupção da medicação");
-    }
-
-    if (answers[9] === "dieta_feeling") {
-      insights.push("Estrutura alimentar sem estratégia metabólica consistente");
-    }
-
-    if (answers[6] === "forca_irregular") {
-      insights.push("Treino de força irregular ao longo do processo");
-    }
 
     const keyInsights = insights.slice(0, 3);
 
@@ -193,7 +113,7 @@ const App: React.FC = () => {
         "Seu perfil apresenta fatores que podem comprometer a estabilidade do peso após o emagrecimento.",
       keyInsights,
       sinaisDetectados,
-      comparacaoPopulacional,
+      comparacaoPopulacional: "",
       indiceMetabolico
     };
   };
@@ -224,28 +144,45 @@ const App: React.FC = () => {
     }, 150);
   };
 
-  const stageInfo = isQuestionStep ? getStageInfo() : null;
+  const startQuiz = () => {
 
-  const stagePercent =
-    stageInfo
-      ? (() => {
-        const raw = Math.round(((stageInfo.position + 1) / stageInfo.total) * 100);
+    setInitializing(true);
 
-        if (stageCompleted) return 100;
+    let p = 0;
 
-        if (stageInfo.isLast) return Math.min(raw, 92);
+    const interval = setInterval(() => {
 
-        return raw;
-      })()
-      : 0;
+      p += 5;
+
+      if (p >= 15) {
+
+        clearInterval(interval);
+
+        setTimeout(() => {
+          setInitializing(false);
+          setCurrentStep(0);
+        }, 400);
+
+      }
+
+      setInitProgress(p);
+
+    }, 80);
+
+  };
 
   const questionNumber = getQuestionIndex() + 1;
   const totalQuestions = QUESTIONS.length;
 
+  const progressPercent =
+    isQuestionStep
+      ? getManipulatedProgress(getQuestionIndex())
+      : 0;
+
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
-      {isQuestionStep && !loading && !results && !showVsl && stageInfo && (
+      {isQuestionStep && !loading && !results && !showVsl && (
 
         <div className="w-full px-6 pt-6 space-y-3">
 
@@ -253,15 +190,10 @@ const App: React.FC = () => {
             Pergunta {questionNumber} de {totalQuestions}
           </div>
 
-          <div className="flex justify-between text-xs font-semibold text-slate-500">
-            <span>{stageInfo.label}</span>
-            <span>{stagePercent}%</span>
-          </div>
-
           <div className="w-full h-[6px] bg-slate-200 rounded-full overflow-hidden">
             <div
               className="bg-[#0f766e] h-full transition-all duration-500"
-              style={{ width: `${stagePercent}%` }}
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
 
@@ -270,7 +202,7 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {currentStep === -1 && !loading && !results && !showVsl && (
+        {currentStep === -1 && !loading && !results && !showVsl && !initializing && (
 
           <div className="flex flex-col items-center px-6 text-center space-y-10 pt-20">
 
@@ -290,11 +222,6 @@ const App: React.FC = () => {
                 Outras conseguem manter.
               </p>
 
-              <p className="text-slate-600 text-sm max-w-sm mx-auto">
-                Este diagnóstico analisa sinais metabólicos associados
-                ao risco de rebote após o emagrecimento.
-              </p>
-
               <p className="text-sm text-amber-600 font-semibold">
                 ⚠️ Muitas pessoas descobrem que seu metabolismo ainda
                 não está preparado para manter o peso.
@@ -307,7 +234,7 @@ const App: React.FC = () => {
             </div>
 
             <button
-              onClick={() => setCurrentStep(0)}
+              onClick={startQuiz}
               className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase shadow-xl"
             >
               Descobrir meu risco
@@ -315,6 +242,31 @@ const App: React.FC = () => {
 
             <div className="text-xs text-slate-400 pt-6">
               Baseado em padrões observados em avaliações metabólicas.
+            </div>
+
+          </div>
+
+        )}
+
+        {initializing && (
+
+          <div className="flex flex-col items-center justify-center text-center p-6 pt-32 space-y-6">
+
+            <h2 className="text-xl font-black text-[#0f766e] uppercase">
+              Iniciando análise metabólica
+            </h2>
+
+            <div className="space-y-2 text-sm text-slate-500">
+              <p>Carregando padrões de avaliação...</p>
+              <p>Comparando perfis metabólicos...</p>
+              <p>Preparando diagnóstico personalizado...</p>
+            </div>
+
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div
+                className="bg-[#0f766e] h-full transition-all duration-200"
+                style={{ width: `${initProgress}%` }}
+              />
             </div>
 
           </div>
@@ -344,22 +296,6 @@ const App: React.FC = () => {
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Gerando Diagnóstico Personalizado
             </h2>
-
-            <p className="text-xs text-slate-500">
-              Seu perfil está sendo comparado com padrões metabólicos observados.
-            </p>
-
-            <div className="space-y-2 text-sm text-slate-500 font-medium">
-              {loadingProgress > 5 && <p>✓ Processando respostas...</p>}
-              {loadingProgress > 25 && <p>✓ Analisando estímulo muscular...</p>}
-              {loadingProgress > 45 && <p>✓ Calculando ingestão proteica...</p>}
-              {loadingProgress > 65 && <p>✓ Identificando padrão metabólico...</p>}
-              {loadingProgress > 85 && (
-                <p className="font-bold text-[#0f766e]">
-                  ✓ Gerando diagnóstico final...
-                </p>
-              )}
-            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
