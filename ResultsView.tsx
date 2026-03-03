@@ -35,28 +35,28 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (situacao === "uso_parou_rebote") {
     fatores.push({
       peso: 3,
-      texto: "Seu corpo já pode estar iniciando um processo de recuperação de peso após a interrupção da medicação."
+      texto: "Você relatou que interrompeu a medicação recentemente, o que costuma ser um momento em que o corpo inicia recuperação de peso."
     });
   }
 
   if (treino === "forca_nao_treina") {
     fatores.push({
       peso: 3,
-      texto: "Atualmente seu organismo não recebe estímulo de musculação suficiente para preservar massa muscular."
+      texto: "Você indicou que atualmente não treina musculação, o que reduz o estímulo necessário para preservar massa muscular."
     });
   }
 
   if (quedaForca === "forca_caiu_muito") {
     fatores.push({
       peso: 3,
-      texto: "Suas respostas indicam uma queda relevante de força durante o processo, um sinal comum de perda de massa muscular."
+      texto: "Você percebeu queda relevante de força durante o processo, um sinal comum de perda de massa muscular."
     });
   }
 
   if (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") {
     fatores.push({
       peso: 3,
-      texto: "Sua ingestão de proteína provavelmente está abaixo do nível necessário para preservar massa muscular durante o emagrecimento."
+      texto: "Pelas suas respostas, sua ingestão de proteína provavelmente está abaixo do necessário para preservar massa muscular."
     });
   }
 
@@ -72,21 +72,21 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (situacao === "uso_atual_plato") {
     fatores.push({
       peso: 2,
-      texto: "Mesmo utilizando a medicação, seu peso parece já não responder com a mesma facilidade."
+      texto: "Você relatou que mesmo usando a medicação o peso já não responde com a mesma facilidade."
     });
   }
 
   if (treino === "forca_irregular") {
     fatores.push({
       peso: 2,
-      texto: "O estímulo de musculação aparece de forma irregular, o que dificulta preservar massa muscular."
+      texto: "O treino de musculação aparece de forma irregular na sua rotina."
     });
   }
 
   if (proteinaRef === "proteina_2") {
     fatores.push({
       peso: 2,
-      texto: "A distribuição de proteína ao longo do dia pode não estar suficiente para proteger a massa muscular."
+      texto: "A distribuição de proteína ao longo do dia pode não estar suficiente para proteger massa muscular."
     });
   }
 
@@ -122,12 +122,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({
     descricao =
       principais.map(f => f.texto).join("\n\n") +
       "\n\n" +
-      "Quando esses fatores aparecem juntos, muitas pessoas até conseguem emagrecer no início.\n\nMas o corpo tende a recuperar gordura depois.";
+      "Quando esses fatores aparecem juntos, muitas pessoas até conseguem emagrecer no início.\n\nMas o corpo tende a recuperar gordura com o tempo.";
 
   } else {
 
     descricao =
-      "Alguns sinais do seu questionário indicam que o emagrecimento pode não estar totalmente sustentado por mecanismos estáveis e mudança de hábitos.";
+      "Alguns sinais indicam que o emagrecimento pode não estar sendo sustentado por mecanismos metabólicos estáveis.";
   }
 
   const sinaisTexto =
@@ -171,7 +171,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
       <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-2">
 
         <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
-          Análise metabólica
+          Análise metabólica do seu perfil
         </p>
 
         <p className="text-2xl font-black text-slate-900">
@@ -184,37 +184,30 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       </div>
 
-      {/* INSIGHTS */}
-
-      {results.keyInsights.length > 0 && (
-
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-3">
-
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-            Sinais detectados no seu perfil
-          </p>
-
-          <ul className="space-y-2 text-sm text-slate-700">
-
-            {results.keyInsights.map((insight, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <span className="text-red-500 font-bold">•</span>
-                <span>{insight}</span>
-              </li>
-            ))}
-
-          </ul>
-
-        </div>
-
-      )}
-
       {/* DIAGNÓSTICO */}
 
       <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 whitespace-pre-line">
         <p className="text-amber-800 font-semibold text-sm leading-relaxed">
           {descricao}
         </p>
+      </div>
+
+      {/* CONTEXTO PERSONALIZADO */}
+
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+          O que isso indica
+        </p>
+
+        <p className="text-sm text-slate-700 leading-relaxed">
+          Pelas respostas do seu questionário, seu emagrecimento pode estar acontecendo sem proteção metabólica suficiente.
+        </p>
+
+        <p className="text-sm text-slate-700 leading-relaxed mt-3">
+          Nesses casos, o peso até pode cair no início — mas o organismo tende a recuperar gordura depois.
+        </p>
+
       </div>
 
       {/* TRANSIÇÃO */}
@@ -226,18 +219,18 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
 
         <p className="text-sm font-semibold text-slate-900">
-         E é justamente esse ponto que separa quem mantém o resultado de quem recupera o peso depois.
+          E é justamente esse ponto que separa quem mantém o resultado de quem recupera o peso depois.
         </p>
 
       </div>
 
-           {/* CTA */}
+      {/* CTA */}
 
       <button
         onClick={onCtaClick}
-        className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl uppercase"
+        className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-semibold text-lg transition-all shadow-xl"
       >
-       Descobrir como
+        Descobrir como isso funciona
       </button>
 
     </div>
