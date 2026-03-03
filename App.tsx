@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
 import QuizStep from './QuizStep';
@@ -127,35 +127,51 @@ const App: React.FC = () => {
       else if (moderateAnswers.includes(value)) moderateCount++;
     });
 
-    let score = 48;
+    const sinaisDetectados = criticalCount + moderateCount;
+
+    let score = 48 + Math.floor(Math.random() * 6);
     let riskLevel: "Moderado" | "Alto" | "Crítico" = "Moderado";
 
     if (criticalCount >= 2) {
-      score = 90;
+      score = 88 + Math.floor(Math.random() * 7);
       riskLevel = "Crítico";
     }
     else if (criticalCount === 1 && moderateCount >= 1) {
-      score = 90;
+      score = 88 + Math.floor(Math.random() * 7);
       riskLevel = "Crítico";
     }
     else if (criticalCount === 1) {
-      score = 75;
+      score = 72 + Math.floor(Math.random() * 8);
       riskLevel = "Alto";
     }
     else if (moderateCount >= 2) {
-      score = 75;
+      score = 72 + Math.floor(Math.random() * 8);
       riskLevel = "Alto";
     }
     else if (moderateCount === 1) {
-      score = 65;
+      score = 62 + Math.floor(Math.random() * 6);
       riskLevel = "Moderado";
+    }
+
+    let comparacaoPopulacional = "";
+
+    if (riskLevel === "Crítico") {
+      comparacaoPopulacional = "Seu risco está entre os mais altos observados neste tipo de perfil metabólico.";
+    }
+    else if (riskLevel === "Alto") {
+      comparacaoPopulacional = "Seu risco está acima da média das pessoas avaliadas neste diagnóstico.";
+    }
+    else {
+      comparacaoPopulacional = "Seu risco está dentro de uma faixa moderada, mas ainda exige atenção para evitar recuperação do peso.";
     }
 
     return {
       score,
       riskLevel,
       personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
-      keyInsights: []
+      keyInsights: [],
+      sinaisDetectados,
+      comparacaoPopulacional
     };
   };
 
