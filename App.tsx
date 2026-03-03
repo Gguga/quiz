@@ -168,11 +168,41 @@ const App: React.FC = () => {
       comparacaoPopulacional = "Seu risco está dentro de uma faixa moderada, mas ainda exige atenção para evitar recuperação do peso.";
     }
 
+    // 🔎 Geração automática de insights personalizados
+
+    const insights: string[] = [];
+
+    if (answers[6] === "forca_nao_treina") {
+      insights.push("Ausência de estímulo de musculação para preservar massa muscular");
+    }
+
+    if (answers[5] === "forca_caiu_muito") {
+      insights.push("Queda de força detectada durante o processo de emagrecimento");
+    }
+
+    if (answers[7] === "proteina_0_1" || answers[8] === "proteina_nunca") {
+      insights.push("Ingestão de proteína abaixo do necessário para proteger massa magra");
+    }
+
+    if (answers[4] === "uso_parou_rebote") {
+      insights.push("Sinais de recuperação de peso após interrupção da medicação");
+    }
+
+    if (answers[9] === "dieta_feeling") {
+      insights.push("Estrutura alimentar sem estratégia metabólica consistente");
+    }
+
+    if (answers[6] === "forca_irregular") {
+      insights.push("Treino de força irregular ao longo do processo");
+    }
+
+    const keyInsights = insights.slice(0, 3);
+
     return {
       score,
       riskLevel,
       personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
-      keyInsights: [],
+      keyInsights,
       sinaisDetectados,
       comparacaoPopulacional,
       indiceMetabolico
