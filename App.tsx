@@ -75,7 +75,7 @@ const App: React.FC = () => {
 
   const triggerStageComplete = (text: string) => {
     setStageCompleted(text);
-    setTimeout(() => setStageCompleted(null), 1200);
+    setTimeout(() => setStageCompleted(null), 1400);
   };
 
   const handleNext = () => {
@@ -83,11 +83,11 @@ const App: React.FC = () => {
     const questionIndex = getQuestionIndex();
 
     if (questionIndex === 3) {
-      triggerStageComplete("Perfil Metabólico mapeado");
+      triggerStageComplete("Perfil metabólico identificado");
     }
 
     if (questionIndex === 7) {
-      triggerStageComplete("Proteção Muscular analisada");
+      triggerStageComplete("Proteção muscular analisada");
     }
 
     if (questionIndex === QUESTIONS.length - 1) {
@@ -129,29 +129,21 @@ const App: React.FC = () => {
 
     const sinaisDetectados = criticalCount + moderateCount;
 
-    let score = 48 + Math.floor(Math.random() * 6);
-    let riskLevel: "Moderado" | "Alto" | "Crítico" = "Moderado";
+    // NOVO ALGORITMO REALISTA
 
-    if (criticalCount >= 2) {
-      score = 88 + Math.floor(Math.random() * 7);
-      riskLevel = "Crítico";
-    }
-    else if (criticalCount === 1 && moderateCount >= 1) {
-      score = 88 + Math.floor(Math.random() * 7);
-      riskLevel = "Crítico";
-    }
-    else if (criticalCount === 1) {
-      score = 72 + Math.floor(Math.random() * 8);
-      riskLevel = "Alto";
-    }
-    else if (moderateCount >= 2) {
-      score = 72 + Math.floor(Math.random() * 8);
-      riskLevel = "Alto";
-    }
-    else if (moderateCount === 1) {
-      score = 62 + Math.floor(Math.random() * 6);
-      riskLevel = "Moderado";
-    }
+    let score =
+      40 +
+      criticalCount * 18 +
+      moderateCount * 9 +
+      Math.floor(Math.random() * 6) - 3;
+
+    score = Math.max(42, Math.min(score, 95));
+
+    let riskLevel: "Moderado" | "Alto" | "Crítico";
+
+    if (score >= 88) riskLevel = "Crítico";
+    else if (score >= 72) riskLevel = "Alto";
+    else riskLevel = "Moderado";
 
     const indiceMetabolico =
       100 - score + Math.floor(Math.random() * 6) - 3;
@@ -159,16 +151,17 @@ const App: React.FC = () => {
     let comparacaoPopulacional = "";
 
     if (riskLevel === "Crítico") {
-      comparacaoPopulacional = "Seu risco está entre os mais altos observados neste tipo de perfil metabólico.";
+      comparacaoPopulacional =
+        "Seu perfil apresenta um padrão metabólico frequentemente associado a alto risco de recuperação de peso.";
     }
     else if (riskLevel === "Alto") {
-      comparacaoPopulacional = "Seu risco está acima da média das pessoas avaliadas neste diagnóstico.";
+      comparacaoPopulacional =
+        "Seu perfil apresenta características acima da média observada em outros usuários avaliados.";
     }
     else {
-      comparacaoPopulacional = "Seu risco está dentro de uma faixa moderada, mas ainda exige atenção para evitar recuperação do peso.";
+      comparacaoPopulacional =
+        "Seu perfil está dentro de uma faixa intermediária observada neste diagnóstico.";
     }
-
-    // 🔎 Geração automática de insights personalizados
 
     const insights: string[] = [];
 
@@ -181,11 +174,11 @@ const App: React.FC = () => {
     }
 
     if (answers[7] === "proteina_0_1" || answers[8] === "proteina_nunca") {
-      insights.push("Ingestão de proteína abaixo do necessário para proteger massa magra");
+      insights.push("Ingestão de proteína abaixo da faixa de preservação muscular");
     }
 
     if (answers[4] === "uso_parou_rebote") {
-      insights.push("Sinais de recuperação de peso após interrupção da medicação");
+      insights.push("Sinais iniciais de recuperação de peso após interrupção da medicação");
     }
 
     if (answers[9] === "dieta_feeling") {
@@ -201,7 +194,8 @@ const App: React.FC = () => {
     return {
       score,
       riskLevel,
-      personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
+      personalizedMessage:
+        "Seu perfil apresenta fatores que podem comprometer a estabilidade do peso após o emagrecimento.",
       keyInsights,
       sinaisDetectados,
       comparacaoPopulacional,
@@ -229,13 +223,14 @@ const App: React.FC = () => {
           setLoadingProgress(100);
           setResults(result);
           setLoading(false);
-        }, 1200);
+        }, 1400);
       }
 
     }, 150);
   };
 
   const stageInfo = isQuestionStep ? getStageInfo() : null;
+
   const stagePercent =
     stageInfo
       ? Math.round((stageInfo.position / stageInfo.total) * 100)
@@ -247,11 +242,11 @@ const App: React.FC = () => {
       ? "Detectando ausência de estímulo de musculação..."
       : "Analisando padrão de estímulo muscular...",
     answers[7] === "proteina_0_1"
-      ? "Detectando ingestão proteica abaixo do ideal..."
+      ? "Detectando ingestão proteica abaixo da faixa de proteção muscular..."
       : "Calculando distribuição de proteína...",
     answers[4] === "uso_parou_rebote"
-      ? "Identificando sinais iniciais de efeito rebote..."
-      : "Analisando adaptação à medicação...",
+      ? "Identificando sinais iniciais de recuperação de peso..."
+      : "Analisando adaptação metabólica à medicação...",
     "Calculando índice de vulnerabilidade metabólica..."
   ];
 
@@ -275,8 +270,8 @@ const App: React.FC = () => {
       )}
 
       {stageCompleted && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
-          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl text-center space-y-3">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-50 pointer-events-auto">
+          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl text-center space-y-3 pointer-events-none">
             <div className="text-3xl">✔️</div>
             <p className="font-bold text-[#0f766e]">{stageCompleted}</p>
           </div>
@@ -285,88 +280,16 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
-        {currentStep === -1 && !loading && !results && !showVsl && (
-          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
-
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-                Diagnóstico Gratuito
-              </p>
-
-              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
-                Risco de Rebote
-              </h1>
-
-              <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-                Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 w-full mt-4">
-              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-green-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '22%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-700">
-                  Baixo risco
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <div className="w-8 h-28 bg-slate-200 rounded-full relative overflow-hidden">
-                  <div
-                    className="absolute bottom-0 w-full bg-red-500 rounded-full transition-all duration-[2000ms]"
-                    style={{ height: animateGraph ? '82%' : '0%' }}
-                  />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-700">
-                  Alto risco
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setCurrentStep(0)}
-              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
-            >
-              Começar Avaliação Gratuita
-            </button>
-
-            <p className="text-xs text-slate-400 pt-6">
-              © 2026 Protocolo Anti-Rebote
-            </p>
-
-          </div>
-        )}
-
-        {isQuestionStep && !loading && !results && !showVsl && (
-          <QuizStep
-            key={currentStep}
-            question={QUESTIONS[getQuestionIndex()]}
-            selectedOption={
-              answers[QUESTIONS[getQuestionIndex()].id] || null
-            }
-            onSelect={handleSelectOption}
-            onNext={handleNext}
-            onBack={() => setCurrentStep(prev => prev - 1)}
-            isFirst={currentStep === 0}
-          />
-        )}
-
-        {isNewsStep && !loading && !results && !showVsl && (
-          <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
-          </div>
-        )}
-
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
               Gerando Diagnóstico Personalizado
             </h2>
+
+            <p className="text-xs text-slate-500">
+              Seu perfil está sendo comparado com padrões metabólicos observados em outros usuários.
+            </p>
 
             <div className="space-y-2 text-sm text-slate-500 font-medium">
               {loadingProgress > 5 && <p>✓ {loadingMessages[0]}</p>}
