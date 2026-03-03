@@ -293,7 +293,7 @@ const App: React.FC = () => {
               </p>
 
               <p className="text-sm text-amber-600 font-semibold">
-                ⚠️ Descubra seu metabolismo está
+                ⚠️ Descubra se seu metabolismo está
                 preparado para manter o peso.
               </p>
 
