@@ -293,10 +293,11 @@ const App: React.FC = () => {
               </p>
 
               <p className="text-sm text-amber-600 font-semibold">
-                ⚠️ Muitas pessoas descobrem que seu metabolismo ainda
-                não está preparado para manter o peso.
+                ⚠️ Descubra seu metabolismo está
+                preparado para manter o peso.
               </p>
 
+              
             <button
               onClick={startQuiz}
               className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase shadow-xl"
