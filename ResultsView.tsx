@@ -127,7 +127,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   } else {
 
     descricao =
-      "Alguns sinais do seu questionário indicam que o emagrecimento pode não estar totalmente sustentado por mecanismos metabólicos estáveis.";
+      "Alguns sinais do seu questionário indicam que o emagrecimento pode não estar totalmente sustentado por mecanismos estáveis e mudança de hábitos.";
   }
 
   const sinaisTexto =
@@ -226,15 +226,15 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
 
         <p className="text-sm font-semibold text-slate-900">
-          Vou te mostrar como isso funciona.
+         E é justamente esse ponto que separa quem mantém o resultado de quem recupera o peso depois.
         </p>
 
       </div>
 
       {/* VALIDAÇÃO */}
 
-      <p className="text-xs text-slate-500 text-center leading-relaxed">
-        Resultado baseado nas respostas fornecidas no questionário.
+      <p className="text-xs text-slate-400 text-center leading-relaxed">
+        Resultado gerado com base nas respostas fornecidas.
       </p>
 
       {/* CTA */}
