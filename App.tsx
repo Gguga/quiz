@@ -1,133 +1,345 @@
-import { Question } from './types';
+import React, { useState, useEffect } from 'react';
+import { QUESTIONS } from './constants';
+import { UserAnswers, QuizResults } from './types';
+import QuizStep from './QuizStep';
+import ResultsView from './ResultsView';
+import VslView from './components/VslView';
+import NewsInterstitial from './components/NewsInterstitial';
 
-export const QUESTIONS: Question[] = [
+const NEWS_POSITION = 4;
 
-  // 1 SEXO
-  {
-    id: 1,
-    text: "Você é:",
-    options: [
-      { label: "Homem", value: "sexo_homem", weight: 0 },
-      { label: "Mulher", value: "sexo_mulher", weight: 0 }
-    ]
-  },
+const App: React.FC = () => {
 
-  // 2 IDADE
-  {
-    id: 2,
-    text: "Qual sua faixa etária?",
-    options: [
-      { label: "18 a 29 anos", value: "idade_18_29", weight: 5 },
-      { label: "30 a 39 anos", value: "idade_30_39", weight: 10 },
-      { label: "40 a 49 anos", value: "idade_40_49", weight: 20 },
-      { label: "50 anos ou mais", value: "idade_50_plus", weight: 30 }
-    ]
-  },
+  const [currentStep, setCurrentStep] = useState<number>(-1);
+  const [answers, setAnswers] = useState<UserAnswers>({});
+  const [results, setResults] = useState<QuizResults | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [showVsl, setShowVsl] = useState<boolean>(false);
 
-  // 3 HISTORICO
-  {
-    id: 3,
-    text: "Ha quanto tempo voce tenta emagrecer?",
-    options: [
-      { label: "Menos de 1 ano", value: "tempo_curto", weight: 5 },
-      { label: "1-3 anos", value: "tempo_medio", weight: 15 },
-      { label: "5-10 anos", value: "tempo_longo", weight: 30 },
-      { label: "Mais de 10 anos", value: "tempo_eterno", weight: 40 }
-    ]
-  },
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentStep, results, showVsl, loading]);
 
-  // 4 SITUACAO COM MEDICACAO
-  {
-    id: 4,
-    text: "Qual sua situacao atual com a medicacao para emagrecimento?",
-    options: [
-      { label: "Estou usando e ainda estou emagrecendo", value: "uso_atual_perda", weight: 25 },
-      { label: "Estou usando, mas o peso parou de cair", value: "uso_atual_plato", weight: 40 },
-      { label: "Estou reduzindo a dose", value: "uso_desmame", weight: 55 },
-      { label: "Ja parei e o peso comecou a voltar", value: "uso_parou_rebote", weight: 65 }
-    ]
-  },
+  const getQuestionIndex = () => {
+    if (currentStep > NEWS_POSITION) return currentStep - 1;
+    return currentStep;
+  };
 
-  // 5 FORCA ENERGIA
-  {
-    id: 5,
-    text: "Depois que comecou a usar a medicacao, sua forca ou energia:",
-    options: [
-      { label: "Cairam bastante", value: "forca_caiu_muito", weight: 45 },
-      { label: "Cairam um pouco", value: "forca_caiu_pouco", weight: 25 },
-      { label: "Nao percebi muita diferenca", value: "forca_estavel_medio", weight: 10 },
-      { label: "Estao iguais ou melhores", value: "forca_estavel", weight: 0 }
-    ]
-  },
+  const isNewsStep = currentStep === NEWS_POSITION;
 
-  // 6 TREINO DE FORCA
-  {
-    id: 6,
-    text: "Como esta seu treino de forca atualmente?",
-    options: [
-      { label: "Treino estruturado com progressao", value: "forca_progressao", weight: 0 },
-      { label: "Treino, mas sem muita estrategia", value: "forca_irregular", weight: 25 },
-      { label: "Faco apenas caminhada ou cardio", value: "forca_cardio", weight: 45 },
-      { label: "Nao faco musculacao", value: "forca_nao_treina", weight: 50 }
-    ]
-  },
+  const isQuestionStep =
+    currentStep >= 0 &&
+    currentStep < QUESTIONS.length + 1 &&
+    !isNewsStep;
 
-  // 7 PROTEINA POR REFEICAO
-  {
-    id: 7,
-    text: "Em quantas refeicoes do dia voce costuma incluir uma fonte de proteina?",
-    options: [
-      { label: "0 ou 1 refeicao", value: "proteina_0_1", weight: 55 },
-      { label: "2 refeicoes", value: "proteina_2", weight: 35 },
-      { label: "3 refeicoes", value: "proteina_3", weight: 10 },
-      { label: "4 ou mais refeicoes", value: "proteina_4_plus", weight: 0 }
-    ]
-  },
+  const getManipulatedProgress = (index: number) => {
 
-  // 8 CONSCIENCIA PROTEICA
-  {
-    id: 8,
-    text: "Voce costuma acompanhar ou calcular a quantidade de proteina da sua dieta?",
-    options: [
-      { label: "Sim, calculo por peso corporal", value: "proteina_calculada", weight: 0 },
-      { label: "Tenho uma nocao aproximada", value: "proteina_feeling", weight: 40 },
-      { label: "Nunca calculei", value: "proteina_nunca", weight: 55 }
-    ]
-  },
+    const map = [
+      18, 27, 39, 52, 61, 70, 79, 86, 92, 96, 100
+    ];
 
-  // 9 ESTRUTURA DA DIETA
-  {
-    id: 9,
-    text: "Como sua alimentacao esta estruturada hoje?",
-    options: [
-      { label: "Tenho uma estrategia alimentar bem definida", value: "dieta_protecao_sim", weight: 0 },
-      { label: "Estou focando apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
-      { label: "Apenas reduzi as quantidades", value: "dieta_reduzi", weight: 40 },
-      { label: "Vou ajustando no feeling", value: "dieta_feeling", weight: 50 }
-    ]
-  },
+    return map[index] || 100;
+  };
 
-  // 10 COLATERAIS
-  {
-    id: 10,
-    text: "Durante o uso da medicacao, voce percebeu algum destes efeitos?",
-    options: [
-      { label: "Cansaco constante ou falta de energia", value: "colateral_cansaco", weight: 25 },
-      { label: "Nausea ou constipacao frequente", value: "colateral_digestivo", weight: 20 },
-      { label: "Um pouco de cada", value: "colateral_varios", weight: 35 },
-      { label: "Nenhum desses", value: "colateral_nenhum", weight: 0 }
-    ]
-  },
+  const handleSelectOption = (value: string) => {
+    const questionIndex = getQuestionIndex();
+    const questionId = QUESTIONS[questionIndex].id;
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
 
-  // 11 COMPROMISSO
-  {
-    id: 11,
-    text: "Voce gostaria de entender como manter seu peso sem risco de rebote?",
-    options: [
-      { label: "Sim, quero manter meu resultado", value: "compromisso_sim", weight: 0 },
-      { label: "Quero entender melhor como funciona", value: "compromisso_talvez", weight: 5 },
-      { label: "Nao sei se faria tanta diferenca", value: "compromisso_duvida", weight: 10 }
-    ]
-  }
+  const handleNext = () => {
 
-];
+    const questionIndex = getQuestionIndex();
+
+    if (questionIndex === QUESTIONS.length - 1) {
+      startAnalysis();
+      return;
+    }
+
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const calculateScore = (): QuizResults => {
+
+    const criticalAnswers = [
+      "uso_parou_rebote",
+      "forca_nao_treina",
+      "forca_caiu_muito",
+      "proteina_0_1",
+      "proteina_nunca",
+      "dieta_feeling"
+    ];
+
+    const moderateAnswers = [
+      "uso_atual_plato",
+      "forca_irregular",
+      "proteina_2",
+      "dieta_reduzi",
+      "colateral_varios",
+      "tempo_longo",
+      "tempo_eterno"
+    ];
+
+    let criticalCount = 0;
+    let moderateCount = 0;
+
+    Object.values(answers).forEach(value => {
+
+      if (criticalAnswers.includes(value)) criticalCount++;
+      else if (moderateAnswers.includes(value)) moderateCount++;
+
+    });
+
+    const sinaisDetectados = criticalCount + moderateCount;
+
+    let score =
+      55 +
+      criticalCount * 12 +
+      moderateCount * 7 +
+      Math.floor(Math.random() * 5) - 2;
+
+    score = Math.max(60, Math.min(score, 88));
+
+    let riskLevel: "Baixo" | "Moderado" | "Alto" | "Crítico";
+
+    if (score >= 85) riskLevel = "Crítico";
+    else if (score >= 72) riskLevel = "Alto";
+    else if (score >= 60) riskLevel = "Moderado";
+    else riskLevel = "Baixo";
+
+    const indiceMetabolico =
+      100 - score + Math.floor(Math.random() * 5) - 2;
+
+    let comparacaoPopulacional = "";
+
+    if (riskLevel === "Crítico") {
+
+      comparacaoPopulacional =
+        "Seu perfil apresenta um padrão frequentemente observado em pessoas que recuperam peso após interromper o processo de emagrecimento.";
+
+    } else if (riskLevel === "Alto") {
+
+      comparacaoPopulacional =
+        "Seu perfil apresenta características acima da média observada em outros usuários avaliados neste diagnóstico.";
+
+    } else {
+
+      comparacaoPopulacional =
+        "Seu perfil está dentro de uma faixa intermediária observada neste diagnóstico.";
+
+    }
+
+    const insights: string[] = [];
+
+    if (answers[6] === "forca_nao_treina") {
+      insights.push("Ausência de estímulo de musculação para preservar massa muscular");
+    }
+
+    if (answers[5] === "forca_caiu_muito") {
+      insights.push("Queda relevante de força ao longo do processo");
+    }
+
+    if (answers[7] === "proteina_0_1" || answers[8] === "proteina_nunca") {
+      insights.push("Ingestão de proteína abaixo da faixa ideal para preservação muscular");
+    }
+
+    if (answers[4] === "uso_parou_rebote") {
+      insights.push("Sinais iniciais de recuperação de peso após interrupção da medicação");
+    }
+
+    if (answers[9] === "dieta_feeling") {
+      insights.push("Estrutura alimentar sem estratégia metabólica consistente");
+    }
+
+    if (answers[6] === "forca_irregular") {
+      insights.push("Treino de força irregular ao longo do processo");
+    }
+
+    const keyInsights = insights.slice(0, 3);
+
+    return {
+      score,
+      riskLevel,
+      personalizedMessage:
+        "Seu perfil apresenta fatores que podem comprometer a estabilidade do peso após o emagrecimento.",
+      keyInsights,
+      sinaisDetectados,
+      comparacaoPopulacional,
+      indiceMetabolico
+    };
+  };
+
+  const startAnalysis = () => {
+
+    setLoading(true);
+    setLoadingProgress(0);
+
+    const result = calculateScore();
+    let progress = 0;
+
+    const interval = setInterval(() => {
+
+      if (progress < 90) {
+
+        progress += 3;
+        setLoadingProgress(progress);
+
+      } else {
+
+        clearInterval(interval);
+
+        setTimeout(() => {
+
+          setLoadingProgress(100);
+          setResults(result);
+          setLoading(false);
+
+        }, 1200);
+
+      }
+
+    }, 120);
+  };
+
+  const startQuiz = () => {
+    setCurrentStep(0);
+  };
+
+  const questionNumber = getQuestionIndex() + 1;
+  const totalQuestions = QUESTIONS.length;
+
+  const progressPercent =
+    isQuestionStep
+      ? getManipulatedProgress(getQuestionIndex())
+      : 0;
+
+  return (
+    <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
+
+      {isQuestionStep && !loading && !results && !showVsl && (
+
+        <div className="w-full px-6 pt-6 space-y-3">
+
+          <div className="flex justify-center text-xs font-semibold text-slate-500">
+            Pergunta {questionNumber} de {totalQuestions}
+          </div>
+
+          <div className="w-full h-[6px] bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="bg-[#0f766e] h-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+
+        </div>
+
+      )}
+
+      <main className="flex-1 w-full max-w-md mx-auto">
+
+        {currentStep === -1 && !loading && !results && !showVsl && (
+
+          <div className="flex flex-col items-center px-6 text-center space-y-10 pt-20">
+
+            <div className="space-y-4">
+
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">
+                Diagnóstico metabólico
+              </p>
+
+              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+                Seu corpo está preparado
+                para não recuperar o peso?
+              </h1>
+
+              <p className="text-slate-600 text-base max-w-sm mx-auto">
+                Algumas pessoas emagrecem e recuperam tudo meses depois.
+                Outras conseguem manter.
+              </p>
+
+              <p className="text-sm text-amber-600 font-semibold">
+                ⚠️ Muitas pessoas descobrem que seu metabolismo ainda
+                não está preparado para manter o peso.
+              </p>
+
+              <p className="text-xs text-slate-500">
+                Leva menos de 2 minutos.
+              </p>
+
+            </div>
+
+            <button
+              onClick={startQuiz}
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase shadow-xl"
+            >
+              Descobrir meu risco
+            </button>
+
+            <div className="text-xs text-slate-400 pt-6">
+              Baseado em padrões observados em avaliações metabólicas.
+            </div>
+
+          </div>
+
+        )}
+
+        {isQuestionStep && !loading && !results && !showVsl && (
+
+          <QuizStep
+            key={currentStep}
+            question={QUESTIONS[getQuestionIndex()]}
+            selectedOption={
+              answers[QUESTIONS[getQuestionIndex()].id] || null
+            }
+            onSelect={handleSelectOption}
+            onNext={handleNext}
+            onBack={() => setCurrentStep(prev => prev - 1)}
+            isFirst={currentStep === 0}
+          />
+
+        )}
+
+        {isNewsStep && !loading && !results && !showVsl && (
+          <div className="py-6 px-4">
+            <NewsInterstitial onNext={handleNext} />
+          </div>
+        )}
+
+        {loading && (
+
+          <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
+
+            <h2 className="text-xl font-black text-[#0f766e] uppercase">
+              Gerando Diagnóstico Personalizado
+            </h2>
+
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div
+                className="bg-[#0f766e] h-full transition-all duration-300"
+                style={{ width: `${loadingProgress}%` }}
+              />
+            </div>
+
+          </div>
+
+        )}
+
+        {results && !loading && !showVsl && (
+
+          <ResultsView
+            results={results}
+            answers={answers}
+            onCtaClick={() => setShowVsl(true)}
+          />
+
+        )}
+
+        {showVsl && !loading && <VslView />}
+
+      </main>
+    </div>
+  );
+};
+
+export default App;
