@@ -42,7 +42,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (treino === "forca_nao_treina") {
     fatores.push({
       peso: 3,
-      texto: "Atualmente seu organismo não recebe estímulo de musculação suficiente para preservar a massa muscular."
+      texto: "Atualmente seu organismo não recebe estímulo de musculação suficiente para preservar massa muscular."
     });
   }
 
@@ -56,14 +56,14 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") {
     fatores.push({
       peso: 3,
-      texto: "Sua ingestão de proteína provavelmente está abaixo do nível necessário para preservar a massa muscular durante o emagrecimento."
+      texto: "Sua ingestão de proteína provavelmente está abaixo do nível necessário para preservar massa muscular durante o emagrecimento."
     });
   }
 
   if (dieta === "dieta_feeling") {
     fatores.push({
       peso: 2,
-      texto: "Sua alimentação parece estar sendo conduzida mais por tentativa e erro do que por uma estratégia metabólica estruturada."
+      texto: "Sua alimentação parece estar sendo conduzida mais por tentativa e erro do que por uma estratégia estruturada."
     });
   }
 
@@ -86,28 +86,28 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (proteinaRef === "proteina_2") {
     fatores.push({
       peso: 2,
-      texto: "A distribuição de proteína ao longo do dia pode ainda não estar suficiente para proteger a massa muscular."
+      texto: "A distribuição de proteína ao longo do dia pode não estar suficiente para proteger a massa muscular."
     });
   }
 
   if (tempo === "tempo_longo" || tempo === "tempo_eterno") {
     fatores.push({
       peso: 1,
-      texto: "Existe um histórico prolongado de tentativas de emagrecimento, o que costuma tornar o metabolismo mais resistente."
+      texto: "Existe um histórico prolongado de tentativas de emagrecimento."
     });
   }
 
   if (idade === "idade_40_49" || idade === "idade_50_plus") {
     fatores.push({
       peso: 1,
-      texto: "Com o avanço da idade, o metabolismo tende a responder com mais dificuldade ao emagrecimento."
+      texto: "Com o avanço da idade, o metabolismo tende a responder com mais dificuldade."
     });
   }
 
   if (colateral === "colateral_varios") {
     fatores.push({
       peso: 1,
-      texto: "Alguns sinais indicam que seu corpo pode estar passando por instabilidade durante o processo."
+      texto: "Alguns sinais indicam instabilidade metabólica durante o processo."
     });
   }
 
@@ -122,7 +122,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
     descricao =
       principais.map(f => f.texto).join("\n\n") +
       "\n\n" +
-      "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer inicialmente, mas o corpo tende a recuperar gordura com o tempo.";
+      "Quando esses fatores aparecem juntos, muitas pessoas até conseguem emagrecer no início.\n\nMas o corpo tende a recuperar gordura depois.";
 
   } else {
 
@@ -130,14 +130,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({
       "Alguns sinais do seu questionário indicam que o emagrecimento pode não estar totalmente sustentado por mecanismos metabólicos estáveis.";
   }
 
-  // 🔤 SINGULAR / PLURAL
-
   const sinaisTexto =
     results.sinaisDetectados === 1
-      ? "1 sinal metabólico identificado"
-      : `${results.sinaisDetectados} sinais metabólicos identificados`;
-
-  // 🎨 COR DINÂMICA
+      ? "1 padrão metabólico identificado"
+      : `${results.sinaisDetectados} padrões metabólicos identificados`;
 
   let colorClass = "text-green-600";
 
@@ -175,7 +171,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
       <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-2">
 
         <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
-          Padrões detectados
+          Análise metabólica
         </p>
 
         <p className="text-2xl font-black text-slate-900">
@@ -221,38 +217,24 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
       </div>
 
-      {/* EXPLICAÇÃO */}
+      {/* TRANSIÇÃO */}
 
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
-
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-          Interpretação metabólica
-        </p>
+      <div className="text-center space-y-2">
 
         <p className="text-sm text-slate-700 leading-relaxed">
-          Pelas respostas do seu questionário, o emagrecimento pode não estar sendo sustentado por mecanismos metabólicos estáveis.
+          Existe uma forma de estruturar o emagrecimento para reduzir esse risco metabólico.
         </p>
 
-        <p className="text-sm text-slate-700 leading-relaxed">
-          Quando a perda de peso acontece sem preservação adequada de massa muscular e sem estrutura alimentar estratégica, o organismo tende a recuperar gordura ao longo do tempo.
-        </p>
-
-        <p className="text-sm font-semibold text-slate-900 leading-relaxed">
-          A boa notícia é que esses fatores normalmente podem ser corrigidos quando existe uma estratégia correta de proteção metabólica.
+        <p className="text-sm font-semibold text-slate-900">
+          Vou te mostrar como isso funciona.
         </p>
 
       </div>
 
-      {/* TRANSIÇÃO PARA CTA */}
-
-      <p className="text-sm text-slate-700 text-center leading-relaxed">
-        A seguir você pode ver como funciona a estratégia utilizada para reduzir esse risco metabólico e evitar o efeito rebote.
-      </p>
-
       {/* VALIDAÇÃO */}
 
       <p className="text-xs text-slate-500 text-center leading-relaxed">
-        Este diagnóstico foi gerado automaticamente a partir das respostas fornecidas no questionário.
+        Resultado baseado nas respostas fornecidas no questionário.
       </p>
 
       {/* CTA */}
