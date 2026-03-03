@@ -231,19 +231,13 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       </div>
 
-      {/* VALIDAÇÃO */}
-
-      <p className="text-xs text-slate-400 text-center leading-relaxed">
-        Resultado gerado com base nas respostas fornecidas.
-      </p>
-
-      {/* CTA */}
+           {/* CTA */}
 
       <button
         onClick={onCtaClick}
         className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl uppercase"
       >
-        Ver como reduzir meu risco de rebote
+       Descobrir como
       </button>
 
     </div>
