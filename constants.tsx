@@ -1,3 +1,4 @@
+```ts
 import { Question } from './types';
 
 export const QUESTIONS: Question[] = [
@@ -12,15 +13,15 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 2️⃣ IDADE
+  // 2️⃣ IDADE (pergunta fácil)
   {
     id: 2,
     text: "Qual sua faixa etária?",
     options: [
-      { label: "18 a 29", value: "idade_18_29", weight: 5 },
-      { label: "30 a 39", value: "idade_30_39", weight: 10 },
-      { label: "40 a 49", value: "idade_40_49", weight: 20 },
-      { label: "50+", value: "idade_50_plus", weight: 30 }
+      { label: "18 a 29 anos", value: "idade_18_29", weight: 5 },
+      { label: "30 a 39 anos", value: "idade_30_39", weight: 10 },
+      { label: "40 a 49 anos", value: "idade_40_49", weight: 20 },
+      { label: "50 anos ou mais", value: "idade_50_plus", weight: 30 }
     ]
   },
 
@@ -39,10 +40,10 @@ export const QUESTIONS: Question[] = [
   // 4️⃣ SITUAÇÃO COM A CANETA
   {
     id: 4,
-    text: "Qual sua situação hoje com a caneta?",
+    text: "Qual sua situação atual com a medicação para emagrecimento?",
     options: [
       { label: "💉 Estou usando e ainda estou emagrecendo", value: "uso_atual_perda", weight: 25 },
-      { label: "📉 Estou usando, mas o peso travou", value: "uso_atual_plato", weight: 40 },
+      { label: "📉 Estou usando, mas o peso parou de cair", value: "uso_atual_plato", weight: 40 },
       { label: "🔄 Estou reduzindo a dose", value: "uso_desmame", weight: 55 },
       { label: "⚠️ Já parei e o peso começou a voltar", value: "uso_parou_rebote", weight: 65 }
     ]
@@ -55,64 +56,64 @@ export const QUESTIONS: Question[] = [
     options: [
       { label: "Caíram bastante", value: "forca_caiu_muito", weight: 45 },
       { label: "Caíram um pouco", value: "forca_caiu_pouco", weight: 25 },
-      { label: "Não reparei tanta diferença", value: "forca_estavel_medio", weight: 10 },
-      { label: "Estão iguais ou melhoraram", value: "forca_estavel", weight: 0 }
+      { label: "Não percebi muita diferença", value: "forca_estavel_medio", weight: 10 },
+      { label: "Estão iguais ou melhores", value: "forca_estavel", weight: 0 }
     ]
   },
 
   // 6️⃣ TREINO DE FORÇA
   {
     id: 6,
-    text: "Atualmente você treina musculação ou outro treino de força?",
+    text: "Como está seu treino de força atualmente?",
     options: [
-      { label: "Sim, treino estruturado", value: "forca_progressao", weight: 0 },
-      { label: "Treino sem muita estratégia", value: "forca_irregular", weight: 25 },
-      { label: "Só faço caminhada ou cardio", value: "forca_cardio", weight: 45 },
+      { label: "Treino estruturado com progressão", value: "forca_progressao", weight: 0 },
+      { label: "Treino, mas sem muita estratégia", value: "forca_irregular", weight: 25 },
+      { label: "Faço apenas caminhada ou cardio", value: "forca_cardio", weight: 45 },
       { label: "Não faço musculação", value: "forca_nao_treina", weight: 50 }
     ]
   },
 
-  // 7️⃣ PROTEÍNA POR REFEIÇÃO
+  // 7️⃣ PROTEÍNA POR REFEIÇÃO (comportamental)
   {
     id: 7,
-    text: "Em quantas refeições do dia você consome boas quantidades de proteína?",
+    text: "Em quantas refeições do dia você costuma incluir uma fonte de proteína?",
     options: [
-      { label: "0–1", value: "proteina_0_1", weight: 55 },
-      { label: "2", value: "proteina_2", weight: 35 },
-      { label: "3", value: "proteina_3", weight: 10 },
-      { label: "4 ou mais", value: "proteina_4_plus", weight: 0 }
+      { label: "0 ou 1 refeição", value: "proteina_0_1", weight: 55 },
+      { label: "2 refeições", value: "proteina_2", weight: 35 },
+      { label: "3 refeições", value: "proteina_3", weight: 10 },
+      { label: "4 ou mais refeições", value: "proteina_4_plus", weight: 0 }
     ]
   },
 
-  // 8️⃣ PROTEÍNA CALCULADA
+  // 8️⃣ CONSCIÊNCIA PROTEICA
   {
     id: 8,
-    text: "Você sabe quanto de proteína precisa comer por dia?",
+    text: "Você costuma acompanhar ou calcular a quantidade de proteína da sua dieta?",
     options: [
       { label: "Sim, calculo por peso corporal", value: "proteina_calculada", weight: 0 },
-      { label: "Tenho noção aproximada", value: "proteina_feeling", weight: 40 },
+      { label: "Tenho uma noção aproximada", value: "proteina_feeling", weight: 40 },
       { label: "Nunca calculei", value: "proteina_nunca", weight: 55 }
     ]
   },
 
-  // 9️⃣ DIETA
+  // 9️⃣ ESTRUTURA DA DIETA
   {
     id: 9,
-    text: "Sua dieta atual foi pensada para emagrecer com qualidade e conseguir manter depois?",
+    text: "Como sua alimentação está estruturada hoje?",
     options: [
-      { label: "Sim, já foi pensada para essa fase", value: "dieta_protecao_sim", weight: 0 },
-      { label: "Está focada apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
+      { label: "Tenho uma estratégia alimentar bem definida", value: "dieta_protecao_sim", weight: 0 },
+      { label: "Estou focando apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
       { label: "Apenas reduzi as quantidades", value: "dieta_reduzi", weight: 40 },
-      { label: "Ajusto tudo no feeling", value: "dieta_feeling", weight: 50 }
+      { label: "Vou ajustando no feeling", value: "dieta_feeling", weight: 50 }
     ]
   },
 
   // 🔟 COLATERAIS
   {
     id: 10,
-    text: "Durante o uso, você percebeu algum destes efeitos?",
+    text: "Durante o uso da medicação, você percebeu algum destes efeitos?",
     options: [
-      { label: "Cansaço constante / falta de energia", value: "colateral_cansaco", weight: 25 },
+      { label: "Cansaço constante ou falta de energia", value: "colateral_cansaco", weight: 25 },
       { label: "Náusea ou constipação frequente", value: "colateral_digestivo", weight: 20 },
       { label: "Um pouco de cada", value: "colateral_varios", weight: 35 },
       { label: "Nenhum desses", value: "colateral_nenhum", weight: 0 }
@@ -122,7 +123,7 @@ export const QUESTIONS: Question[] = [
   // 1️⃣1️⃣ COMPROMISSO
   {
     id: 11,
-    text: "Você quer emagrecer com qualidade e garantir que seu peso não volte depois?",
+    text: "Você gostaria de entender como manter seu peso sem risco de rebote?",
     options: [
       { label: "Sim, quero manter meu resultado", value: "compromisso_sim", weight: 0 },
       { label: "Quero entender melhor como funciona", value: "compromisso_talvez", weight: 5 },
@@ -131,3 +132,4 @@ export const QUESTIONS: Question[] = [
   }
 
 ];
+```
