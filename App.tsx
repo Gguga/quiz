@@ -1,4 +1,3 @@
-```tsx
 import React, { useState, useEffect } from 'react';
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
@@ -30,7 +29,7 @@ const App: React.FC = () => {
   const getManipulatedProgress = (index: number) => {
 
     const map = [
-      18,27,39,52,61,70,79,86,92,96,100
+      18, 27, 39, 52, 61, 70, 79, 86, 92, 96, 100
     ];
 
     return map[index] || 100;
@@ -79,30 +78,75 @@ const App: React.FC = () => {
     let moderateCount = 0;
 
     Object.values(answers).forEach(value => {
+
       if (criticalAnswers.includes(value)) criticalCount++;
       else if (moderateAnswers.includes(value)) moderateCount++;
+
     });
 
     const sinaisDetectados = criticalCount + moderateCount;
 
     let score =
-      40 +
-      criticalCount * 18 +
-      moderateCount * 9 +
-      Math.floor(Math.random() * 6) - 3;
+      55 +
+      criticalCount * 12 +
+      moderateCount * 7 +
+      Math.floor(Math.random() * 5) - 2;
 
-    score = Math.max(42, Math.min(score, 95));
+    score = Math.max(60, Math.min(score, 88));
 
     let riskLevel: "Moderado" | "Alto" | "Crítico";
 
-    if (score >= 88) riskLevel = "Crítico";
+    if (score >= 85) riskLevel = "Crítico";
     else if (score >= 72) riskLevel = "Alto";
     else riskLevel = "Moderado";
 
     const indiceMetabolico =
-      100 - score + Math.floor(Math.random() * 6) - 3;
+      100 - score + Math.floor(Math.random() * 5) - 2;
+
+    let comparacaoPopulacional = "";
+
+    if (riskLevel === "Crítico") {
+
+      comparacaoPopulacional =
+        "Seu perfil apresenta um padrão frequentemente observado em pessoas que recuperam peso após interromper o processo de emagrecimento.";
+
+    } else if (riskLevel === "Alto") {
+
+      comparacaoPopulacional =
+        "Seu perfil apresenta características acima da média observada em outros usuários avaliados neste diagnóstico.";
+
+    } else {
+
+      comparacaoPopulacional =
+        "Seu perfil está dentro de uma faixa intermediária observada neste diagnóstico.";
+
+    }
 
     const insights: string[] = [];
+
+    if (answers[6] === "forca_nao_treina") {
+      insights.push("Ausência de estímulo de musculação para preservar massa muscular");
+    }
+
+    if (answers[5] === "forca_caiu_muito") {
+      insights.push("Queda relevante de força ao longo do processo");
+    }
+
+    if (answers[7] === "proteina_0_1" || answers[8] === "proteina_nunca") {
+      insights.push("Ingestão de proteína abaixo da faixa ideal para preservação muscular");
+    }
+
+    if (answers[4] === "uso_parou_rebote") {
+      insights.push("Sinais iniciais de recuperação de peso após interrupção da medicação");
+    }
+
+    if (answers[9] === "dieta_feeling") {
+      insights.push("Estrutura alimentar sem estratégia metabólica consistente");
+    }
+
+    if (answers[6] === "forca_irregular") {
+      insights.push("Treino de força irregular ao longo do processo");
+    }
 
     const keyInsights = insights.slice(0, 3);
 
@@ -113,7 +157,7 @@ const App: React.FC = () => {
         "Seu perfil apresenta fatores que podem comprometer a estabilidade do peso após o emagrecimento.",
       keyInsights,
       sinaisDetectados,
-      comparacaoPopulacional: "",
+      comparacaoPopulacional,
       indiceMetabolico
     };
   };
@@ -129,19 +173,25 @@ const App: React.FC = () => {
     const interval = setInterval(() => {
 
       if (progress < 90) {
+
         progress += 3;
         setLoadingProgress(progress);
+
       } else {
+
         clearInterval(interval);
 
         setTimeout(() => {
+
           setLoadingProgress(100);
           setResults(result);
           setLoading(false);
-        }, 1400);
+
+        }, 1200);
+
       }
 
-    }, 150);
+    }, 120);
   };
 
   const startQuiz = () => {
@@ -159,15 +209,17 @@ const App: React.FC = () => {
         clearInterval(interval);
 
         setTimeout(() => {
+
           setInitializing(false);
           setCurrentStep(0);
-        }, 400);
+
+        }, 350);
 
       }
 
       setInitProgress(p);
 
-    }, 80);
+    }, 70);
 
   };
 
@@ -198,6 +250,7 @@ const App: React.FC = () => {
           </div>
 
         </div>
+
       )}
 
       <main className="flex-1 w-full max-w-md mx-auto">
@@ -326,4 +379,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-```
