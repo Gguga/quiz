@@ -112,12 +112,30 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   }
 
   fatores.sort((a, b) => b.peso - a.peso);
+
   const principais = fatores.slice(0, 2);
 
-  const descricao =
-    principais.map(f => f.texto).join("\n\n") +
-    "\n\n" +
-    "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer inicialmente, mas o corpo tende a recuperar gordura com o tempo.";
+  let descricao = "";
+
+  if (principais.length > 0) {
+
+    descricao =
+      principais.map(f => f.texto).join("\n\n") +
+      "\n\n" +
+      "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer inicialmente, mas o corpo tende a recuperar gordura com o tempo.";
+
+  } else {
+
+    descricao =
+      "Alguns sinais do seu questionário indicam que o emagrecimento pode não estar totalmente sustentado por mecanismos metabólicos estáveis.";
+  }
+
+  // 🔤 SINGULAR / PLURAL
+
+  const sinaisTexto =
+    results.sinaisDetectados === 1
+      ? "1 sinal metabólico identificado"
+      : `${results.sinaisDetectados} sinais metabólicos identificados`;
 
   // 🎨 COR DINÂMICA
 
@@ -161,7 +179,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
 
         <p className="text-2xl font-black text-slate-900">
-          {results.sinaisDetectados} sinais metabólicos identificados
+          {sinaisTexto}
         </p>
 
         <p className="text-xs text-slate-500">
@@ -224,6 +242,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
 
       </div>
+
+      {/* TRANSIÇÃO PARA CTA */}
+
+      <p className="text-sm text-slate-700 text-center leading-relaxed">
+        A seguir você pode ver como funciona a estratégia utilizada para reduzir esse risco metabólico e evitar o efeito rebote.
+      </p>
 
       {/* VALIDAÇÃO */}
 
