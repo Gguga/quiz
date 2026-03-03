@@ -297,17 +297,17 @@ const App: React.FC = () => {
                 não está preparado para manter o peso.
               </p>
 
-              <p className="text-xs text-slate-500">
-                Leva menos de 2 minutos.
-              </p>
-            </div>
-
             <button
               onClick={startQuiz}
               className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase shadow-xl"
             >
               Descobrir meu risco
             </button>
+
+                <p className="text-xs text-slate-500">
+                Leva menos de 2 minutos.
+              </p>
+            </div>
 
             <div className="text-xs text-slate-400 pt-6">
               Baseado em padrões observados em avaliações metabólicas.
