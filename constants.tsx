@@ -115,7 +115,7 @@ export const QUESTIONS: Question[] = [
     options: [
       { label: "Cansaço constante ou falta de energia", value: "colateral_cansaco", weight: 25 },
       { label: "Náusea ou prisão de ventre frequente", value: "colateral_digestivo", weight: 20 },
-      { label: "Um pouco de cada", value: "colateral_varios", weight: 35 }
+      { label: "Um pouco de cada", value: "colateral_varios", weight: 35 },
       { label: "Nenhum desses", value: "colateral_nenhum", weight: 0 },
     ]
   },
