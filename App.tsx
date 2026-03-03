@@ -48,7 +48,8 @@ const App: React.FC = () => {
       return {
         label: "Etapa 1 • Perfil Metabólico",
         total: 4,
-        position: index + 1
+        position: index,
+        isLast: index === 3
       };
     }
 
@@ -56,14 +57,16 @@ const App: React.FC = () => {
       return {
         label: "Etapa 2 • Proteção Muscular",
         total: 4,
-        position: index - 3
+        position: index - 4,
+        isLast: index === 7
       };
     }
 
     return {
       label: "Etapa 3 • Estrutura Alimentar",
       total: 3,
-      position: index - 7
+      position: index - 8,
+      isLast: index === 10
     };
   };
 
@@ -231,28 +234,33 @@ const App: React.FC = () => {
 
   const stagePercent =
     stageInfo
-      ? Math.round((stageInfo.position / stageInfo.total) * 100)
+      ? (() => {
+        const raw = Math.round(((stageInfo.position + 1) / stageInfo.total) * 100);
+
+        if (stageCompleted) return 100;
+
+        if (stageInfo.isLast) return Math.min(raw, 92);
+
+        return raw;
+      })()
       : 0;
 
-  const loadingMessages = [
-    "Processando respostas do questionário...",
-    answers[6] === "forca_nao_treina"
-      ? "Detectando ausência de estímulo de musculação..."
-      : "Analisando padrão de estímulo muscular...",
-    answers[7] === "proteina_0_1"
-      ? "Detectando ingestão proteica abaixo da faixa de proteção muscular..."
-      : "Calculando distribuição de proteína...",
-    answers[4] === "uso_parou_rebote"
-      ? "Identificando sinais iniciais de recuperação de peso..."
-      : "Analisando adaptação metabólica à medicação...",
-    "Calculando índice de vulnerabilidade metabólica..."
-  ];
+  const questionNumber = getQuestionIndex() + 1;
+  const totalQuestions = QUESTIONS.length;
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
 
       {isQuestionStep && !loading && !results && !showVsl && stageInfo && (
-        <div className="w-full px-6 pt-6 space-y-2">
+
+        <div className="w-full px-6 pt-6 space-y-3">
+
+          {/* INDICADOR PERGUNTA X DE Y */}
+
+          <div className="flex justify-center text-xs font-semibold text-slate-500">
+            Pergunta {questionNumber} de {totalQuestions}
+          </div>
+
           <div className="flex justify-between text-xs font-semibold text-slate-500">
             <span>{stageInfo.label}</span>
             <span>{stagePercent}%</span>
@@ -264,6 +272,7 @@ const App: React.FC = () => {
               style={{ width: `${stagePercent}%` }}
             />
           </div>
+
         </div>
       )}
 
@@ -277,8 +286,6 @@ const App: React.FC = () => {
       )}
 
       <main className="flex-1 w-full max-w-md mx-auto">
-
-        {/* TELA INICIAL */}
 
         {currentStep === -1 && !loading && !results && !showVsl && (
 
@@ -309,8 +316,6 @@ const App: React.FC = () => {
 
         )}
 
-        {/* PERGUNTAS */}
-
         {isQuestionStep && !loading && !results && !showVsl && (
 
           <QuizStep
@@ -327,8 +332,6 @@ const App: React.FC = () => {
 
         )}
 
-        {/* INTERSTITIAL */}
-
         {isNewsStep && !loading && !results && !showVsl && (
 
           <div className="py-6 px-4">
@@ -336,8 +339,6 @@ const App: React.FC = () => {
           </div>
 
         )}
-
-        {/* LOADING */}
 
         {loading && (
 
@@ -352,13 +353,13 @@ const App: React.FC = () => {
             </p>
 
             <div className="space-y-2 text-sm text-slate-500 font-medium">
-              {loadingProgress > 5 && <p>✓ {loadingMessages[0]}</p>}
-              {loadingProgress > 25 && <p>✓ {loadingMessages[1]}</p>}
-              {loadingProgress > 45 && <p>✓ {loadingMessages[2]}</p>}
-              {loadingProgress > 65 && <p>✓ {loadingMessages[3]}</p>}
+              {loadingProgress > 5 && <p>✓ Processando respostas...</p>}
+              {loadingProgress > 25 && <p>✓ Analisando estímulo muscular...</p>}
+              {loadingProgress > 45 && <p>✓ Calculando ingestão proteica...</p>}
+              {loadingProgress > 65 && <p>✓ Identificando padrão metabólico...</p>}
               {loadingProgress > 85 && (
                 <p className="font-bold text-[#0f766e]">
-                  ✓ {loadingMessages[4]}
+                  ✓ Gerando diagnóstico final...
                 </p>
               )}
             </div>
@@ -374,8 +375,6 @@ const App: React.FC = () => {
 
         )}
 
-        {/* RESULTADO */}
-
         {results && !loading && !showVsl && (
 
           <ResultsView
@@ -385,8 +384,6 @@ const App: React.FC = () => {
           />
 
         )}
-
-        {/* VSL */}
 
         {showVsl && !loading && <VslView />}
 
