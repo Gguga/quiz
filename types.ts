@@ -20,6 +20,7 @@ export interface QuizResults {
   keyInsights: string[];
   sinaisDetectados: number;
   comparacaoPopulacional: string;
+  indiceMetabolico: number;
 }
 
 export interface UserAnswers {
