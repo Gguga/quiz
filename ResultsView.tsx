@@ -35,35 +35,35 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (situacao === "uso_parou_rebote") {
     fatores.push({
       peso: 3,
-      texto: "Com base nas suas respostas, seu corpo já pode estar entrando no processo de recuperação do peso após a interrupção da medicação."
+      texto: "Seu corpo já pode estar iniciando um processo de recuperação de peso após a interrupção da medicação."
     });
   }
 
   if (treino === "forca_nao_treina") {
     fatores.push({
       peso: 3,
-      texto: "Pelas suas respostas, hoje seu corpo não recebe estímulo de musculação suficiente para proteger a massa muscular."
+      texto: "Atualmente seu organismo não recebe estímulo de musculação suficiente para preservar a massa muscular."
     });
   }
 
   if (quedaForca === "forca_caiu_muito") {
     fatores.push({
       peso: 3,
-      texto: "Suas respostas indicam que houve uma queda relevante de força ao longo do processo, um sinal comum de perda de massa muscular."
+      texto: "Suas respostas indicam uma queda relevante de força durante o processo, um sinal comum de perda de massa muscular."
     });
   }
 
   if (proteinaRef === "proteina_0_1" || proteinaCalc === "proteina_nunca") {
     fatores.push({
       peso: 3,
-      texto: "Com base nas suas respostas, sua ingestão de proteína pode não estar suficiente para preservar sua massa muscular durante o emagrecimento."
+      texto: "Sua ingestão de proteína provavelmente está abaixo do nível necessário para preservar a massa muscular durante o emagrecimento."
     });
   }
 
   if (dieta === "dieta_feeling") {
     fatores.push({
       peso: 2,
-      texto: "Sua alimentação parece estar sendo ajustada mais por tentativa e erro do que por uma estratégia metabólica estruturada."
+      texto: "Sua alimentação parece estar sendo conduzida mais por tentativa e erro do que por uma estratégia metabólica estruturada."
     });
   }
 
@@ -72,21 +72,21 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (situacao === "uso_atual_plato") {
     fatores.push({
       peso: 2,
-      texto: "Pelas suas respostas, mesmo com a medicação ativa, o peso já não está respondendo como antes."
+      texto: "Mesmo utilizando a medicação, seu peso parece já não responder com a mesma facilidade."
     });
   }
 
   if (treino === "forca_irregular") {
     fatores.push({
       peso: 2,
-      texto: "O estímulo de treino de força aparece de forma irregular, o que dificulta preservar massa muscular."
+      texto: "O estímulo de musculação aparece de forma irregular, o que dificulta preservar massa muscular."
     });
   }
 
   if (proteinaRef === "proteina_2") {
     fatores.push({
       peso: 2,
-      texto: "A distribuição de proteína ao longo do dia ainda pode estar limitada para proteger a massa muscular."
+      texto: "A distribuição de proteína ao longo do dia pode ainda não estar suficiente para proteger a massa muscular."
     });
   }
 
@@ -100,7 +100,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   if (idade === "idade_40_49" || idade === "idade_50_plus") {
     fatores.push({
       peso: 1,
-      texto: "A partir dessa faixa etária, o metabolismo tende a responder com menos facilidade do que antes."
+      texto: "Com o avanço da idade, o metabolismo tende a responder com mais dificuldade ao emagrecimento."
     });
   }
 
@@ -117,7 +117,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   const descricao =
     principais.map(f => f.texto).join("\n\n") +
     "\n\n" +
-    "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer por um período, mas tende a não se sustentar a longo prazo.";
+    "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer inicialmente, mas o corpo tende a recuperar gordura com o tempo.";
 
   // 🎨 COR DINÂMICA
 
@@ -152,7 +152,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       </div>
 
-      {/* INDICADOR DE SINAIS */}
+      {/* PADRÕES */}
 
       <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-2">
 
@@ -203,24 +203,24 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
       </div>
 
-      {/* ANÁLISE */}
+      {/* EXPLICAÇÃO */}
 
       <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
 
         <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-          Análise do seu perfil metabólico
+          Interpretação metabólica
         </p>
 
         <p className="text-sm text-slate-700 leading-relaxed">
-          Pelas respostas do seu questionário, seu processo de emagrecimento pode não estar sendo sustentado por mecanismos metabólicos estáveis.
+          Pelas respostas do seu questionário, o emagrecimento pode não estar sendo sustentado por mecanismos metabólicos estáveis.
         </p>
 
         <p className="text-sm text-slate-700 leading-relaxed">
-          Isso significa que, mesmo quando o peso reduz inicialmente, o organismo pode ter tendência a recuperar gordura após a interrupção da medicação ou mudanças na rotina.
+          Quando a perda de peso acontece sem preservação adequada de massa muscular e sem estrutura alimentar estratégica, o organismo tende a recuperar gordura ao longo do tempo.
         </p>
 
         <p className="text-sm font-semibold text-slate-900 leading-relaxed">
-          A boa notícia é que esses fatores normalmente podem ser corrigidos quando existe uma estratégia correta de preservação muscular e ajuste metabólico.
+          A boa notícia é que esses fatores normalmente podem ser corrigidos quando existe uma estratégia correta de proteção metabólica.
         </p>
 
       </div>
@@ -228,7 +228,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
       {/* VALIDAÇÃO */}
 
       <p className="text-xs text-slate-500 text-center leading-relaxed">
-        Este diagnóstico foi gerado automaticamente a partir das suas respostas no questionário.
+        Este diagnóstico foi gerado automaticamente a partir das respostas fornecidas no questionário.
       </p>
 
       {/* CTA */}
@@ -237,7 +237,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         onClick={onCtaClick}
         className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl uppercase"
       >
-        Ver como estabilizar meu metabolismo
+        Ver como reduzir meu risco de rebote
       </button>
 
     </div>
