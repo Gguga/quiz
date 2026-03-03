@@ -94,11 +94,12 @@ const App: React.FC = () => {
 
     score = Math.max(60, Math.min(score, 88));
 
-    let riskLevel: "Moderado" | "Alto" | "Crítico";
+    let riskLevel: "Baixo" | "Moderado" | "Alto" | "Crítico";
 
     if (score >= 85) riskLevel = "Crítico";
     else if (score >= 72) riskLevel = "Alto";
-    else riskLevel = "Moderado";
+    else if (score >= 60) riskLevel = "Moderado";
+    else riskLevel = "Baixo";
 
     const indiceMetabolico =
       100 - score + Math.floor(Math.random() * 5) - 2;
