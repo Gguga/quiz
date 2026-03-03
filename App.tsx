@@ -311,8 +311,22 @@ const App: React.FC = () => {
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
 
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
-              Gerando Diagnóstico Personalizado
+              Analisando Estrutura Metabólica
             </h2>
+
+            <div className="space-y-2 text-sm text-slate-500 font-medium">
+
+              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
+              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
+              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
+              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
+              {loadingProgress >= 90 && (
+                <p className="font-bold text-[#0f766e]">
+                  Finalizando diagnóstico...
+                </p>
+              )}
+
+            </div>
 
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div
