@@ -152,6 +152,31 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       </div>
 
+      {/* INSIGHTS DETECTADOS */}
+
+      {results.keyInsights.length > 0 && (
+
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-3">
+
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+            Sinais detectados no seu perfil
+          </p>
+
+          <ul className="space-y-2 text-sm text-slate-700">
+
+            {results.keyInsights.map((insight, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">•</span>
+                <span>{insight}</span>
+              </li>
+            ))}
+
+          </ul>
+
+        </div>
+
+      )}
+
       {/* DIAGNÓSTICO */}
 
       <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 whitespace-pre-line">
@@ -193,7 +218,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         onClick={onCtaClick}
         className="w-full py-6 bg-[#0f766e] hover:bg-[#134e4a] text-white rounded-2xl font-black text-lg transition-all shadow-xl uppercase"
       >
-        Quero ver como corrigir isso
+        Ver como estabilizar meu metabolismo
       </button>
 
     </div>
