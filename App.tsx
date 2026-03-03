@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
 import QuizStep from './QuizStep';
@@ -128,8 +128,6 @@ const App: React.FC = () => {
     });
 
     const sinaisDetectados = criticalCount + moderateCount;
-
-    // NOVO ALGORITMO REALISTA
 
     let score =
       40 +
@@ -280,7 +278,69 @@ const App: React.FC = () => {
 
       <main className="flex-1 w-full max-w-md mx-auto">
 
+        {/* TELA INICIAL */}
+
+        {currentStep === -1 && !loading && !results && !showVsl && (
+
+          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
+
+            <div className="space-y-4">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Diagnóstico Gratuito
+              </p>
+
+              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
+                Risco de Rebote
+              </h1>
+
+              <h2 className="text-base text-slate-600 max-w-sm mx-auto">
+                Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
+              </h2>
+            </div>
+
+            <button
+              onClick={() => setCurrentStep(0)}
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
+            >
+              Começar Avaliação Gratuita
+            </button>
+
+          </div>
+
+        )}
+
+        {/* PERGUNTAS */}
+
+        {isQuestionStep && !loading && !results && !showVsl && (
+
+          <QuizStep
+            key={currentStep}
+            question={QUESTIONS[getQuestionIndex()]}
+            selectedOption={
+              answers[QUESTIONS[getQuestionIndex()].id] || null
+            }
+            onSelect={handleSelectOption}
+            onNext={handleNext}
+            onBack={() => setCurrentStep(prev => prev - 1)}
+            isFirst={currentStep === 0}
+          />
+
+        )}
+
+        {/* INTERSTITIAL */}
+
+        {isNewsStep && !loading && !results && !showVsl && (
+
+          <div className="py-6 px-4">
+            <NewsInterstitial onNext={handleNext} />
+          </div>
+
+        )}
+
+        {/* LOADING */}
+
         {loading && (
+
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
 
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
@@ -309,16 +369,24 @@ const App: React.FC = () => {
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
+
           </div>
+
         )}
 
+        {/* RESULTADO */}
+
         {results && !loading && !showVsl && (
+
           <ResultsView
             results={results}
             answers={answers}
             onCtaClick={() => setShowVsl(true)}
           />
+
         )}
+
+        {/* VSL */}
 
         {showVsl && !loading && <VslView />}
 
