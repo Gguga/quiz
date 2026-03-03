@@ -1,4 +1,3 @@
-
 export interface QuestionOption {
   label: string;
   subLabel?: string;
@@ -19,6 +18,8 @@ export interface QuizResults {
   riskLevel: 'Baixo' | 'Moderado' | 'Alto' | 'Crítico';
   personalizedMessage: string;
   keyInsights: string[];
+  sinaisDetectados: number;
+  comparacaoPopulacional: string;
 }
 
 export interface UserAnswers {
