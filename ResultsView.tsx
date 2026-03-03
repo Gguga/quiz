@@ -117,9 +117,9 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   const descricao =
     principais.map(f => f.texto).join("\n\n") +
     "\n\n" +
-    "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer por um tempo, mas tende a não se sustentar a longo prazo.";
+    "Quando esses fatores aparecem juntos, o emagrecimento pode até acontecer por um período, mas tende a não se sustentar a longo prazo.";
 
-  // 🎨 COR DINÂMICA POR NÍVEL
+  // 🎨 COR DINÂMICA
 
   let colorClass = "text-green-600";
 
@@ -152,7 +152,25 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       </div>
 
-      {/* INSIGHTS DETECTADOS */}
+      {/* INDICADOR DE SINAIS */}
+
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-2">
+
+        <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
+          Padrões detectados
+        </p>
+
+        <p className="text-2xl font-black text-slate-900">
+          {results.sinaisDetectados} sinais metabólicos identificados
+        </p>
+
+        <p className="text-xs text-slate-500">
+          {results.comparacaoPopulacional}
+        </p>
+
+      </div>
+
+      {/* INSIGHTS */}
 
       {results.keyInsights.length > 0 && (
 
@@ -185,7 +203,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
       </div>
 
-      {/* ANÁLISE METABÓLICA */}
+      {/* ANÁLISE */}
 
       <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
 
@@ -194,23 +212,24 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </p>
 
         <p className="text-sm text-slate-700 leading-relaxed">
-          Pelas respostas do seu questionário, o seu emagrecimento pode não estar
-          sendo sustentado por mecanismos metabólicos estáveis.
+          Pelas respostas do seu questionário, seu processo de emagrecimento pode não estar sendo sustentado por mecanismos metabólicos estáveis.
         </p>
 
         <p className="text-sm text-slate-700 leading-relaxed">
-          Isso significa que, mesmo quando o peso desce, o corpo pode acabar
-          recuperando gordura com relativa facilidade após a interrupção da
-          medicação ou mudanças na rotina.
+          Isso significa que, mesmo quando o peso reduz inicialmente, o organismo pode ter tendência a recuperar gordura após a interrupção da medicação ou mudanças na rotina.
         </p>
 
         <p className="text-sm font-semibold text-slate-900 leading-relaxed">
-          A boa notícia é que esses fatores normalmente podem ser corrigidos
-          quando existe uma estratégia correta de preservação muscular e ajuste
-          metabólico.
+          A boa notícia é que esses fatores normalmente podem ser corrigidos quando existe uma estratégia correta de preservação muscular e ajuste metabólico.
         </p>
 
       </div>
+
+      {/* VALIDAÇÃO */}
+
+      <p className="text-xs text-slate-500 text-center leading-relaxed">
+        Este diagnóstico foi gerado automaticamente a partir das suas respostas no questionário.
+      </p>
 
       {/* CTA */}
 
