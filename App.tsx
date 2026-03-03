@@ -1,12 +1,10 @@
+```tsx
 import React, { useState, useEffect } from 'react';
 import { QUESTIONS } from './constants';
 import { UserAnswers, QuizResults } from './types';
 import QuizStep from './QuizStep';
 import ResultsView from './ResultsView';
 import VslView from './components/VslView';
-import NewsInterstitial from './components/NewsInterstitial';
-
-const NEWS_POSITION = 4;
 
 const App: React.FC = () => {
 
@@ -29,16 +27,12 @@ const App: React.FC = () => {
   }, [currentStep, results, showVsl, loading]);
 
   const getQuestionIndex = () => {
-    if (currentStep > NEWS_POSITION) return currentStep - 1;
     return currentStep;
   };
 
-  const isNewsStep = currentStep === NEWS_POSITION;
-
   const isQuestionStep =
     currentStep >= 0 &&
-    currentStep < QUESTIONS.length + 1 &&
-    !isNewsStep;
+    currentStep < QUESTIONS.length;
 
   const getStageInfo = () => {
 
@@ -255,8 +249,6 @@ const App: React.FC = () => {
 
         <div className="w-full px-6 pt-6 space-y-3">
 
-          {/* INDICADOR PERGUNTA X DE Y */}
-
           <div className="flex justify-center text-xs font-semibold text-slate-500">
             Pergunta {questionNumber} de {totalQuestions}
           </div>
@@ -276,41 +268,54 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {stageCompleted && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-50 pointer-events-auto">
-          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl text-center space-y-3 pointer-events-none">
-            <div className="text-3xl">✔️</div>
-            <p className="font-bold text-[#0f766e]">{stageCompleted}</p>
-          </div>
-        </div>
-      )}
-
       <main className="flex-1 w-full max-w-md mx-auto">
 
         {currentStep === -1 && !loading && !results && !showVsl && (
 
-          <div className="flex flex-col items-center px-6 text-center space-y-8 pt-20">
+          <div className="flex flex-col items-center px-6 text-center space-y-10 pt-20">
 
             <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-                Diagnóstico Gratuito
+
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">
+                Diagnóstico metabólico
               </p>
 
-              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e]">
-                Risco de Rebote
+              <h1 className="text-3xl md:text-4xl font-black text-[#0f766e] leading-tight">
+                Seu corpo está preparado
+                para não recuperar o peso?
               </h1>
 
-              <h2 className="text-base text-slate-600 max-w-sm mx-auto">
-                Emagrecer é só a primeira etapa. Descubra se você tem estrutura para manter.
-              </h2>
+              <p className="text-slate-600 text-base max-w-sm mx-auto">
+                Algumas pessoas emagrecem e recuperam tudo meses depois.
+                Outras conseguem manter.
+              </p>
+
+              <p className="text-slate-600 text-sm max-w-sm mx-auto">
+                Este diagnóstico analisa sinais metabólicos associados
+                ao risco de rebote após o emagrecimento.
+              </p>
+
+              <p className="text-sm text-amber-600 font-semibold">
+                ⚠️ Muitas pessoas descobrem que seu metabolismo ainda
+                não está preparado para manter o peso.
+              </p>
+
+              <p className="text-xs text-slate-500">
+                Leva menos de 2 minutos.
+              </p>
+
             </div>
 
             <button
               onClick={() => setCurrentStep(0)}
-              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase mt-6 shadow-xl"
+              className="w-full py-6 bg-[#0f766e] text-white rounded-2xl font-black uppercase shadow-xl"
             >
-              Começar Avaliação Gratuita
+              Descobrir meu risco
             </button>
+
+            <div className="text-xs text-slate-400 pt-6">
+              Baseado em padrões observados em avaliações metabólicas.
+            </div>
 
           </div>
 
@@ -332,14 +337,6 @@ const App: React.FC = () => {
 
         )}
 
-        {isNewsStep && !loading && !results && !showVsl && (
-
-          <div className="py-6 px-4">
-            <NewsInterstitial onNext={handleNext} />
-          </div>
-
-        )}
-
         {loading && (
 
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
@@ -349,7 +346,7 @@ const App: React.FC = () => {
             </h2>
 
             <p className="text-xs text-slate-500">
-              Seu perfil está sendo comparado com padrões metabólicos observados em outros usuários.
+              Seu perfil está sendo comparado com padrões metabólicos observados.
             </p>
 
             <div className="space-y-2 text-sm text-slate-500 font-medium">
@@ -393,3 +390,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+```
