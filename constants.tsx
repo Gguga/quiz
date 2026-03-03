@@ -5,7 +5,7 @@ export const QUESTIONS: Question[] = [
   // 1 SEXO
   {
     id: 1,
-    text: "Você é:",
+    text: "Seu sexo:",
     options: [
       { label: "Homem", value: "sexo_homem", weight: 0 },
       { label: "Mulher", value: "sexo_mulher", weight: 0 }
@@ -15,7 +15,7 @@ export const QUESTIONS: Question[] = [
   // 2 IDADE
   {
     id: 2,
-    text: "Qual sua faixa etária?",
+    text: "Qual sua idade?",
     options: [
       { label: "18 a 29 anos", value: "idade_18_29", weight: 5 },
       { label: "30 a 39 anos", value: "idade_30_39", weight: 10 },
@@ -24,43 +24,43 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 3 HISTORICO
+  // 3 HISTÓRICO
   {
     id: 3,
     text: "Há quanto tempo você tenta emagrecer?",
     options: [
       { label: "Menos de 1 ano", value: "tempo_curto", weight: 5 },
-      { label: "1–3 anos", value: "tempo_medio", weight: 15 },
-      { label: "3–5 anos", value: "tempo_longo", weight: 30 },
+      { label: "Entre 1 e 3 anos", value: "tempo_medio", weight: 15 },
+      { label: "Entre 3 e 5 anos", value: "tempo_longo", weight: 30 },
       { label: "Mais de 5 anos", value: "tempo_eterno", weight: 40 }
     ]
   },
 
-  // 4 SITUACAO COM MEDICACAO
+  // 4 SITUAÇÃO MEDICAÇÃO
   {
     id: 4,
-    text: "Qual destas situações descreve melhor o seu momento com a medicação para emagrecimento?",
+    text: "Qual situação descreve melhor seu momento com a medicação para emagrecimento?",
     options: [
       { label: "Estou usando e ainda estou emagrecendo", value: "uso_atual_perda", weight: 25 },
-      { label: "Estou usando, mas o peso estagnou", value: "uso_atual_plato", weight: 40 },
+      { label: "Estou usando, mas o peso parou de cair", value: "uso_atual_plato", weight: 40 },
       { label: "Estou reduzindo a dose", value: "uso_desmame", weight: 55 },
       { label: "Já parei e tenho medo de recuperar o peso", value: "uso_parou_rebote", weight: 65 }
     ]
   },
 
-  // 5 FORCA ENERGIA
+  // 5 FORÇA / ENERGIA
   {
     id: 5,
     text: "Depois que começou a usar a medicação, sua força ou energia:",
     options: [
-      { label: "Caíram bastante", value: "forca_caiu_muito", weight: 45 },
-      { label: "Caíram um pouco", value: "forca_caiu_pouco", weight: 25 },
+      { label: "Estão iguais ou melhores", value: "forca_estavel", weight: 0 },
       { label: "Não percebi muita diferença", value: "forca_estavel_medio", weight: 10 },
-      { label: "Estão iguais ou melhores", value: "forca_estavel", weight: 0 }
+      { label: "Caíram um pouco", value: "forca_caiu_pouco", weight: 25 },
+      { label: "Caíram bastante", value: "forca_caiu_muito", weight: 45 }
     ]
   },
 
-  // 6 TREINO DE FORCA
+  // 6 TREINO
   {
     id: 6,
     text: "Como está seu treino de força atualmente?",
@@ -72,22 +72,22 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 7 PROTEINA POR REFEICAO
+  // 7 PROTEÍNA
   {
     id: 7,
-    text: "Em quantas refeições do dia você costuma incluir uma fonte de proteína?",
+    text: "Em quantas refeições do dia você inclui proteína?",
     options: [
-      { label: "1 refeição ou menos", value: "proteina_0_1", weight: 55 },
-      { label: "2 refeições", value: "proteina_2", weight: 35 },
+      { label: "4 ou mais refeições", value: "proteina_4_plus", weight: 0 },
       { label: "3 refeições", value: "proteina_3", weight: 10 },
-      { label: "4 ou mais refeições", value: "proteina_4_plus", weight: 0 }
+      { label: "2 refeições", value: "proteina_2", weight: 35 },
+      { label: "1 refeição ou menos", value: "proteina_0_1", weight: 55 }
     ]
   },
 
-  // 8 CONSCIENCIA PROTEICA
+  // 8 CONSCIÊNCIA PROTEICA
   {
     id: 8,
-    text: "Você costuma acompanhar ou calcular a quantidade de proteína da sua dieta?",
+    text: "Você acompanha ou calcula a proteína da sua dieta?",
     options: [
       { label: "Sim, calculo por peso corporal", value: "proteina_calculada", weight: 0 },
       { label: "Tenho uma noção aproximada", value: "proteina_feeling", weight: 40 },
@@ -95,10 +95,10 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 9 ESTRUTURA DA DIETA
+  // 9 ESTRUTURA DIETA
   {
     id: 9,
-    text: "Como sua alimentação está estruturada hoje?",
+    text: "Como sua alimentação está organizada hoje?",
     options: [
       { label: "Tenho uma estratégia alimentar bem definida", value: "dieta_protecao_sim", weight: 0 },
       { label: "Estou focando apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
@@ -110,19 +110,19 @@ export const QUESTIONS: Question[] = [
   // 10 COLATERAIS
   {
     id: 10,
-    text: "Durante o uso da medicação, você percebeu algum destes efeitos?",
+    text: "Durante o uso da medicação você percebeu algum desses efeitos?",
     options: [
+      { label: "Nenhum desses", value: "colateral_nenhum", weight: 0 },
       { label: "Cansaço constante ou falta de energia", value: "colateral_cansaco", weight: 25 },
       { label: "Náusea ou prisão de ventre frequente", value: "colateral_digestivo", weight: 20 },
-      { label: "Um pouco de cada", value: "colateral_varios", weight: 35 },
-      { label: "Nenhum desses", value: "colateral_nenhum", weight: 0 }
+      { label: "Um pouco de cada", value: "colateral_varios", weight: 35 }
     ]
   },
 
   // 11 COMPROMISSO
   {
     id: 11,
-    text: "Você quer aprender como manter seu peso sem efeito rebote?",
+    text: "Você gostaria de aprender como manter o peso sem efeito rebote?",
     options: [
       { label: "Sim, quero manter meu resultado", value: "compromisso_sim", weight: 0 },
       { label: "Quero entender melhor como funciona", value: "compromisso_talvez", weight: 5 },
