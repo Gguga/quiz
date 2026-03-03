@@ -2,7 +2,7 @@ import { Question } from './types';
 
 export const QUESTIONS: Question[] = [
 
-  // 1️⃣ SEXO
+  // 1 SEXO
   {
     id: 1,
     text: "Você é:",
@@ -12,7 +12,7 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 2️⃣ IDADE (pergunta fácil)
+  // 2 IDADE
   {
     id: 2,
     text: "Qual sua faixa etária?",
@@ -24,111 +24,110 @@ export const QUESTIONS: Question[] = [
     ]
   },
 
-  // 3️⃣ HISTÓRICO
+  // 3 HISTORICO
   {
     id: 3,
-    text: "Há quanto tempo você tenta emagrecer?",
+    text: "Ha quanto tempo voce tenta emagrecer?",
     options: [
       { label: "Menos de 1 ano", value: "tempo_curto", weight: 5 },
-      { label: "1–3 anos", value: "tempo_medio", weight: 15 },
-      { label: "5–10 anos", value: "tempo_longo", weight: 30 },
+      { label: "1-3 anos", value: "tempo_medio", weight: 15 },
+      { label: "5-10 anos", value: "tempo_longo", weight: 30 },
       { label: "Mais de 10 anos", value: "tempo_eterno", weight: 40 }
     ]
   },
 
-  // 4️⃣ SITUAÇÃO COM A CANETA
+  // 4 SITUACAO COM MEDICACAO
   {
     id: 4,
-    text: "Qual sua situação atual com a medicação para emagrecimento?",
+    text: "Qual sua situacao atual com a medicacao para emagrecimento?",
     options: [
-      { label: "💉 Estou usando e ainda estou emagrecendo", value: "uso_atual_perda", weight: 25 },
-      { label: "📉 Estou usando, mas o peso parou de cair", value: "uso_atual_plato", weight: 40 },
-      { label: "🔄 Estou reduzindo a dose", value: "uso_desmame", weight: 55 },
-      { label: "⚠️ Já parei e o peso começou a voltar", value: "uso_parou_rebote", weight: 65 }
+      { label: "Estou usando e ainda estou emagrecendo", value: "uso_atual_perda", weight: 25 },
+      { label: "Estou usando, mas o peso parou de cair", value: "uso_atual_plato", weight: 40 },
+      { label: "Estou reduzindo a dose", value: "uso_desmame", weight: 55 },
+      { label: "Ja parei e o peso comecou a voltar", value: "uso_parou_rebote", weight: 65 }
     ]
   },
 
-  // 5️⃣ FORÇA / ENERGIA
+  // 5 FORCA ENERGIA
   {
     id: 5,
-    text: "Depois que começou a usar a medicação, sua força ou energia:",
+    text: "Depois que comecou a usar a medicacao, sua forca ou energia:",
     options: [
-      { label: "Caíram bastante", value: "forca_caiu_muito", weight: 45 },
-      { label: "Caíram um pouco", value: "forca_caiu_pouco", weight: 25 },
-      { label: "Não percebi muita diferença", value: "forca_estavel_medio", weight: 10 },
-      { label: "Estão iguais ou melhores", value: "forca_estavel", weight: 0 }
+      { label: "Cairam bastante", value: "forca_caiu_muito", weight: 45 },
+      { label: "Cairam um pouco", value: "forca_caiu_pouco", weight: 25 },
+      { label: "Nao percebi muita diferenca", value: "forca_estavel_medio", weight: 10 },
+      { label: "Estao iguais ou melhores", value: "forca_estavel", weight: 0 }
     ]
   },
 
-  // 6️⃣ TREINO DE FORÇA
+  // 6 TREINO DE FORCA
   {
     id: 6,
-    text: "Como está seu treino de força atualmente?",
+    text: "Como esta seu treino de forca atualmente?",
     options: [
-      { label: "Treino estruturado com progressão", value: "forca_progressao", weight: 0 },
-      { label: "Treino, mas sem muita estratégia", value: "forca_irregular", weight: 25 },
-      { label: "Faço apenas caminhada ou cardio", value: "forca_cardio", weight: 45 },
-      { label: "Não faço musculação", value: "forca_nao_treina", weight: 50 }
+      { label: "Treino estruturado com progressao", value: "forca_progressao", weight: 0 },
+      { label: "Treino, mas sem muita estrategia", value: "forca_irregular", weight: 25 },
+      { label: "Faco apenas caminhada ou cardio", value: "forca_cardio", weight: 45 },
+      { label: "Nao faco musculacao", value: "forca_nao_treina", weight: 50 }
     ]
   },
 
-  // 7️⃣ PROTEÍNA POR REFEIÇÃO (comportamental)
+  // 7 PROTEINA POR REFEICAO
   {
     id: 7,
-    text: "Em quantas refeições do dia você costuma incluir uma fonte de proteína?",
+    text: "Em quantas refeicoes do dia voce costuma incluir uma fonte de proteina?",
     options: [
-      { label: "0 ou 1 refeição", value: "proteina_0_1", weight: 55 },
-      { label: "2 refeições", value: "proteina_2", weight: 35 },
-      { label: "3 refeições", value: "proteina_3", weight: 10 },
-      { label: "4 ou mais refeições", value: "proteina_4_plus", weight: 0 }
+      { label: "0 ou 1 refeicao", value: "proteina_0_1", weight: 55 },
+      { label: "2 refeicoes", value: "proteina_2", weight: 35 },
+      { label: "3 refeicoes", value: "proteina_3", weight: 10 },
+      { label: "4 ou mais refeicoes", value: "proteina_4_plus", weight: 0 }
     ]
   },
 
-  // 8️⃣ CONSCIÊNCIA PROTEICA
+  // 8 CONSCIENCIA PROTEICA
   {
     id: 8,
-    text: "Você costuma acompanhar ou calcular a quantidade de proteína da sua dieta?",
+    text: "Voce costuma acompanhar ou calcular a quantidade de proteina da sua dieta?",
     options: [
       { label: "Sim, calculo por peso corporal", value: "proteina_calculada", weight: 0 },
-      { label: "Tenho uma noção aproximada", value: "proteina_feeling", weight: 40 },
+      { label: "Tenho uma nocao aproximada", value: "proteina_feeling", weight: 40 },
       { label: "Nunca calculei", value: "proteina_nunca", weight: 55 }
     ]
   },
 
-  // 9️⃣ ESTRUTURA DA DIETA
+  // 9 ESTRUTURA DA DIETA
   {
     id: 9,
-    text: "Como sua alimentação está estruturada hoje?",
+    text: "Como sua alimentacao esta estruturada hoje?",
     options: [
-      { label: "Tenho uma estratégia alimentar bem definida", value: "dieta_protecao_sim", weight: 0 },
+      { label: "Tenho uma estrategia alimentar bem definida", value: "dieta_protecao_sim", weight: 0 },
       { label: "Estou focando apenas em emagrecer", value: "dieta_emagrecer", weight: 25 },
       { label: "Apenas reduzi as quantidades", value: "dieta_reduzi", weight: 40 },
       { label: "Vou ajustando no feeling", value: "dieta_feeling", weight: 50 }
     ]
   },
 
-  // 🔟 COLATERAIS
+  // 10 COLATERAIS
   {
     id: 10,
-    text: "Durante o uso da medicação, você percebeu algum destes efeitos?",
+    text: "Durante o uso da medicacao, voce percebeu algum destes efeitos?",
     options: [
-      { label: "Cansaço constante ou falta de energia", value: "colateral_cansaco", weight: 25 },
-      { label: "Náusea ou constipação frequente", value: "colateral_digestivo", weight: 20 },
+      { label: "Cansaco constante ou falta de energia", value: "colateral_cansaco", weight: 25 },
+      { label: "Nausea ou constipacao frequente", value: "colateral_digestivo", weight: 20 },
       { label: "Um pouco de cada", value: "colateral_varios", weight: 35 },
       { label: "Nenhum desses", value: "colateral_nenhum", weight: 0 }
     ]
   },
 
-  // 1️⃣1️⃣ COMPROMISSO
+  // 11 COMPROMISSO
   {
     id: 11,
-    text: "Você gostaria de entender como manter seu peso sem risco de rebote?",
+    text: "Voce gostaria de entender como manter seu peso sem risco de rebote?",
     options: [
       { label: "Sim, quero manter meu resultado", value: "compromisso_sim", weight: 0 },
       { label: "Quero entender melhor como funciona", value: "compromisso_talvez", weight: 5 },
-      { label: "Não sei se faria tanta diferença", value: "compromisso_duvida", weight: 10 }
+      { label: "Nao sei se faria tanta diferenca", value: "compromisso_duvida", weight: 10 }
     ]
   }
 
 ];
-```
