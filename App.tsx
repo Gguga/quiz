@@ -153,6 +153,9 @@ const App: React.FC = () => {
       riskLevel = "Moderado";
     }
 
+    const indiceMetabolico =
+      100 - score + Math.floor(Math.random() * 6) - 3;
+
     let comparacaoPopulacional = "";
 
     if (riskLevel === "Crítico") {
@@ -171,7 +174,8 @@ const App: React.FC = () => {
       personalizedMessage: "Existe uma vulnerabilidade estrutural que pode comprometer a manutenção do peso caso nada seja ajustado.",
       keyInsights: [],
       sinaisDetectados,
-      comparacaoPopulacional
+      comparacaoPopulacional,
+      indiceMetabolico
     };
   };
 
@@ -206,6 +210,20 @@ const App: React.FC = () => {
     stageInfo
       ? Math.round((stageInfo.position / stageInfo.total) * 100)
       : 0;
+
+  const loadingMessages = [
+    "Processando respostas do questionário...",
+    answers[6] === "forca_nao_treina"
+      ? "Detectando ausência de estímulo de musculação..."
+      : "Analisando padrão de estímulo muscular...",
+    answers[7] === "proteina_0_1"
+      ? "Detectando ingestão proteica abaixo do ideal..."
+      : "Calculando distribuição de proteína...",
+    answers[4] === "uso_parou_rebote"
+      ? "Identificando sinais iniciais de efeito rebote..."
+      : "Analisando adaptação à medicação...",
+    "Calculando índice de vulnerabilidade metabólica..."
+  ];
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6f7] flex flex-col font-sans">
@@ -317,17 +335,17 @@ const App: React.FC = () => {
         {loading && (
           <div className="flex flex-col items-center justify-center text-center p-6 pt-24 space-y-6">
             <h2 className="text-xl font-black text-[#0f766e] uppercase">
-              Analisando Estrutura Metabólica
+              Gerando Diagnóstico Personalizado
             </h2>
 
             <div className="space-y-2 text-sm text-slate-500 font-medium">
-              {loadingProgress > 10 && <p>✓ Avaliando histórico metabólico...</p>}
-              {loadingProgress > 30 && <p>✓ Calculando vulnerabilidade muscular...</p>}
-              {loadingProgress > 50 && <p>✓ Analisando padrão proteico...</p>}
-              {loadingProgress > 70 && <p>✓ Cruzando adaptação à medicação...</p>}
-              {loadingProgress >= 90 && (
+              {loadingProgress > 5 && <p>✓ {loadingMessages[0]}</p>}
+              {loadingProgress > 25 && <p>✓ {loadingMessages[1]}</p>}
+              {loadingProgress > 45 && <p>✓ {loadingMessages[2]}</p>}
+              {loadingProgress > 65 && <p>✓ {loadingMessages[3]}</p>}
+              {loadingProgress > 85 && (
                 <p className="font-bold text-[#0f766e]">
-                  Finalizando diagnóstico...
+                  ✓ {loadingMessages[4]}
                 </p>
               )}
             </div>
